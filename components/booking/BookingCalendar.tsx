@@ -3,12 +3,11 @@
 import { useState } from "react";
 import { format, addDays, startOfDay, isBefore, isToday } from "date-fns";
 import { es } from "date-fns/locale";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, CalendarDays, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BookingForm } from "./BookingForm";
 
 type AvailabilitySlot = { dayOfWeek: number; startTime: string; endTime: string };
-
 type Props = {
   tenantId: string;
   tenantSlug: string;
@@ -16,6 +15,8 @@ type Props = {
   availability: AvailabilitySlot[];
   accentColor: string;
 };
+
+const DAY_LABELS = ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"];
 
 export function BookingCalendar({ tenantId, tenantSlug, service, availability, accentColor }: Props) {
   const today = startOfDay(new Date());
@@ -33,9 +34,7 @@ export function BookingCalendar({ tenantId, tenantSlug, service, availability, a
     setSelectedDate(date);
     setSelectedTime(null);
     setLoadingSlots(true);
-    const res = await fetch(
-      `/api/slots?tenantId=${tenantId}&serviceId=${service.id}&date=${format(date, "yyyy-MM-dd")}`
-    );
+    const res = await fetch(`/api/slots?tenantId=${tenantId}&serviceId=${service.id}&date=${format(date, "yyyy-MM-dd")}`);
     const data = await res.json();
     setSlots(data.slots ?? []);
     setLoadingSlots(false);
@@ -54,90 +53,126 @@ export function BookingCalendar({ tenantId, tenantSlug, service, availability, a
     );
   }
 
+  const canGoPrev = !isBefore(addDays(weekStart, -1), today);
+
   return (
-    <div className="space-y-6">
-      <div className="rounded-xl border border-gray-200 bg-white p-5">
-        <div className="mb-4 flex items-center justify-between">
+    <div className="space-y-4">
+      {/* Calendar */}
+      <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+        {/* Month nav */}
+        <div className="flex items-center justify-between border-b border-gray-50 px-5 py-3.5">
           <button
             onClick={() => setWeekStart((w) => addDays(w, -7))}
-            disabled={isBefore(addDays(weekStart, -1), today)}
-            className="rounded-lg p-2 hover:bg-gray-100 disabled:opacity-30"
+            disabled={!canGoPrev}
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <span className="text-sm font-medium text-gray-700">
+          <span className="text-sm font-semibold capitalize text-gray-700">
             {format(weekStart, "MMMM yyyy", { locale: es })}
           </span>
           <button
             onClick={() => setWeekStart((w) => addDays(w, 7))}
-            className="rounded-lg p-2 hover:bg-gray-100"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
         </div>
 
-        <div className="grid grid-cols-7 gap-1">
+        {/* Day labels */}
+        <div className="grid grid-cols-7 border-b border-gray-50 px-4 py-2">
+          {DAY_LABELS.map((d) => (
+            <div key={d} className="text-center text-xs font-medium text-gray-400">{d}</div>
+          ))}
+        </div>
+
+        {/* Days */}
+        <div className="grid grid-cols-7 gap-1 p-4">
           {days.map((day) => {
             const isAvailable = availableDays.has(day.getDay()) && !isBefore(day, today);
             const isSelected = selectedDate?.toDateString() === day.toDateString();
+            const isTodayDate = isToday(day);
+
             return (
               <button
                 key={day.toISOString()}
                 onClick={() => isAvailable && selectDate(day)}
                 disabled={!isAvailable}
-                className={`flex flex-col items-center rounded-lg py-2 text-xs transition-colors ${
-                  isSelected
-                    ? "text-white font-bold"
-                    : isAvailable
-                    ? "hover:bg-gray-100 text-gray-700"
-                    : "text-gray-300 cursor-not-allowed"
-                }`}
+                className={`
+                  relative flex flex-col items-center rounded-xl py-2.5 text-xs transition-all
+                  ${isSelected ? "text-white font-bold shadow-md" : ""}
+                  ${!isSelected && isAvailable ? "hover:bg-gray-50 text-gray-700 cursor-pointer" : ""}
+                  ${!isAvailable ? "text-gray-300 cursor-not-allowed" : ""}
+                `}
                 style={isSelected ? { backgroundColor: accentColor } : undefined}
               >
-                <span>{format(day, "EEE", { locale: es })}</span>
-                <span className={`mt-1 text-sm font-medium ${isToday(day) && !isSelected ? "text-indigo-600" : ""}`}>
-                  {format(day, "d")}
-                </span>
+                <span className="leading-none">{format(day, "d")}</span>
+                {isTodayDate && !isSelected && (
+                  <span className="mt-1 h-1 w-1 rounded-full" style={{ backgroundColor: accentColor }} />
+                )}
               </button>
             );
           })}
         </div>
       </div>
 
+      {/* Time slots */}
       {selectedDate && (
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
-          <h3 className="mb-4 text-sm font-medium text-gray-600">
-            {format(selectedDate, "EEEE d 'de' MMMM", { locale: es })}
-          </h3>
-          {loadingSlots ? (
-            <p className="text-center text-sm text-gray-400 py-4">Cargando horarios...</p>
-          ) : slots.length === 0 ? (
-            <p className="text-center text-sm text-gray-400 py-4">No hay horarios disponibles para este día.</p>
-          ) : (
-            <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-              {slots.map((slot) => (
-                <button
-                  key={slot}
-                  onClick={() => setSelectedTime(slot)}
-                  className={`rounded-lg border py-2 text-sm font-medium transition-colors ${
-                    selectedTime === slot
-                      ? "text-white border-transparent"
-                      : "border-gray-200 text-gray-700 hover:border-indigo-300 hover:bg-indigo-50"
-                  }`}
-                  style={selectedTime === slot ? { backgroundColor: accentColor, borderColor: accentColor } : undefined}
-                >
-                  {slot}
-                </button>
-              ))}
-            </div>
-          )}
+        <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+          <div className="flex items-center gap-2 border-b border-gray-50 px-5 py-3.5">
+            <CalendarDays className="h-4 w-4 text-gray-400" />
+            <span className="text-sm font-semibold capitalize text-gray-700">
+              {format(selectedDate, "EEEE d 'de' MMMM", { locale: es })}
+            </span>
+          </div>
+
+          <div className="p-4">
+            {loadingSlots ? (
+              <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="h-10 rounded-xl skeleton" />
+                ))}
+              </div>
+            ) : slots.length === 0 ? (
+              <div className="flex flex-col items-center py-8 text-center">
+                <Clock className="mb-2 h-8 w-8 text-gray-200" />
+                <p className="text-sm font-medium text-gray-400">Sin horarios disponibles</p>
+                <p className="mt-0.5 text-xs text-gray-300">Probá con otro día</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+                {slots.map((slot) => {
+                  const isSelected = selectedTime === slot;
+                  return (
+                    <button
+                      key={slot}
+                      onClick={() => setSelectedTime(slot)}
+                      className={`rounded-xl border py-2.5 text-sm font-medium transition-all ${
+                        isSelected
+                          ? "text-white border-transparent shadow-md scale-105"
+                          : "border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50"
+                      }`}
+                      style={isSelected ? { backgroundColor: accentColor } : undefined}
+                    >
+                      {slot}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
       )}
 
+      {/* CTA */}
       {selectedTime && (
-        <Button className="w-full" onClick={() => setStep("form")} style={{ backgroundColor: accentColor }}>
-          Continuar con {selectedTime}
-        </Button>
+        <button
+          onClick={() => setStep("form")}
+          className="flex w-full items-center justify-center gap-2 rounded-2xl py-4 text-base font-semibold text-white shadow-lg transition-all hover:shadow-xl hover:-translate-y-0.5"
+          style={{ backgroundColor: accentColor }}
+        >
+          Continuar → {selectedTime}
+        </button>
       )}
     </div>
   );
