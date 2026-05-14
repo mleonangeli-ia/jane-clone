@@ -46,7 +46,8 @@ export async function POST(req: NextRequest) {
     create: { tenantId, name: clientName, email: clientEmail, phone: clientPhone ?? undefined },
   });
 
-  const requiresPayment = service.price > 0;
+  const stripeEnabled = process.env.STRIPE_ENABLED !== "false";
+  const requiresPayment = stripeEnabled && service.price > 0;
   const status = requiresPayment ? "PENDING" : "CONFIRMED";
 
   const appointment = await prisma.appointment.create({
