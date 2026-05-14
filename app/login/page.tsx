@@ -46,7 +46,7 @@ export default function LoginPage() {
           <blockquote className="text-2xl font-light leading-relaxed text-indigo-100">
             "Desde que uso JaneClone mis pacientes reservan solos y yo me concentro en atender."
           </blockquote>
-          <p className="mt-4 text-sm text-indigo-300">Dra. María González — Kinesióloga</p>
+          <p className="mt-4 text-sm text-indigo-300">Lic. Florencia Lucchini — Psicóloga</p>
         </div>
         <div className="flex gap-8 text-indigo-200">
           <div>

@@ -107,7 +107,7 @@ export default function LandingPage() {
                   <ArrowRight className="h-5 w-5" />
                 </Button>
               </Link>
-              <Link href="/book/maria-gonzalez">
+              <Link href="/book/florencia-lucchini">
                 <Button size="lg" variant="outline" className="h-14 px-8 text-base border-gray-200 hover:bg-gray-50">
                   Ver demo en vivo
                 </Button>

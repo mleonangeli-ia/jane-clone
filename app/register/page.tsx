@@ -84,7 +84,7 @@ export default function RegisterPage() {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-1.5">
                 <Label htmlFor="name">Nombre completo</Label>
-                <Input id="name" name="name" required placeholder="Dra. María González" className="h-11" />
+                <Input id="name" name="name" required placeholder="Lic. Florencia Lucchini" className="h-11" />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="email">Email</Label>
