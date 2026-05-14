@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe";
+import { preference } from "@/lib/mercadopago";
 import { prisma } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
@@ -22,40 +22,46 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "El turno ya fue procesado" }, { status: 409 });
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3001";
   const slug = appointment.tenant.slug;
 
-  const session = await stripe.checkout.sessions.create({
-    mode: "payment",
-    payment_method_types: ["card"],
-    customer_email: appointment.client.email,
-    line_items: [
-      {
-        quantity: 1,
-        price_data: {
-          currency: "ars",
-          unit_amount: appointment.service.price,
-          product_data: {
-            name: appointment.service.name,
-            description: `Turno con ${appointment.tenant.name}`,
-          },
+  const result = await preference.create({
+    body: {
+      items: [
+        {
+          id: appointment.serviceId,
+          title: appointment.service.name,
+          description: `Turno con ${appointment.tenant.name}`,
+          quantity: 1,
+          unit_price: appointment.service.price / 100,
+          currency_id: "ARS",
         },
+      ],
+      payer: {
+        name: appointment.client.name,
+        email: appointment.client.email,
       },
-    ],
-    metadata: {
-      appointmentId: appointment.id,
-      tenantId: appointment.tenantId,
+      external_reference: appointment.id,
+      back_urls: {
+        success: `${appUrl}/book/${slug}/success?appointment_id=${appointment.id}`,
+        failure: `${appUrl}/book/${slug}/cancel?appointment_id=${appointment.id}`,
+        pending: `${appUrl}/book/${slug}/success?appointment_id=${appointment.id}&pending=1`,
+      },
+      auto_return: "approved",
+      notification_url: `${appUrl}/api/payments/webhook`,
+      statement_descriptor: "JaneClone",
     },
-    success_url: `${appUrl}/book/${slug}/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${appUrl}/book/${slug}/cancel?appointment_id=${appointment.id}`,
-    expires_at: Math.floor(Date.now() / 1000) + 30 * 60, // 30 min
   });
 
-  // Store session ID on appointment so webhook can find it
+  // Store preference ID on appointment
   await prisma.appointment.update({
     where: { id: appointment.id },
-    data: { stripeCheckoutSession: session.id },
+    data: { stripeCheckoutSession: result.id },
   });
 
-  return NextResponse.json({ url: session.url });
+  const url = process.env.MP_ACCESS_TOKEN?.startsWith("TEST")
+    ? result.sandbox_init_point
+    : result.init_point;
+
+  return NextResponse.json({ url });
 }

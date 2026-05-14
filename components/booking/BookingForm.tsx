@@ -55,7 +55,7 @@ export function BookingForm({ tenantId, service, date, time, accentColor, onBack
       return;
     }
 
-    // Step 2: if free, done; if paid, go to Stripe
+    // Step 2: if free, done; if paid, go to MercadoPago
     if (!aptJson.requiresPayment) {
       window.location.href = "?confirmed=1";
       return;
@@ -74,7 +74,7 @@ export function BookingForm({ tenantId, service, date, time, accentColor, onBack
       return;
     }
 
-    // Redirect to Stripe Checkout
+    // Redirect to MercadoPago Checkout
     window.location.href = checkoutJson.url;
   }
 
@@ -158,7 +158,7 @@ export function BookingForm({ tenantId, service, date, time, accentColor, onBack
 
           {service.price > 0 && (
             <p className="text-center text-xs text-gray-400">
-              Pago seguro procesado por Stripe
+              Pago seguro procesado por MercadoPago
             </p>
           )}
         </form>

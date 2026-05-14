@@ -5,7 +5,7 @@ import { Calendar, Users, CreditCard, Clock } from "lucide-react";
 const features = [
   { icon: Calendar, title: "Agenda online", desc: "Tus clientes reservan sus turnos 24/7 desde cualquier dispositivo." },
   { icon: Users, title: "Gestión de clientes", desc: "Historial de visitas, notas y datos de contacto en un solo lugar." },
-  { icon: CreditCard, title: "Pagos integrados", desc: "Cobrá al momento de la reserva o en persona con Stripe." },
+  { icon: CreditCard, title: "Pagos integrados", desc: "Cobrá al momento de la reserva o en persona con MercadoPago." },
   { icon: Clock, title: "Disponibilidad flexible", desc: "Configurá tus horarios y dejá que el sistema haga el resto." },
 ];
 
