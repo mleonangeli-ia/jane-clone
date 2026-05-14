@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { ArrowLeft, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowLeft, Loader2, CheckCircle, Calendar, Clock, User, Mail, Phone, MessageSquare, Tag } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatPrice, formatDuration } from "@/lib/utils";
@@ -21,6 +20,8 @@ type Props = {
 export function BookingForm({ tenantId, service, date, time, accentColor, onBack }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [done, setDone] = useState(false);
+  const [clientName, setClientName] = useState("");
 
   const startTime = new Date(date);
   const [h, m] = time.split(":").map(Number);
@@ -32,8 +33,9 @@ export function BookingForm({ tenantId, service, date, time, accentColor, onBack
     setError("");
 
     const data = new FormData(e.currentTarget);
+    const name = data.get("name") as string;
+    setClientName(name);
 
-    // Step 1: create the appointment (PENDING if price > 0)
     const aptRes = await fetch("/api/appointments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -41,7 +43,7 @@ export function BookingForm({ tenantId, service, date, time, accentColor, onBack
         tenantId,
         serviceId: service.id,
         startTime: startTime.toISOString(),
-        clientName: data.get("name"),
+        clientName: name,
         clientEmail: data.get("email"),
         clientPhone: data.get("phone"),
         notes: data.get("notes"),
@@ -55,9 +57,9 @@ export function BookingForm({ tenantId, service, date, time, accentColor, onBack
       return;
     }
 
-    // Step 2: if free, done; if paid, go to MercadoPago
     if (!aptJson.requiresPayment) {
-      window.location.href = "?confirmed=1";
+      setDone(true);
+      setLoading(false);
       return;
     }
 
@@ -74,91 +76,166 @@ export function BookingForm({ tenantId, service, date, time, accentColor, onBack
       return;
     }
 
-    // Redirect to MercadoPago Checkout
     window.location.href = checkoutJson.url;
   }
 
+  // ── Success screen ──────────────────────────────────────────────
+  if (done) {
+    return (
+      <div className="animate-fade-up space-y-6">
+        {/* Big checkmark */}
+        <div className="flex flex-col items-center py-8 text-center">
+          <div
+            className="flex h-20 w-20 items-center justify-center rounded-full"
+            style={{ backgroundColor: `${accentColor}20` }}
+          >
+            <CheckCircle className="h-10 w-10" style={{ color: accentColor }} />
+          </div>
+          <h2 className="mt-4 text-2xl font-bold text-gray-900">¡Turno confirmado!</h2>
+          <p className="mt-2 text-gray-500">
+            Te esperamos el{" "}
+            <span className="font-medium text-gray-700">
+              {format(startTime, "EEEE d 'de' MMMM 'a las' HH:mm", { locale: es })}
+            </span>
+          </p>
+        </div>
+
+        {/* Appointment card */}
+        <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+          <div className="h-1" style={{ backgroundColor: accentColor }} />
+          <div className="space-y-3 p-5">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-gray-500">Servicio</span>
+              <span className="font-semibold text-gray-900">{service.name}</span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-gray-500">Duración</span>
+              <span className="text-gray-700">{formatDuration(service.duration)}</span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-gray-500">Fecha</span>
+              <span className="text-gray-700">{format(startTime, "d MMM yyyy", { locale: es })}</span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-gray-500">Hora</span>
+              <span className="font-semibold text-gray-700">{format(startTime, "HH:mm")}</span>
+            </div>
+          </div>
+          <div
+            className="flex items-center gap-2 px-5 py-3 text-sm font-medium text-white"
+            style={{ backgroundColor: accentColor }}
+          >
+            <CheckCircle className="h-4 w-4" />
+            Confirmación enviada por email
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Form ────────────────────────────────────────────────────────
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
+      {/* Back */}
       <button
         onClick={onBack}
-        className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700"
+        className="flex items-center gap-2 text-sm text-gray-400 transition-colors hover:text-gray-600"
       >
         <ArrowLeft className="h-4 w-4" />
         Cambiar horario
       </button>
 
-      {/* Summary */}
-      <div className="rounded-xl border border-gray-200 bg-white p-5">
-        <h3 className="mb-3 font-semibold text-gray-900">Resumen del turno</h3>
-        <dl className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <dt className="text-gray-500">Servicio</dt>
-            <dd className="font-medium text-gray-900">{service.name}</dd>
-          </div>
-          <div className="flex justify-between">
-            <dt className="text-gray-500">Duración</dt>
-            <dd className="text-gray-700">{formatDuration(service.duration)}</dd>
-          </div>
-          <div className="flex justify-between">
-            <dt className="text-gray-500">Fecha y hora</dt>
-            <dd className="text-gray-700">
-              {format(startTime, "EEEE d MMM 'a las' HH:mm", { locale: es })}
-            </dd>
-          </div>
-          {service.price > 0 && (
-            <div className="flex justify-between border-t border-gray-100 pt-2">
-              <dt className="font-medium text-gray-700">Total a pagar</dt>
-              <dd className="font-bold text-gray-900">{formatPrice(service.price)}</dd>
+      {/* Booking summary pill */}
+      <div
+        className="flex flex-wrap items-center gap-2 rounded-2xl p-4 text-white"
+        style={{ backgroundColor: accentColor }}
+      >
+        <div className="flex items-center gap-1.5 text-sm">
+          <Calendar className="h-4 w-4 opacity-80" />
+          <span className="capitalize">{format(startTime, "EEEE d MMM", { locale: es })}</span>
+        </div>
+        <div className="h-4 w-px bg-white/30" />
+        <div className="flex items-center gap-1.5 text-sm">
+          <Clock className="h-4 w-4 opacity-80" />
+          <span>{format(startTime, "HH:mm")}</span>
+        </div>
+        <div className="h-4 w-px bg-white/30" />
+        <div className="flex items-center gap-1.5 text-sm">
+          <Clock className="h-4 w-4 opacity-80" />
+          <span>{formatDuration(service.duration)}</span>
+        </div>
+        {service.price > 0 && (
+          <>
+            <div className="h-4 w-px bg-white/30" />
+            <div className="flex items-center gap-1.5 text-sm font-bold">
+              <Tag className="h-4 w-4 opacity-80" />
+              <span>{formatPrice(service.price)}</span>
             </div>
-          )}
-        </dl>
+          </>
+        )}
       </div>
 
-      {/* Form */}
-      <div className="rounded-xl border border-gray-200 bg-white p-5">
-        <h3 className="mb-4 font-semibold text-gray-900">Tus datos</h3>
-        <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Form card */}
+      <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+        <div className="border-b border-gray-50 px-5 py-4">
+          <h3 className="font-semibold text-gray-900">Tus datos</h3>
+          <p className="text-sm text-gray-500">Para confirmar tu turno necesitamos tu info</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4 p-5">
           <div className="space-y-1.5">
-            <Label htmlFor="name">Nombre completo</Label>
-            <Input id="name" name="name" required placeholder="Juan Pérez" />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" name="email" type="email" required placeholder="juan@ejemplo.com" />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="phone">Teléfono (opcional)</Label>
-            <Input id="phone" name="phone" placeholder="+54 11 1234-5678" />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="notes">Comentarios (opcional)</Label>
-            <Input id="notes" name="notes" placeholder="Alguna consulta o aclaración..." />
+            <Label htmlFor="name" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
+              <User className="h-3 w-3" /> Nombre completo
+            </Label>
+            <Input id="name" name="name" required placeholder="Juan Pérez" className="h-11 rounded-xl" />
           </div>
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          <div className="space-y-1.5">
+            <Label htmlFor="email" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
+              <Mail className="h-3 w-3" /> Email
+            </Label>
+            <Input id="email" name="email" type="email" required placeholder="juan@ejemplo.com" className="h-11 rounded-xl" />
+          </div>
 
-          <Button
+          <div className="space-y-1.5">
+            <Label htmlFor="phone" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
+              <Phone className="h-3 w-3" /> Teléfono <span className="normal-case font-normal text-gray-400">(opcional)</span>
+            </Label>
+            <Input id="phone" name="phone" placeholder="+54 11 1234-5678" className="h-11 rounded-xl" />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="notes" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
+              <MessageSquare className="h-3 w-3" /> Comentarios <span className="normal-case font-normal text-gray-400">(opcional)</span>
+            </Label>
+            <Input id="notes" name="notes" placeholder="Alguna consulta o aclaración..." className="h-11 rounded-xl" />
+          </div>
+
+          {error && (
+            <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">{error}</div>
+          )}
+
+          <button
             type="submit"
-            className="w-full"
             disabled={loading}
+            className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-base font-semibold text-white shadow-md transition-all hover:shadow-lg hover:opacity-95 disabled:opacity-60"
             style={{ backgroundColor: accentColor }}
           >
             {loading ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                {service.price > 0 ? "Redirigiendo a pago..." : "Confirmando..."}
+                {service.price > 0 ? "Redirigiendo a MercadoPago..." : "Confirmando..."}
               </>
             ) : service.price > 0 ? (
-              `Pagar ${formatPrice(service.price)}`
+              `Ir a pagar · ${formatPrice(service.price)}`
             ) : (
-              "Confirmar turno gratis"
+              "Confirmar turno"
             )}
-          </Button>
+          </button>
 
           {service.price > 0 && (
             <p className="text-center text-xs text-gray-400">
-              Pago seguro procesado por MercadoPago
+              Serás redirigido a MercadoPago para completar el pago de forma segura
             </p>
           )}
         </form>
