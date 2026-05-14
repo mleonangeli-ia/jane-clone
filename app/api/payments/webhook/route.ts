@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { payment } from "@/lib/mercadopago";
+import { getPayment } from "@/lib/mercadopago";
 import { prisma } from "@/lib/db";
 import { sendBookingEmails } from "@/lib/emails/send-booking-emails";
 
@@ -8,29 +8,25 @@ export async function POST(req: NextRequest) {
   if (!body) return NextResponse.json({ ok: true });
 
   const { type, data } = body;
-
-  // MercadoPago sends "payment" notifications
   if (type === "payment" && data?.id) {
-    await handlePaymentNotification(String(data.id));
+    await handlePayment(String(data.id));
   }
 
   return NextResponse.json({ ok: true });
 }
 
-async function handlePaymentNotification(paymentId: string) {
-  let mpPayment;
+async function handlePayment(paymentId: string) {
+  let mpData;
   try {
-    mpPayment = await payment.get({ id: paymentId });
+    mpData = await getPayment(paymentId);
   } catch {
     return;
   }
 
-  const appointmentId = mpPayment.external_reference;
+  const appointmentId = mpData.external_reference;
   if (!appointmentId) return;
 
-  const status = mpPayment.status;
-
-  if (status === "approved") {
+  if (mpData.status === "approved") {
     await prisma.$transaction([
       prisma.appointment.update({
         where: { id: appointmentId },
@@ -40,15 +36,12 @@ async function handlePaymentNotification(paymentId: string) {
         where: { appointmentId },
         create: {
           appointmentId,
-          amount: Math.round((mpPayment.transaction_amount ?? 0) * 100),
-          currency: mpPayment.currency_id?.toLowerCase() ?? "ars",
+          amount: Math.round((mpData.transaction_amount ?? 0) * 100),
+          currency: mpData.currency_id?.toLowerCase() ?? "ars",
           stripePaymentIntentId: paymentId,
           status: "PAID",
         },
-        update: {
-          status: "PAID",
-          stripePaymentIntentId: paymentId,
-        },
+        update: { status: "PAID", stripePaymentIntentId: paymentId },
       }),
     ]);
 
@@ -77,7 +70,7 @@ async function handlePaymentNotification(paymentId: string) {
     }
   }
 
-  if (status === "rejected" || status === "cancelled") {
+  if (["rejected", "cancelled"].includes(mpData.status ?? "")) {
     await prisma.appointment.update({
       where: { id: appointmentId, status: "PENDING" },
       data: { status: "CANCELLED" },
