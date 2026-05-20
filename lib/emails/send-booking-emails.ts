@@ -1,6 +1,7 @@
 import { resend, FROM_EMAIL } from "@/lib/resend";
 import { clientConfirmationEmail } from "./client-confirmation";
 import { professionalNotificationEmail } from "./professional-notification";
+import { generateCancelToken } from "@/lib/cancel-token";
 
 type BookingEmailParams = {
   clientName: string;
@@ -17,11 +18,16 @@ type BookingEmailParams = {
   notes: string | null;
   tenantSlug: string;
   appUrl: string;
+  appointmentId: string;
+  appointmentCreatedAt: Date;
+  intakeUrl: string | null;
 };
 
 export async function sendBookingEmails(p: BookingEmailParams) {
   const bookingUrl = `${p.appUrl}/book/${p.tenantSlug}`;
   const dashboardUrl = `${p.appUrl}/dashboard/appointments`;
+  const token = generateCancelToken(p.appointmentId, p.appointmentCreatedAt);
+  const cancelUrl = `${p.appUrl}/book/${p.tenantSlug}/self-cancel?id=${p.appointmentId}&token=${token}`;
 
   const client = clientConfirmationEmail({
     clientName: p.clientName,
@@ -33,6 +39,8 @@ export async function sendBookingEmails(p: BookingEmailParams) {
     price: p.price,
     currency: p.currency,
     bookingUrl,
+    cancelUrl,
+    intakeUrl: p.intakeUrl,
   });
 
   const professional = professionalNotificationEmail({

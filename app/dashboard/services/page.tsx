@@ -4,15 +4,23 @@ import { prisma } from "@/lib/db";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatPrice, formatDuration } from "@/lib/utils";
 import { ServiceForm } from "@/components/services/ServiceForm";
+import { ServiceIntakeAssociation } from "@/components/services/ServiceIntakeAssociation";
 
 export default async function ServicesPage() {
   const session = await getServerSession(authOptions);
   const tenantId = session!.user.id;
 
-  const services = await prisma.service.findMany({
-    where: { tenantId },
-    orderBy: { createdAt: "asc" },
-  });
+  const [services, intakeForms] = await Promise.all([
+    prisma.service.findMany({
+      where: { tenantId },
+      orderBy: { createdAt: "asc" },
+    }),
+    prisma.intakeForm.findMany({
+      where: { tenantId },
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
+    }),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -48,6 +56,11 @@ export default async function ServicesPage() {
                   <span className="font-medium text-gray-700">{formatDuration(service.duration)}</span>
                   <span className="font-bold text-gray-900">{formatPrice(service.price)}</span>
                 </div>
+                <ServiceIntakeAssociation
+                  serviceId={service.id}
+                  currentFormId={service.intakeFormId ?? null}
+                  availableForms={intakeForms}
+                />
               </CardContent>
             </Card>
           ))}

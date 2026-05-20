@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,10 +17,12 @@ type Tenant = {
   phone: string | null;
   address: string | null;
   accentColor: string;
+  timezone: string;
 };
 
-export function SettingsForm({ tenant }: { tenant: Tenant }) {
+export function SettingsForm({ tenant, isGoogleConnected }: { tenant: Tenant; isGoogleConnected: boolean }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -38,10 +40,16 @@ export function SettingsForm({ tenant }: { tenant: Tenant }) {
         phone: data.get("phone"),
         address: data.get("address"),
         accentColor: data.get("accentColor"),
+        timezone: data.get("timezone"),
       }),
     });
     setSaving(false);
     setSuccess(true);
+    router.refresh();
+  }
+
+  async function handleDisconnect() {
+    await fetch("/api/google-calendar/disconnect", { method: "POST" });
     router.refresh();
   }
 
@@ -95,6 +103,24 @@ export function SettingsForm({ tenant }: { tenant: Tenant }) {
               </div>
             </div>
             <div className="space-y-1.5">
+              <Label htmlFor="timezone">Zona horaria</Label>
+              <select
+                id="timezone"
+                name="timezone"
+                defaultValue={tenant.timezone}
+                className="flex h-10 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value="America/Argentina/Buenos_Aires">Argentina (ARS, UTC-3)</option>
+                <option value="America/Santiago">Chile (UTC-3/-4)</option>
+                <option value="America/Bogota">Colombia (UTC-5)</option>
+                <option value="America/Lima">Perú (UTC-5)</option>
+                <option value="America/Mexico_City">México (UTC-6)</option>
+                <option value="America/New_York">Nueva York (UTC-5/-4)</option>
+                <option value="Europe/Madrid">España (UTC+1/+2)</option>
+                <option value="UTC">UTC</option>
+              </select>
+            </div>
+            <div className="space-y-1.5">
               <Label htmlFor="accentColor">Color de marca</Label>
               <input id="accentColor" name="accentColor" type="color" defaultValue={tenant.accentColor} className="h-10 w-full cursor-pointer rounded-lg border border-gray-200 p-1" />
             </div>
@@ -105,6 +131,29 @@ export function SettingsForm({ tenant }: { tenant: Tenant }) {
               </Button>
             </div>
           </form>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader><CardTitle>Google Calendar</CardTitle></CardHeader>
+        <CardContent>
+          {isGoogleConnected ? (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-sm text-green-600">
+                <span className="h-2 w-2 rounded-full bg-green-500 inline-block" />
+                Conectado — los turnos se sincronizan automáticamente
+              </div>
+              <Button variant="outline" size="sm" onClick={handleDisconnect}>Desconectar</Button>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-gray-500">Sincronizá tus turnos confirmados con Google Calendar</p>
+              <Button variant="outline" size="sm" onClick={() => window.location.href = "/api/google-calendar/auth"}>
+                Conectar Google Calendar
+              </Button>
+            </div>
+          )}
+          {searchParams?.get("gc") === "connected" && <p className="mt-2 text-sm text-green-600">¡Google Calendar conectado correctamente!</p>}
+          {searchParams?.get("gc") === "error" && <p className="mt-2 text-sm text-red-500">Error al conectar. Intentá de nuevo.</p>}
         </CardContent>
       </Card>
     </div>

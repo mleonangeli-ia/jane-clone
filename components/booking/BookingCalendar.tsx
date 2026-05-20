@@ -6,6 +6,7 @@ import { es } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, CalendarDays, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BookingForm } from "./BookingForm";
+import { WaitlistSection } from "./WaitlistSection";
 
 type AvailabilitySlot = { dayOfWeek: number; startTime: string; endTime: string };
 type Props = {
@@ -134,11 +135,12 @@ export function BookingCalendar({ tenantId, tenantSlug, service, availability, a
                 ))}
               </div>
             ) : slots.length === 0 ? (
-              <div className="flex flex-col items-center py-8 text-center">
-                <Clock className="mb-2 h-8 w-8 text-gray-200" />
-                <p className="text-sm font-medium text-gray-400">Sin horarios disponibles</p>
-                <p className="mt-0.5 text-xs text-gray-300">Probá con otro día</p>
-              </div>
+              <WaitlistSection
+                tenantId={tenantId}
+                serviceId={service.id}
+                date={format(selectedDate, "yyyy-MM-dd")}
+                accentColor={accentColor}
+              />
             ) : (
               <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
                 {slots.map((slot) => {

@@ -4,8 +4,12 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { addMinutes, parseISO } from "date-fns";
 import { sendBookingEmails } from "@/lib/emails/send-booking-emails";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { generateIntakeToken } from "@/lib/intake-token";
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req);
+  if (!rateLimit(ip)) return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   const { tenantId, serviceId, startTime, clientName, clientEmail, clientPhone, notes } =
     await req.json();
 
@@ -62,6 +66,19 @@ export async function POST(req: NextRequest) {
     },
   });
 
+  let intakeUrl: string | null = null;
+  if (service.intakeFormId) {
+    const formResponse = await prisma.formResponse.create({
+      data: {
+        appointmentId: appointment.id,
+        formId: service.intakeFormId,
+      },
+    });
+    const intakeToken = generateIntakeToken(formResponse.id, formResponse.createdAt);
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+    intakeUrl = `${appUrl}/intake/${formResponse.id}?token=${intakeToken}`;
+  }
+
   // Send confirmation emails for free appointments immediately
   if (!requiresPayment) {
     sendBookingEmails({
@@ -79,6 +96,9 @@ export async function POST(req: NextRequest) {
       notes: notes ?? null,
       tenantSlug: tenant.slug,
       appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+      appointmentId: appointment.id,
+      appointmentCreatedAt: appointment.createdAt,
+      intakeUrl,
     }).catch(console.error); // fire-and-forget, don't block the response
   }
 

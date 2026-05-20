@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
 
   await prisma.appointment.update({
     where: { id: appointment.id },
-    data: { stripeCheckoutSession: result.id },
+    data: { mpPreferenceId: result.id },
   });
 
   const isTest = process.env.MP_ACCESS_TOKEN?.startsWith("TEST");

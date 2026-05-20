@@ -11,6 +11,9 @@ import {
   LogOut,
   LayoutDashboard,
   ExternalLink,
+  BarChart2,
+  ClipboardList,
+  BellPlus,
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
@@ -18,8 +21,11 @@ import { cn } from "@/lib/utils";
 const nav = [
   { href: "/dashboard", label: "Inicio", icon: LayoutDashboard },
   { href: "/dashboard/appointments", label: "Agenda", icon: Calendar },
+  { href: "/dashboard/waitlist", label: "Lista de espera", icon: BellPlus },
   { href: "/dashboard/clients", label: "Clientes", icon: Users },
   { href: "/dashboard/services", label: "Servicios", icon: Briefcase },
+  { href: "/dashboard/reports", label: "Reportes", icon: BarChart2 },
+  { href: "/dashboard/intake-forms", label: "Intake Forms", icon: ClipboardList },
   { href: "/dashboard/availability", label: "Disponibilidad", icon: Clock },
   { href: "/dashboard/settings", label: "Configuración", icon: Settings },
 ];

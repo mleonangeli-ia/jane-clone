@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getPayment } from "@/lib/mercadopago";
 import { prisma } from "@/lib/db";
 import { sendBookingEmails } from "@/lib/emails/send-booking-emails";
+import { createCalendarEvent } from "@/lib/google-calendar";
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
@@ -38,10 +39,10 @@ async function handlePayment(paymentId: string) {
           appointmentId,
           amount: Math.round((mpData.transaction_amount ?? 0) * 100),
           currency: mpData.currency_id?.toLowerCase() ?? "ars",
-          stripePaymentIntentId: paymentId,
+          mpPaymentId: paymentId,
           status: "PAID",
         },
-        update: { status: "PAID", stripePaymentIntentId: paymentId },
+        update: { status: "PAID", mpPaymentId: paymentId },
       }),
     ]);
 
@@ -66,7 +67,23 @@ async function handlePayment(paymentId: string) {
         notes: appointment.notes,
         tenantSlug: appointment.tenant.slug,
         appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3001",
+        appointmentId: appointment.id,
+        appointmentCreatedAt: appointment.createdAt,
+        intakeUrl: null,
       }).catch(console.error);
+
+      if (appointment.tenant.googleRefreshToken) {
+        createCalendarEvent({
+          refreshToken: appointment.tenant.googleRefreshToken,
+          summary: `${appointment.client.name} — ${appointment.service.name}`,
+          description: `Cliente: ${appointment.client.email}`,
+          startTime: appointment.startTime,
+          endTime: appointment.endTime,
+          location: appointment.tenant.address ?? undefined,
+        }).then(async (eventId) => {
+          if (eventId) await prisma.appointment.update({ where: { id: appointmentId }, data: { googleEventId: eventId } });
+        }).catch(console.error);
+      }
     }
   }
 

@@ -7,17 +7,45 @@ import { formatPrice } from "@/lib/utils";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { AppointmentActions } from "@/components/appointments/AppointmentActions";
+import { Suspense } from "react";
+import { AppointmentsFilters } from "@/components/appointments/AppointmentsFilters";
+import Link from "next/link";
+import { AppointmentStatus, Prisma } from "@prisma/client";
 
-export default async function AppointmentsPage() {
+const PAGE_SIZE = 25;
+
+export default async function AppointmentsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; status?: string; serviceId?: string; page?: string }>;
+}) {
   const session = await getServerSession(authOptions);
   const tenantId = session!.user.id;
+  const { q, status, serviceId, page: pageParam } = await searchParams;
 
-  const appointments = await prisma.appointment.findMany({
-    where: { tenantId },
-    include: { client: true, service: true },
-    orderBy: { startTime: "desc" },
-    take: 50,
-  });
+  const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
+  const skip = (page - 1) * PAGE_SIZE;
+
+  const where: Prisma.AppointmentWhereInput = { tenantId };
+  if (q) where.client = { name: { contains: q, mode: "insensitive" } };
+  if (status && Object.values(AppointmentStatus).includes(status as AppointmentStatus)) {
+    where.status = status as AppointmentStatus;
+  }
+  if (serviceId) where.serviceId = serviceId;
+
+  const [rawAppointments, services] = await Promise.all([
+    prisma.appointment.findMany({
+      where,
+      include: { client: true, service: true },
+      orderBy: { startTime: "desc" },
+      skip,
+      take: PAGE_SIZE + 1,
+    }),
+    prisma.service.findMany({ where: { tenantId } }),
+  ]);
+
+  const hasMore = rawAppointments.length > PAGE_SIZE;
+  const appointments = hasMore ? rawAppointments.slice(0, PAGE_SIZE) : rawAppointments;
 
   const grouped = appointments.reduce<Record<string, typeof appointments>>((acc, apt) => {
     const key = format(apt.startTime, "yyyy-MM-dd");
@@ -26,11 +54,27 @@ export default async function AppointmentsPage() {
     return acc;
   }, {});
 
+  function buildPageUrl(targetPage: number) {
+    const params = new URLSearchParams();
+    if (q) params.set("q", q);
+    if (status) params.set("status", status);
+    if (serviceId) params.set("serviceId", serviceId);
+    params.set("page", String(targetPage));
+    return `/dashboard/appointments?${params.toString()}`;
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Agenda</h1>
       </div>
+
+      <Suspense fallback={<div className="h-9 w-full rounded-md bg-gray-100 animate-pulse" />}>
+        <AppointmentsFilters
+          services={services.map((s) => ({ id: s.id, name: s.name }))}
+          defaultValues={{ q, status, serviceId }}
+        />
+      </Suspense>
 
       {Object.keys(grouped).length === 0 ? (
         <Card>
@@ -75,6 +119,29 @@ export default async function AppointmentsPage() {
             </div>
           </div>
         ))
+      )}
+
+      {(page > 1 || hasMore) && (
+        <div className="flex items-center justify-between pt-2">
+          {page > 1 ? (
+            <Link
+              href={buildPageUrl(page - 1)}
+              className="text-sm font-medium text-indigo-600 hover:text-indigo-800"
+            >
+              ← Anterior
+            </Link>
+          ) : (
+            <span />
+          )}
+          {hasMore && (
+            <Link
+              href={buildPageUrl(page + 1)}
+              className="text-sm font-medium text-indigo-600 hover:text-indigo-800"
+            >
+              Siguiente →
+            </Link>
+          )}
+        </div>
       )}
     </div>
   );

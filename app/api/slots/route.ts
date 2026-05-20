@@ -2,8 +2,25 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { generateTimeSlots } from "@/lib/utils";
 import { format, parseISO, startOfDay, endOfDay } from "date-fns";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
+
+// Converts a UTC Date to the local time in the given IANA timezone
+// using built-in Intl — no extra packages needed.
+function toZonedTime(date: Date, tz: string): Date {
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone: tz,
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit",
+    hour12: false,
+  });
+  const parts = Object.fromEntries(formatter.formatToParts(date).map((p) => [p.type, p.value]));
+  return new Date(`${parts.year}-${parts.month}-${parts.day}T${parts.hour === "24" ? "00" : parts.hour}:${parts.minute}:${parts.second}`);
+}
 
 export async function GET(req: NextRequest) {
+  const ip = getClientIp(req);
+  if (!rateLimit(ip)) return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+
   const { searchParams } = new URL(req.url);
   const tenantId = searchParams.get("tenantId");
   const serviceId = searchParams.get("serviceId");
@@ -16,7 +33,7 @@ export async function GET(req: NextRequest) {
   const date = parseISO(dateStr);
   const dayOfWeek = date.getDay();
 
-  const [availability, service, existingAppointments] = await Promise.all([
+  const [availability, service, existingAppointments, tenantData] = await Promise.all([
     prisma.availability.findUnique({
       where: { tenantId_dayOfWeek: { tenantId, dayOfWeek } },
     }),
@@ -29,17 +46,20 @@ export async function GET(req: NextRequest) {
       },
       select: { startTime: true, endTime: true },
     }),
+    prisma.tenant.findUnique({ where: { id: tenantId }, select: { timezone: true } }),
   ]);
 
   if (!availability?.isActive || !service) {
     return NextResponse.json({ slots: [] });
   }
 
-  const allSlots = generateTimeSlots(availability.startTime, availability.endTime, service.duration, date);
+  const tz = tenantData?.timezone ?? "UTC";
+  const zonedDate = toZonedTime(date, tz);
+  const allSlots = generateTimeSlots(availability.startTime, availability.endTime, service.duration, zonedDate);
 
   const bookedTimes = new Set(existingAppointments.map((a) => format(a.startTime, "HH:mm")));
 
-  const now = new Date();
+  const now = toZonedTime(new Date(), tz);
   const available = allSlots
     .filter((slot) => slot > now)
     .filter((slot) => !bookedTimes.has(format(slot, "HH:mm")))

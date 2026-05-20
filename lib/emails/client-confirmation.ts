@@ -11,6 +11,8 @@ type Params = {
   price: number;
   currency: string;
   bookingUrl: string;
+  cancelUrl: string | null;
+  intakeUrl: string | null;
 };
 
 export function clientConfirmationEmail(p: Params) {
@@ -95,9 +97,39 @@ export function clientConfirmationEmail(p: Params) {
               </tr>
             </table>
 
-            <p style="margin:0 0 8px;color:#6b7280;font-size:13px;text-align:center;">
+          </td>
+        </tr>
+
+        ${
+          p.intakeUrl
+            ? `<!-- Intake form section -->
+        <tr>
+          <td style="padding:0 40px 24px;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#eff6ff;border-radius:8px;border:1px solid #bfdbfe;">
+              <tr>
+                <td style="padding:16px 20px;">
+                  <p style="margin:0 0 8px;color:#1e40af;font-size:13px;font-weight:600;">📋 Completá tu formulario</p>
+                  <p style="margin:0 0 12px;color:#3b82f6;font-size:13px;">El profesional solicita que completes un breve formulario antes de tu turno.</p>
+                  <a href="${p.intakeUrl}" style="display:inline-block;padding:8px 20px;background:#2563eb;color:#ffffff;font-size:13px;font-weight:600;border-radius:8px;text-decoration:none;">Completar formulario</a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>`
+            : ""
+        }
+
+        <tr>
+          <td style="padding:0 40px 32px;">
+            ${
+              p.cancelUrl
+                ? `<div style="text-align:center;margin-bottom:8px;">
+              <a href="${p.cancelUrl}" style="display:inline-block;padding:10px 24px;background:#ef4444;color:#ffffff;font-size:13px;font-weight:600;border-radius:8px;text-decoration:none;">Cancelar turno</a>
+            </div>`
+                : `<p style="margin:0 0 8px;color:#6b7280;font-size:13px;text-align:center;">
               Si necesitás cancelar o reprogramar, contactá al profesional.
-            </p>
+            </p>`
+            }
           </td>
         </tr>
 
