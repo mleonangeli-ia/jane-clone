@@ -1,0 +1,194 @@
+app/dashboard/intake-forms/page.tsx
+  s_8c6bc0f418be34::t_a8a40bfb8dfca3 1-69
+app/dashboard/services/page.tsx
+  s_8c6bc0f418be34::t_39c73b8b3362cd 7,13-23
+  s_8c6bc0f418be34::t_a8bae9200ea14f 59-63
+prisma/schema.prisma
+  s_8c6bc0f418be34::t_18951627ddf1fb 131-187,220-226
+  s_8c6bc0f418be34::t_109c05ad0c7284 106-110
+  s_8c6bc0f418be34::t_83109e4f161f73 188-205
+  s_8c6bc0f418be34::t_bb7de2d739340c 26-33
+  s_8c6bc0f418be34::t_481114e0c4fbfd 101
+  s_8c6bc0f418be34::t_4d48bd66587ec7 51-54
+  s_8c6bc0f418be34::t_7f8e68893655cf 21-24
+  s_8c6bc0f418be34::t_196aab1b9ba5b7 100
+  s_8c6bc0f418be34::t_6f40abdef84ead 39-49
+  s_8c6bc0f418be34::t_feec708c14c6bb 102
+  s_8c6bc0f418be34::t_1f13619f2e398f 120-121
+app/api/appointments/cancel-public/route.ts
+  s_8c6bc0f418be34::t_750e48afc09a00 51-57
+  s_8c6bc0f418be34::t_51832adae64843 1-7,10-50,58-136
+  s_8c6bc0f418be34::t_48a6b09dc8cf48 8-9
+components/intake/IntakeFormEditor.tsx
+  s_8c6bc0f418be34::t_16eb331d6fc63c 1-275
+app/api/google-calendar/callback/route.ts
+  s_8c6bc0f418be34::t_b05c5afb5ac1ab 1-36
+package.json
+  s_8c6bc0f418be34::t_b33211540bdd50 9-11
+tests/api/booking-conflict.test.ts
+  s_8c6bc0f418be34::t_8c0adc48bde5bc 1-67
+app/api/clients/[id]/route.ts
+  s_8c6bc0f418be34::t_13e668b9a19ac5 1-52
+app/dashboard/appointments/page.tsx
+  s_8c6bc0f418be34::t_23fdc22c58643b 10-12,15-21,24-28,30-45,47-48,57-65,72-78,123-144
+  s_8c6bc0f418be34::t_ecaa4775f31f08 13,29
+app/api/intake-forms/route.ts
+  s_b7d33d458833f1::t_99b5ff4e98d9d3 5
+  s_b7d33d458833f1::t_4c4b4766de0601 45
+  s_8c6bc0f418be34::t_4998a45094a865 1-4,6-44,46-61
+tsconfig.json
+  s_b7d33d458833f1::t_e37a08cffadb43 33
+app/api/intake/[responseId]/route.ts
+  s_8c6bc0f418be34::t_49e38588ced3f9 1-84
+lib/emails/waitlist-notification.ts
+  s_8c6bc0f418be34::t_176689bec4a81f 1-51
+tests/lib/cancel-token.test.ts
+  s_8c6bc0f418be34::t_2f3d4580110027 1-61
+components/clients/ClientsSearch.tsx
+  s_8c6bc0f418be34::t_12f01ab2552392 1-35
+components/layout/Sidebar.tsx
+  s_8c6bc0f418be34::t_f5e9a650ab4dcb 14-15
+  s_8c6bc0f418be34::t_e63c516175f6ae 16
+  s_8c6bc0f418be34::t_622601f9fba375 24
+  s_8c6bc0f418be34::t_0a2bcca031d96e 27-28
+app/api/cron/reminders/route.ts
+  s_8c6bc0f418be34::t_f262264a106344 1-59
+components/settings/SettingsForm.tsx
+  s_8c6bc0f418be34::t_8e0c92ce4553ce 106-122
+  s_8c6bc0f418be34::t_9753c040d450b1 136-158
+  s_8c6bc0f418be34::t_468f97da6d47f5 4,20,23,25,43,51-52
+app/api/appointments/[id]/route.ts
+  s_8c6bc0f418be34::t_fe7b7ee7f98087 45-78
+  s_8c6bc0f418be34::t_d4146bc426ad4d 5-6
+lib/rate-limit.ts
+  s_8c6bc0f418be34::t_f0bf81abd9a4a0 1-18
+app/dashboard/clients/[id]/page.tsx
+  s_8c6bc0f418be34::t_bd96572d4ed8f6 27-32
+  s_8c6bc0f418be34::t_44d252cedcbbaf 1-26,33-132,146,153,171-194
+  s_8c6bc0f418be34::t_fe39844958fc38 133-145,147-152,154-170
+app/api/services/[id]/route.ts
+  s_8c6bc0f418be34::t_28ee342e6d9b78 1-27
+app/api/payments/checkout/route.ts
+  s_8c6bc0f418be34::t_f7d415ac666b7f 43
+lib/emails/send-booking-emails.ts
+  s_8c6bc0f418be34::t_2def0541e7de4b 23
+  s_8c6bc0f418be34::t_3213cfd132d0f1 4,21-22,29-30,42
+  s_8c6bc0f418be34::t_37856214d42875 43
+app/api/google-calendar/auth/route.ts
+  s_8c6bc0f418be34::t_3fc95e7fef8fa6 1-18
+components/booking/WaitlistSection.tsx
+  s_8c6bc0f418be34::t_5cb113adabc88b 1-113
+lib/google-calendar.ts
+  s_8c6bc0f418be34::t_fc6f03a27177e2 1-54
+app/api/settings/route.ts
+  s_8c6bc0f418be34::t_98ae9b245916ab 10,13
+tests/lib/rate-limit.test.ts
+  s_8c6bc0f418be34::t_b5125104ab65df 1-65
+tests/setup.ts
+  s_8c6bc0f418be34::t_32d1e2f845f5c2 1-4
+lib/cancel-token.ts
+  s_8c6bc0f418be34::t_d5e6ce5e1a780b 1-11
+components/booking/BookingCalendar.tsx
+  s_8c6bc0f418be34::t_f9334bcb62fc1f 9
+  s_8c6bc0f418be34::t_947c74e3427098 138-143
+components/clients/ClientEditForm.tsx
+  s_8c6bc0f418be34::t_d3c874180ef2c5 1-91
+components/intake/IntakeFillForm.tsx
+  s_8c6bc0f418be34::t_5a5d0b23ee8a5c 1-176
+app/book/[slug]/self-cancel/page.tsx
+  s_8c6bc0f418be34::t_b90c8f8607ace4 1-190
+app/dashboard/intake-forms/[id]/page.tsx
+  s_8c6bc0f418be34::t_274b40e33e9a03 1-42
+tests/lib/intake-token.test.ts
+  s_8c6bc0f418be34::t_a5ab53efc1196d 1-49
+tests/lib/emails.test.ts
+  s_8c6bc0f418be34::t_2e1bedf8a313b9 1-99
+tests/api/webhook.test.ts
+  s_8c6bc0f418be34::t_09cf676c297889 1-119
+components/booking/SelfCancelButton.tsx
+  s_8c6bc0f418be34::t_6cc9893701ea3b 1-64
+app/intake/[responseId]/page.tsx
+  s_8c6bc0f418be34::t_fe1f036be525b3 1-92
+lib/notifications/waitlist.ts
+  s_8c6bc0f418be34::t_b6b59e0109a698 1-38
+app/dashboard/waitlist/page.tsx
+  s_8c6bc0f418be34::t_4eeb8d9c007fe6 1-67
+components/services/ServiceIntakeAssociation.tsx
+  s_8c6bc0f418be34::t_53f23d988dd46e 1-59
+app/api/intake-forms/[id]/route.ts
+  s_b7d33d458833f1::t_1683840d2db1c7 5
+  s_8c6bc0f418be34::t_b749aad772de45 1-4,6-60,62-92,97-99
+  s_b7d33d458833f1::t_2d8d14c33d120b 61
+  s_8c6bc0f418be34::t_bcc2b8c17c783b 93-96
+vitest.config.ts
+  s_8c6bc0f418be34::t_a9abdacd363a3a 1-22
+components/appointments/AppointmentsFilters.tsx
+  s_8c6bc0f418be34::t_461c3bd541350a 1-79
+lib/intake-token.ts
+  s_8c6bc0f418be34::t_bd0c552ac83e19 1-11
+app/dashboard/reports/page.tsx
+  s_8c6bc0f418be34::t_2bf1c5ef01b827 1-315
+app/dashboard/clients/page.tsx
+  s_8c6bc0f418be34::t_d48d0b2c063b08 8-10,12-16,19,22-25,44-47,52-57,63-73,75,77-78,80-91,93-95
+components/intake/IntakeFormDialog.tsx
+  s_8c6bc0f418be34::t_3ded908a081cae 1-238
+tests/lib/utils.test.ts
+  s_8c6bc0f418be34::t_8d732163eb12fb 1-97
+lib/emails/client-confirmation.ts
+  s_8c6bc0f418be34::t_84a7d6f6ee6059 124-129,131-132
+  s_8c6bc0f418be34::t_4da3035e09bac6 100-123
+  s_8c6bc0f418be34::t_3d46f4aa7e4711 14
+  s_8c6bc0f418be34::t_6e4fb163ebbcf7 15
+vercel.json
+  s_8c6bc0f418be34::t_3dbf0e0dcbb44c 2-3
+app/dashboard/settings/page.tsx
+  s_8c6bc0f418be34::t_0882486f7164c9 11
+  s_8c6bc0f418be34::t_401de77f8dc800 1,17-19
+tests/api/slots.test.ts
+  s_8c6bc0f418be34::t_55d666a10c6637 1-66
+app/api/slots/route.ts
+  s_8c6bc0f418be34::t_8379a5d5f8c9ae 5,21-23
+  s_b7d33d458833f1::t_2f4633ed82eebd 6-18
+  s_8c6bc0f418be34::t_bc40179ac9bc67 36,49,56-58,62
+app/api/waitlist/route.ts
+  s_8c6bc0f418be34::t_4e0ba44b9a3b35 1-36
+app/api/google-calendar/disconnect/route.ts
+  s_8c6bc0f418be34::t_d95cfd7a3be8e5 1-16
+app/api/payments/webhook/route.ts
+  s_8c6bc0f418be34::t_fa727eff3289e8 70-71
+  s_8c6bc0f418be34::t_1ecec019a5ab78 5
+  s_8c6bc0f418be34::t_4c897b0ca07949 74-86
+  s_8c6bc0f418be34::t_43f65cc08612de 42,45
+  s_8c6bc0f418be34::t_30a7e8c1e99e5a 72
+lib/emails/reminder.ts
+  s_8c6bc0f418be34::t_6a50292fbc23ec 1-121
+app/api/appointments/route.ts
+  s_8c6bc0f418be34::t_d7c149fdac23bb 69-81,101
+  s_8c6bc0f418be34::t_f4282721df4996 8
+  s_8c6bc0f418be34::t_ff8792c2de0e47 7,11-12
+  s_8c6bc0f418be34::t_4ffe67c0d3c627 99-100
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "0c6cb528a77a319393b8e574e318fdbf4f399e22",
+  "prompts": {},
+  "sessions": {
+    "s_8c6bc0f418be34": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c201ad1a-7c66-4b52-ba4c-55006f2c6ddf",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Matias Leonangeli <matias.leonangeli@mercadolibre.com>"
+    },
+    "s_b7d33d458833f1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1e396cc2-b540-49f1-b87b-a96982e27c87",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Matias Leonangeli <matias.leonangeli@mercadolibre.com>"
+    }
+  }
+}
