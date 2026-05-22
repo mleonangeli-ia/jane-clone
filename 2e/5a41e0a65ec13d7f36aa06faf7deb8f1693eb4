@@ -1,0 +1,41 @@
+tests/lib/intake-token.test.ts
+  s_8c6bc0f418be34::t_b58f523a86b381 1-2,4,6,11,13-14,19-22,25,27-30,39,42,45,48,51-57
+tests/lib/emails.test.ts
+  s_8c6bc0f418be34::t_8c53b61f82420e 1-2,7,20-22,25-28,31,33-34,37,40-42,45,47,49,51,55-61,64-67,72-75,78-80,83-86,91,97,99-102
+tests/api/slots.test.ts
+  s_8c6bc0f418be34::t_66d882fda1862e 48-49
+  s_8c6bc0f418be34::t_d8223d6dd921be 6-7,15
+  s_8c6bc0f418be34::t_49d3c37aa345a5 37
+  s_8c6bc0f418be34::t_3b741fa3241dba 1-2,26-28,32-33,36,39,43-44,51,55-56,59-61
+package.json
+  s_8c6bc0f418be34::t_b9a636caab7643 9
+tests/lib/cancel-token.test.ts
+  s_8c6bc0f418be34::t_2689f6f9d762c8 1-2,5,10,12-13,16,18-21,24,26-29,32-36,45,51,57,63
+lib/utils.ts
+  s_8c6bc0f418be34::t_ac29c12a30aff1 66
+tests/lib/rate-limit.test.ts
+  s_8c6bc0f418be34::t_c7433ee387094e 1-2,7-11,14-15,17,22,24,28,30-32,36-37,39-40,49,54,57,61
+tests/lib/utils.test.ts
+  s_8c6bc0f418be34::t_ed5c37646700b7 7-8
+  s_8c6bc0f418be34::t_dee167b972c481 1-2,11-12,18-19,23,26-28,31-33,39,43,47,50-51,54-55,62,64,67,69,72,74,77,79,82,84,87,89-90
+tests/api/booking-conflict.test.ts
+  s_8c6bc0f418be34::t_92a506e7b68cc4 1-2,18,20-21,24,26-27,30,33,36,39,42,45,48,51,54,57,60-61
+prisma/schema.prisma
+  s_8c6bc0f418be34::t_b2d9b70893cfb2 10-24,91-104,116-124,182
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "2e5a41e0a65ec13d7f36aa06faf7deb8f1693eb4",
+  "prompts": {},
+  "sessions": {
+    "s_8c6bc0f418be34": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c201ad1a-7c66-4b52-ba4c-55006f2c6ddf",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Matias Leonangeli <matias.leonangeli@mercadolibre.com>"
+    }
+  }
+}
