@@ -2,12 +2,19 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { prisma } from "./db";
-import { consume, reset } from "./rate-limit";
+import { consume, peek, reset } from "./rate-limit";
+import { verifyCaptchaToken } from "./captcha";
 
-// 10 attempts per IP per 15 min — stops brute force from a single origin
-const IP_LIMIT    = { max: 10, windowMs: 15 * 60_000 };
-// 5 attempts per email per 15 min — stops distributed attacks on a single account
-const EMAIL_LIMIT = { max: 5,  windowMs: 15 * 60_000 };
+// Soft limit → CAPTCHA required after this many attempts
+const SOFT  = { max: 3,  windowMs: 15 * 60_000 };
+// Hard limit → full block regardless of CAPTCHA
+const HARD  = { max: 10, windowMs: 15 * 60_000 };
+
+function getIp(req: unknown): string {
+  const headers = (req as { headers?: Record<string, string> }).headers ?? {};
+  const forwarded = headers["x-forwarded-for"] ?? "";
+  return forwarded ? forwarded.split(",")[0].trim() : "unknown";
+}
 
 export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
@@ -16,40 +23,56 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "credentials",
       credentials: {
-        email:    { label: "Email",    type: "email"    },
-        password: { label: "Password", type: "password" },
+        email:        { label: "Email",         type: "email"    },
+        password:     { label: "Password",      type: "password" },
+        captchaToken: { label: "Captcha Token", type: "text"     },
       },
-      // NextAuth v4 passes the raw IncomingMessage as second arg
       async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const email = credentials.email.toLowerCase().trim();
+        const email        = credentials.email.toLowerCase().trim();
+        const captchaToken = credentials.captchaToken ?? "";
+        const ip           = getIp(req);
 
-        // ── Rate limiting ────────────────────────────────────────────
-        const forwarded = (req as unknown as { headers?: Record<string, string> })
-          .headers?.["x-forwarded-for"];
-        const ip = forwarded ? forwarded.split(",")[0].trim() : "unknown";
+        const hardKey = `login:hard:${ip}`;
+        const softKey = `login:soft:${ip}`;
 
-        const byIp    = consume(`login:ip:${ip}`,       IP_LIMIT.max,    IP_LIMIT.windowMs);
-        const byEmail = consume(`login:email:${email}`, EMAIL_LIMIT.max, EMAIL_LIMIT.windowMs);
-
-        if (!byIp.allowed || !byEmail.allowed) {
-          const resetInMin = Math.ceil(
-            Math.max(byIp.resetInMs, byEmail.resetInMs) / 60_000
-          );
-          throw new Error(`RateLimit:${resetInMin}`);
+        // ── 1. Hard limit: consumes on every attempt ──────────────
+        const hard = consume(hardKey, HARD.max, HARD.windowMs);
+        if (!hard.allowed) {
+          const min = Math.ceil(hard.resetInMs / 60_000);
+          throw new Error(`RateLimit:${min}`);
         }
-        // ────────────────────────────────────────────────────────────
 
+        // ── 2. Soft limit: peek first (don't charge twice) ────────
+        const soft = peek(softKey, SOFT.max, SOFT.windowMs);
+        if (!soft.allowed) {
+          if (!captchaToken) {
+            throw new Error("NeedsCaptcha");
+          }
+
+          const valid = await verifyCaptchaToken(captchaToken, ip);
+          if (!valid) {
+            throw new Error("InvalidCaptcha");
+          }
+
+          // CAPTCHA passed → reset soft counter so user gets 3 more free attempts
+          reset(softKey);
+        }
+
+        // Consume soft slot
+        consume(softKey, SOFT.max, SOFT.windowMs);
+
+        // ── 3. Credential check ───────────────────────────────────
         const tenant = await prisma.tenant.findUnique({ where: { email } });
         if (!tenant) return null;
 
         const valid = await compare(credentials.password, tenant.passwordHash);
         if (!valid) return null;
 
-        // Success — clear failure counters so the user isn't locked out later
-        reset(`login:ip:${ip}`);
-        reset(`login:email:${email}`);
+        // Success → clear all counters
+        reset(hardKey);
+        reset(softKey);
 
         return {
           id:    tenant.id,

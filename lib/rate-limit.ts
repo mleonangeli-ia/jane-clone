@@ -36,6 +36,23 @@ export function consume(key: string, limit: number, windowMs: number): RateLimit
   return { allowed: true, remaining: limit - entry.count, resetInMs: entry.reset - now };
 }
 
+/**
+ * Checks the current count WITHOUT consuming a token.
+ * Useful for deciding whether to show CAPTCHA before committing the attempt.
+ */
+export function peek(key: string, limit: number, windowMs: number): RateLimitResult {
+  const now = Date.now();
+  const entry = store.get(key);
+  if (!entry || now > entry.reset) {
+    return { allowed: true, remaining: limit, resetInMs: windowMs };
+  }
+  return {
+    allowed: entry.count < limit,
+    remaining: Math.max(0, limit - entry.count),
+    resetInMs: entry.reset - now,
+  };
+}
+
 /** Resets the counter for a key (e.g. after successful login). */
 export function reset(key: string) {
   store.delete(key);
