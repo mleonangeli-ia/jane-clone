@@ -7,29 +7,46 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calendar } from "lucide-react";
+import { Calendar, ShieldAlert } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [error, setError]       = useState("");
+  const [loading, setLoading]   = useState(false);
+  const [blocked, setBlocked]   = useState(false);
+  const [retryMin, setRetryMin] = useState(0);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (blocked) return;
     setLoading(true);
     setError("");
+
     const data = new FormData(e.currentTarget);
     const result = await signIn("credentials", {
       email: data.get("email"),
       password: data.get("password"),
       redirect: false,
     });
-    if (result?.error) {
-      setError("Email o contraseña incorrectos");
-      setLoading(false);
-    } else {
+
+    if (!result?.error) {
       router.push("/dashboard");
+      return;
     }
+
+    // NextAuth encodes the error in the URL — decode it
+    const raw = decodeURIComponent(result.error);
+
+    if (raw.startsWith("RateLimit:")) {
+      const min = parseInt(raw.split(":")[1] ?? "15", 10);
+      setBlocked(true);
+      setRetryMin(min);
+      setError("");
+    } else {
+      setError("Email o contraseña incorrectos");
+    }
+
+    setLoading(false);
   }
 
   return (
@@ -76,30 +93,72 @@ export default function LoginPage() {
             <p className="mt-1 text-gray-500">Ingresá a tu panel de gestión</p>
           </div>
 
-          <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="space-y-1.5">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" name="email" type="email" required placeholder="vos@ejemplo.com" className="h-11" />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="password">Contraseña</Label>
-                <Input id="password" name="password" type="password" required placeholder="••••••••" className="h-11" />
-              </div>
-              {error && (
-                <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
-                  {error}
+          {/* Rate-limit block screen */}
+          {blocked ? (
+            <div className="overflow-hidden rounded-2xl border border-orange-200 bg-orange-50 shadow-sm">
+              <div className="flex flex-col items-center px-8 py-10 text-center">
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-orange-100">
+                  <ShieldAlert className="h-7 w-7 text-orange-500" />
                 </div>
-              )}
-              <Button
-                type="submit"
-                className="h-11 w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 shadow-md"
-                disabled={loading}
-              >
-                {loading ? "Ingresando..." : "Iniciar sesión"}
-              </Button>
-            </form>
-          </div>
+                <h2 className="text-lg font-bold text-gray-900">Demasiados intentos</h2>
+                <p className="mt-2 text-sm text-gray-600">
+                  Por seguridad bloqueamos temporalmente el acceso desde esta sesión.
+                </p>
+                <div className="mt-4 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-orange-600 ring-1 ring-orange-200">
+                  Podés intentarlo de nuevo en ~{retryMin} min
+                </div>
+                <button
+                  onClick={() => { setBlocked(false); setError(""); }}
+                  className="mt-6 text-xs text-gray-400 underline hover:text-gray-600"
+                >
+                  Intentar de todas formas
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="space-y-1.5">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    placeholder="vos@ejemplo.com"
+                    className="h-11"
+                    autoComplete="email"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="password">Contraseña</Label>
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    required
+                    placeholder="••••••••"
+                    className="h-11"
+                    autoComplete="current-password"
+                  />
+                </div>
+
+                {error && (
+                  <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
+                    {error}
+                  </div>
+                )}
+
+                <Button
+                  type="submit"
+                  className="h-11 w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 shadow-md"
+                  disabled={loading}
+                >
+                  {loading ? "Ingresando..." : "Iniciar sesión"}
+                </Button>
+              </form>
+            </div>
+          )}
 
           <p className="mt-6 text-center text-sm text-gray-500">
             ¿No tenés cuenta?{" "}
