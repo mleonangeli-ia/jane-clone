@@ -2,11 +2,17 @@
 
 import { useState } from "react";
 import { format, addDays, startOfDay, isBefore, isToday } from "date-fns";
-import { es } from "date-fns/locale";
+import { es, enUS, ptBR } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, CalendarDays, Clock } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { BookingForm } from "./BookingForm";
 import { WaitlistSection } from "./WaitlistSection";
+import { getT, type Locale } from "@/lib/i18n";
+
+const DATE_FNS_LOCALE: Record<Locale, Locale extends string ? object : never> = {
+  es: es,
+  en: enUS,
+  pt: ptBR,
+} as unknown as Record<Locale, object>;
 
 type AvailabilitySlot = { dayOfWeek: number; startTime: string; endTime: string };
 type Props = {
@@ -15,11 +21,13 @@ type Props = {
   service: { id: string; name: string; duration: number; price: number };
   availability: AvailabilitySlot[];
   accentColor: string;
+  locale?: Locale;
 };
 
-const DAY_LABELS = ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"];
+export function BookingCalendar({ tenantId, tenantSlug, service, availability, accentColor, locale = "es" }: Props) {
+  const t = getT(locale);
+  const dateFnsLocale = (DATE_FNS_LOCALE as Record<string, object>)[locale] ?? es;
 
-export function BookingCalendar({ tenantId, tenantSlug, service, availability, accentColor }: Props) {
   const today = startOfDay(new Date());
   const [weekStart, setWeekStart] = useState(today);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -49,6 +57,7 @@ export function BookingCalendar({ tenantId, tenantSlug, service, availability, a
         date={selectedDate}
         time={selectedTime}
         accentColor={accentColor}
+        locale={locale}
         onBack={() => setStep("calendar")}
       />
     );
@@ -70,7 +79,7 @@ export function BookingCalendar({ tenantId, tenantSlug, service, availability, a
             <ChevronLeft className="h-4 w-4" />
           </button>
           <span className="text-sm font-semibold capitalize text-gray-700">
-            {format(weekStart, "MMMM yyyy", { locale: es })}
+            {format(weekStart, "MMMM yyyy", { locale: dateFnsLocale as Parameters<typeof format>[2]["locale"] })}
           </span>
           <button
             onClick={() => setWeekStart((w) => addDays(w, 7))}
@@ -82,8 +91,8 @@ export function BookingCalendar({ tenantId, tenantSlug, service, availability, a
 
         {/* Day labels */}
         <div className="grid grid-cols-7 border-b border-gray-50 px-4 py-2">
-          {DAY_LABELS.map((d) => (
-            <div key={d} className="text-center text-xs font-medium text-gray-400">{d}</div>
+          {t.calendar.days.map((d, i) => (
+            <div key={i} className="text-center text-xs font-medium text-gray-400">{d}</div>
           ))}
         </div>
 
@@ -123,7 +132,7 @@ export function BookingCalendar({ tenantId, tenantSlug, service, availability, a
           <div className="flex items-center gap-2 border-b border-gray-50 px-5 py-3.5">
             <CalendarDays className="h-4 w-4 text-gray-400" />
             <span className="text-sm font-semibold capitalize text-gray-700">
-              {format(selectedDate, "EEEE d 'de' MMMM", { locale: es })}
+              {format(selectedDate, "EEEE d 'de' MMMM", { locale: dateFnsLocale as Parameters<typeof format>[2]["locale"] })}
             </span>
           </div>
 
@@ -140,21 +149,22 @@ export function BookingCalendar({ tenantId, tenantSlug, service, availability, a
                 serviceId={service.id}
                 date={format(selectedDate, "yyyy-MM-dd")}
                 accentColor={accentColor}
+                locale={locale}
               />
             ) : (
               <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
                 {slots.map((slot) => {
-                  const isSelected = selectedTime === slot;
+                  const isSlotSelected = selectedTime === slot;
                   return (
                     <button
                       key={slot}
                       onClick={() => setSelectedTime(slot)}
                       className={`rounded-xl border py-2.5 text-sm font-medium transition-all ${
-                        isSelected
+                        isSlotSelected
                           ? "text-white border-transparent shadow-md scale-105"
                           : "border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50"
                       }`}
-                      style={isSelected ? { backgroundColor: accentColor } : undefined}
+                      style={isSlotSelected ? { backgroundColor: accentColor } : undefined}
                     >
                       {slot}
                     </button>
@@ -173,7 +183,7 @@ export function BookingCalendar({ tenantId, tenantSlug, service, availability, a
           className="flex w-full items-center justify-center gap-2 rounded-2xl py-4 text-base font-semibold text-white shadow-lg transition-all hover:shadow-xl hover:-translate-y-0.5"
           style={{ backgroundColor: accentColor }}
         >
-          Continuar → {selectedTime}
+          {t.calendar.continue} → {selectedTime}
         </button>
       )}
     </div>

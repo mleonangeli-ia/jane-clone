@@ -3,22 +3,25 @@
 import { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { getT, type Locale } from "@/lib/i18n";
 
 type Props = {
   tenantId: string;
   serviceId: string;
   date: string;
   accentColor: string;
+  locale?: Locale;
 };
 
-export function WaitlistSection({ tenantId, serviceId, date, accentColor }: Props) {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+export function WaitlistSection({ tenantId, serviceId, date, accentColor, locale = "es" }: Props) {
+  const tw = getT(locale).waitlist;
+
+  const [name, setName]           = useState("");
+  const [email, setEmail]         = useState("");
+  const [phone, setPhone]         = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess]     = useState(false);
+  const [error, setError]         = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -33,15 +36,8 @@ export function WaitlistSection({ tenantId, serviceId, date, accentColor }: Prop
 
     setSubmitting(false);
 
-    if (res.status === 409) {
-      setError("Ya estás anotado en la lista para este día.");
-      return;
-    }
-
-    if (!res.ok) {
-      setError("Ocurrió un error. Intentá de nuevo.");
-      return;
-    }
+    if (res.status === 409) { setError(tw.alreadyJoined); return; }
+    if (!res.ok) { setError(locale === "en" ? "An error occurred. Please try again." : locale === "pt" ? "Ocorreu um erro. Tente novamente." : "Ocurrió un error. Intentá de nuevo."); return; }
 
     setSuccess(true);
   }
@@ -54,49 +50,31 @@ export function WaitlistSection({ tenantId, serviceId, date, accentColor }: Prop
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <p className="text-sm font-medium text-gray-700">
-          ¡Listo! Te anotamos en la lista de espera.
-        </p>
-        <p className="mt-1 text-xs text-gray-400">Te avisamos si se libera un turno.</p>
+        <p className="text-sm font-medium text-gray-700">{tw.joined}</p>
+        <p className="mt-1 text-xs text-gray-400">{tw.joinedSub}</p>
       </div>
     );
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm p-5">
-      <p className="mb-1 text-sm font-semibold text-gray-700">Sin horarios disponibles</p>
-      <p className="mb-4 text-xs text-gray-400">Anotate en la lista de espera y te avisamos si se libera un turno.</p>
+    <div className="space-y-4">
+      <div className="flex flex-col items-center py-4 text-center">
+        <p className="text-sm font-semibold text-gray-700">{tw.title}</p>
+        <p className="mt-1 text-xs text-gray-400">{tw.sub}</p>
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-3">
         <div className="space-y-1">
-          <Label htmlFor="wl-name">Nombre</Label>
-          <Input
-            id="wl-name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            placeholder="Tu nombre"
-          />
+          <Label htmlFor="wl-name">{tw.name}</Label>
+          <Input id="wl-name" value={name} onChange={(e) => setName(e.target.value)} required />
         </div>
         <div className="space-y-1">
-          <Label htmlFor="wl-email">Email</Label>
-          <Input
-            id="wl-email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            placeholder="tu@email.com"
-          />
+          <Label htmlFor="wl-email">{tw.email}</Label>
+          <Input id="wl-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         </div>
         <div className="space-y-1">
-          <Label htmlFor="wl-phone">Teléfono <span className="text-gray-400">(opcional)</span></Label>
-          <Input
-            id="wl-phone"
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="+54 11 1234-5678"
-          />
+          <Label htmlFor="wl-phone">{tw.phone} <span className="text-gray-400">{getT(locale).form.optional}</span></Label>
+          <Input id="wl-phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
         </div>
         {error && <p className="text-xs text-red-500">{error}</p>}
         <button
@@ -105,7 +83,7 @@ export function WaitlistSection({ tenantId, serviceId, date, accentColor }: Prop
           className="w-full rounded-xl py-2.5 text-sm font-semibold text-white transition-all hover:opacity-90 disabled:opacity-60"
           style={{ backgroundColor: accentColor }}
         >
-          {submitting ? "Enviando..." : "Anotarme en lista de espera"}
+          {submitting ? tw.joining : tw.join}
         </button>
       </form>
     </div>
