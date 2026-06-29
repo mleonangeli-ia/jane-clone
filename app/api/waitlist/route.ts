@@ -1,11 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { getClientIp } from "@/lib/rate-limit";
+import { checkWaitlistRateLimit, isDisposableEmail, isHoneypotClean } from "@/lib/abuse";
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req);
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ error: "Invalid request" }, { status: 400 });
 
-  const { tenantId, serviceId, date, name, email, phone } = body;
+  const { tenantId, serviceId, date, name, email, phone, _hp } = body;
+
+  // Abuse checks
+  if (!isHoneypotClean(_hp)) {
+    return NextResponse.json({ ok: true }); // silently discard
+  }
+  if (email && isDisposableEmail(email)) {
+    return NextResponse.json({ error: "Email no permitido." }, { status: 422 });
+  }
+  const wlLimit = checkWaitlistRateLimit(ip);
+  if (!wlLimit.allowed) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
 
   if (!tenantId || !serviceId || !date || !name || !email) {
     return NextResponse.json({ error: "Faltan campos requeridos" }, { status: 400 });

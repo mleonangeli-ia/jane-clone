@@ -4,14 +4,36 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { addMinutes, parseISO } from "date-fns";
 import { sendBookingEmails } from "@/lib/emails/send-booking-emails";
-import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { getClientIp } from "@/lib/rate-limit";
 import { generateIntakeToken } from "@/lib/intake-token";
+import { checkBookingRateLimit, isDisposableEmail, isHoneypotClean } from "@/lib/abuse";
 
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
-  if (!rateLimit(ip)) return NextResponse.json({ error: "Too many requests" }, { status: 429 });
-  const { tenantId, serviceId, startTime, clientName, clientEmail, clientPhone, notes } =
-    await req.json();
+
+  const body = await req.json();
+  const { tenantId, serviceId, startTime, clientName, clientEmail, clientPhone, notes, _hp } = body;
+
+  // ── Abuse prevention ──────────────────────────────────────────
+  // 1. Honeypot — silently accept but discard (bots won't know)
+  if (!isHoneypotClean(_hp)) {
+    return NextResponse.json({ id: "ok", requiresPayment: false }, { status: 201 });
+  }
+
+  // 2. Disposable email check
+  if (clientEmail && isDisposableEmail(clientEmail)) {
+    return NextResponse.json({ error: "Email no permitido. Usá una dirección de email válida." }, { status: 422 });
+  }
+
+  // 3. Rate limit: per-IP and per-email
+  const { ipResult, emailResult } = checkBookingRateLimit(ip, (clientEmail ?? "").toLowerCase());
+  if (!ipResult.allowed) {
+    return NextResponse.json({ error: "Demasiadas reservas. Intentá en unos minutos." }, { status: 429 });
+  }
+  if (!emailResult.allowed) {
+    return NextResponse.json({ error: "Límite de reservas diarias alcanzado para este email." }, { status: 429 });
+  }
+  // ─────────────────────────────────────────────────────────────
 
   if (!tenantId || !serviceId || !startTime || !clientName || !clientEmail) {
     return NextResponse.json({ error: "Faltan datos requeridos" }, { status: 400 });

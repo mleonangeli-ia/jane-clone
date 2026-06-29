@@ -31,7 +31,7 @@ export function WaitlistSection({ tenantId, serviceId, date, accentColor, locale
     const res = await fetch("/api/waitlist", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tenantId, serviceId, date, name, email, phone: phone || undefined }),
+      body: JSON.stringify({ tenantId, serviceId, date, name, email, phone: phone || undefined, _hp: "" }),
     });
 
     setSubmitting(false);

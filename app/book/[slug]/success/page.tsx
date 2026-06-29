@@ -7,7 +7,8 @@ import { format } from "date-fns";
 import { es, enUS, ptBR } from "date-fns/locale";
 import Link from "next/link";
 
-const DATE_FNS: Record<Locale, object> = { es, en: enUS, pt: ptBR };
+import type { Locale as DateFnsLocale } from "date-fns";
+const DATE_FNS: Record<Locale, DateFnsLocale> = { es, en: enUS, pt: ptBR };
 
 export default async function SuccessPage({
   params,
@@ -22,7 +23,7 @@ export default async function SuccessPage({
   const cookieStore = await cookies();
   const locale = (cookieStore.get("jane-locale")?.value ?? "es") as Locale;
   const t = getT(locale).success;
-  const dateFnsLocale = DATE_FNS[locale] as Parameters<typeof format>[2]["locale"];
+  const dateFnsLocale = DATE_FNS[locale];
 
   if (!appointment_id) return <ErrorMessage slug={slug} locale={locale} />;
 

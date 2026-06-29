@@ -8,11 +8,8 @@ import { BookingForm } from "./BookingForm";
 import { WaitlistSection } from "./WaitlistSection";
 import { getT, type Locale } from "@/lib/i18n";
 
-const DATE_FNS_LOCALE: Record<Locale, Locale extends string ? object : never> = {
-  es: es,
-  en: enUS,
-  pt: ptBR,
-} as unknown as Record<Locale, object>;
+import type { Locale as DateFnsLocale } from "date-fns";
+const DATE_FNS_LOCALE: Record<Locale, DateFnsLocale> = { es, en: enUS, pt: ptBR };
 
 type AvailabilitySlot = { dayOfWeek: number; startTime: string; endTime: string };
 type Props = {
@@ -26,7 +23,7 @@ type Props = {
 
 export function BookingCalendar({ tenantId, tenantSlug, service, availability, accentColor, locale = "es" }: Props) {
   const t = getT(locale);
-  const dateFnsLocale = (DATE_FNS_LOCALE as Record<string, object>)[locale] ?? es;
+  const dateFnsLocale = DATE_FNS_LOCALE[locale] ?? es;
 
   const today = startOfDay(new Date());
   const [weekStart, setWeekStart] = useState(today);
@@ -79,7 +76,7 @@ export function BookingCalendar({ tenantId, tenantSlug, service, availability, a
             <ChevronLeft className="h-4 w-4" />
           </button>
           <span className="text-sm font-semibold capitalize text-gray-700">
-            {format(weekStart, "MMMM yyyy", { locale: dateFnsLocale as Parameters<typeof format>[2]["locale"] })}
+            {format(weekStart, "MMMM yyyy", { locale: dateFnsLocale })}
           </span>
           <button
             onClick={() => setWeekStart((w) => addDays(w, 7))}
@@ -132,7 +129,7 @@ export function BookingCalendar({ tenantId, tenantSlug, service, availability, a
           <div className="flex items-center gap-2 border-b border-gray-50 px-5 py-3.5">
             <CalendarDays className="h-4 w-4 text-gray-400" />
             <span className="text-sm font-semibold capitalize text-gray-700">
-              {format(selectedDate, "EEEE d 'de' MMMM", { locale: dateFnsLocale as Parameters<typeof format>[2]["locale"] })}
+              {format(selectedDate, "EEEE d 'de' MMMM", { locale: dateFnsLocale })}
             </span>
           </div>
 

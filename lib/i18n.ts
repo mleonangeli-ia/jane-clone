@@ -245,7 +245,7 @@ export type Locale = keyof typeof translations;
 export type T = (typeof translations)["es"];
 
 export function getT(locale: string): T {
-  return (translations as Record<string, T>)[locale] ?? translations.es;
+  return (translations as unknown as Record<string, T>)[locale] ?? translations.es;
 }
 
 export const LOCALES: { code: Locale; label: string; flag: string }[] = [

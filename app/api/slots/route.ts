@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { generateTimeSlots } from "@/lib/utils";
 import { format, parseISO, startOfDay, endOfDay } from "date-fns";
-import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { getClientIp } from "@/lib/rate-limit";
+import { checkSlotsRateLimit } from "@/lib/abuse";
 
 // Converts a UTC Date to the local time in the given IANA timezone
 // using built-in Intl — no extra packages needed.
@@ -19,7 +20,8 @@ function toZonedTime(date: Date, tz: string): Date {
 
 export async function GET(req: NextRequest) {
   const ip = getClientIp(req);
-  if (!rateLimit(ip)) return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  const slotLimit = checkSlotsRateLimit(ip);
+  if (!slotLimit.allowed) return NextResponse.json({ error: "Too many requests" }, { status: 429 });
 
   const { searchParams } = new URL(req.url);
   const tenantId = searchParams.get("tenantId");

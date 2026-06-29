@@ -9,7 +9,8 @@ import { Label } from "@/components/ui/label";
 import { formatPrice, formatDuration } from "@/lib/utils";
 import { getT, type Locale } from "@/lib/i18n";
 
-const DATE_FNS: Record<Locale, object> = { es, en: enUS, pt: ptBR };
+import type { Locale as DateFnsLocale } from "date-fns";
+const DATE_FNS: Record<Locale, DateFnsLocale> = { es, en: enUS, pt: ptBR };
 
 type Props = {
   tenantId: string;
@@ -24,7 +25,7 @@ type Props = {
 export function BookingForm({ tenantId, service, date, time, accentColor, locale = "es", onBack }: Props) {
   const t = getT(locale);
   const tf = t.form;
-  const dateFnsLocale = DATE_FNS[locale] as Parameters<typeof format>[2]["locale"];
+  const dateFnsLocale = DATE_FNS[locale];
 
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState("");
@@ -52,6 +53,7 @@ export function BookingForm({ tenantId, service, date, time, accentColor, locale
         clientEmail: data.get("email"),
         clientPhone: data.get("phone"),
         notes: data.get("notes"),
+        _hp: data.get("_hp"), // honeypot field
       }),
     });
 
@@ -168,6 +170,11 @@ export function BookingForm({ tenantId, service, date, time, accentColor, locale
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 p-5">
+          {/* Honeypot — hidden from humans, traps bots that fill all fields */}
+          <div style={{ position: "absolute", left: "-9999px", opacity: 0, pointerEvents: "none" }} aria-hidden="true">
+            <input type="text" name="_hp" tabIndex={-1} autoComplete="off" />
+          </div>
+
           <div className="space-y-1.5">
             <Label htmlFor="name" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
               <User className="h-3 w-3" /> {tf.name}
