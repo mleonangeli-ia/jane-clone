@@ -1,0 +1,44 @@
+app/api/slots/route.ts
+  s_b7d33d458833f1::t_3d3a972475d677 23-24
+  s_b7d33d458833f1::t_7ac261764d4b5f 5-6
+components/booking/BookingCalendar.tsx
+  s_b7d33d458833f1::t_bac1b2696d94e3 79,132
+  s_b7d33d458833f1::t_aaf0eecfa0a56e 26
+  s_b7d33d458833f1::t_77db5845974065 11-12
+middleware.ts
+  s_b7d33d458833f1::t_c18b5f891f59a5 1-66
+lib/i18n.ts
+  s_b7d33d458833f1::t_48882163400b40 248
+app/api/waitlist/route.ts
+  s_b7d33d458833f1::t_c7e450f38be92f 3-4,7,11-23
+components/booking/WaitlistSection.tsx
+  s_b7d33d458833f1::t_7b37f6d5d3be53 34
+app/book/[slug]/success/page.tsx
+  s_b7d33d458833f1::t_29d9df3fc9f7a7 10-11
+  s_b7d33d458833f1::t_cf814d62ca3dae 26
+components/booking/BookingForm.tsx
+  s_b7d33d458833f1::t_e41b2cb4ac53a0 56
+  s_b7d33d458833f1::t_96d73d67a17210 12-13
+  s_b7d33d458833f1::t_10110a996c5aea 28
+  s_b7d33d458833f1::t_277e939fad6fe7 173-177
+lib/abuse.ts
+  s_b7d33d458833f1::t_64f64aef46bdc0 1-61
+app/api/appointments/route.ts
+  s_b7d33d458833f1::t_68f96b95ba7ddf 7,9,13-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "5795b333aa452802129caa251137c15f1fc03861",
+  "prompts": {},
+  "sessions": {
+    "s_b7d33d458833f1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1e396cc2-b540-49f1-b87b-a96982e27c87",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Matias Leonangeli <matias.leonangeli@mercadolibre.com>"
+    }
+  }
+}
