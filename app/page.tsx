@@ -28,17 +28,17 @@ export default function LandingPage() {
     <div className="min-h-screen bg-white" style={{ fontFamily: "var(--font-inter, system-ui, sans-serif)" }}>
 
       {/* ── Nav ─────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-50 border-b border-indigo-100/50 bg-white/90 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-sky-100/50 bg-white/90 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-400 to-violet-500 shadow-md shadow-indigo-200/60">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-sky-400 to-violet-500 shadow-md shadow-sky-200/60">
               <Calendar className="h-4 w-4 text-white" />
             </div>
-            <span className="text-[15px] font-bold tracking-tight text-indigo-900">JaneClone</span>
+            <span className="text-[15px] font-bold tracking-tight text-gray-900">JaneClone</span>
           </div>
           <nav className="hidden items-center gap-6 md:flex">
-            <a href="#features" className="text-sm text-gray-400 hover:text-indigo-600 transition-colors">Funcionalidades</a>
-            <a href="#testimonials" className="text-sm text-gray-400 hover:text-indigo-600 transition-colors">Testimonios</a>
+            <a href="#features" className="text-sm text-gray-400 hover:text-sky-600 transition-colors">Funcionalidades</a>
+            <a href="#testimonials" className="text-sm text-gray-400 hover:text-sky-600 transition-colors">Testimonios</a>
           </nav>
           <div className="flex items-center gap-2.5">
             <Link href="/login">
@@ -47,7 +47,7 @@ export default function LandingPage() {
               </button>
             </Link>
             <Link href="/register">
-              <button className="rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-200/70 transition-all hover:-translate-y-0.5 hover:bg-indigo-600 hover:shadow-xl">
+              <button className="rounded-xl bg-sky-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-sky-200/70 transition-all hover:-translate-y-0.5 hover:bg-sky-600 hover:shadow-xl">
                 Empezar gratis
               </button>
             </Link>
@@ -57,18 +57,18 @@ export default function LandingPage() {
 
       <main>
         {/* ── Hero ─────────────────────────────────────────── */}
-        <section className="relative overflow-hidden pt-20 pb-24" style={{ background: "linear-gradient(160deg, #f8f7ff 0%, #f0f4ff 40%, #fdf4ff 100%)" }}>
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-full max-w-5xl bg-gradient-to-r from-transparent via-indigo-200/60 to-transparent" />
+        <section className="relative overflow-hidden pt-20 pb-24" style={{ background: "linear-gradient(160deg, #f0fdf4 0%, #ecfeff 50%, #f0f9ff 100%)" }}>
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-full max-w-5xl bg-gradient-to-r from-transparent via-sky-200/60 to-transparent" />
 
           <div className="relative mx-auto max-w-5xl px-6 text-center">
-            <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-white px-4 py-1.5 text-sm font-medium text-indigo-600 shadow-sm">
+            <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-sky-200 bg-white px-4 py-1.5 text-sm font-medium text-sky-600 shadow-sm">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
               Para profesionales de la salud
             </div>
 
             <h1 className="mx-auto max-w-3xl text-5xl font-extrabold leading-[1.1] tracking-tight text-gray-900 sm:text-6xl">
               Tu agenda online,{" "}
-              <span className="text-indigo-500">sin complicaciones</span>
+              <span className="text-sky-500">sin complicaciones</span>
             </h1>
 
             <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-gray-500">
@@ -77,13 +77,13 @@ export default function LandingPage() {
 
             <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
               <Link href="/register">
-                <button className="flex h-12 items-center gap-2 rounded-xl bg-indigo-500 px-8 text-base font-semibold text-white shadow-xl shadow-indigo-200/60 transition-all hover:-translate-y-0.5 hover:bg-indigo-600">
+                <button className="flex h-12 items-center gap-2 rounded-xl bg-sky-500 px-8 text-base font-semibold text-white shadow-xl shadow-sky-200/60 transition-all hover:-translate-y-0.5 hover:bg-sky-600">
                   Crear cuenta gratis
                   <ArrowRight className="h-4 w-4" />
                 </button>
               </Link>
               <Link href="/book/florencia-lucchini">
-                <button className="flex h-12 items-center gap-2 rounded-xl border border-indigo-200 bg-white px-8 text-base font-medium text-indigo-600 shadow-sm transition-all hover:border-indigo-300 hover:bg-indigo-50">
+                <button className="flex h-12 items-center gap-2 rounded-xl border border-sky-200 bg-white px-8 text-base font-medium text-sky-600 shadow-sm transition-all hover:border-sky-300 hover:bg-sky-50">
                   Ver demo en vivo
                 </button>
               </Link>
@@ -93,8 +93,8 @@ export default function LandingPage() {
             {/* Stats */}
             <div className="mx-auto mt-14 grid max-w-xl grid-cols-2 gap-3 sm:grid-cols-4">
               {stats.map((s) => (
-                <div key={s.label} className="rounded-2xl border border-indigo-100 bg-white px-4 py-4 shadow-sm">
-                  <p className="text-2xl font-extrabold text-indigo-600">{s.value}</p>
+                <div key={s.label} className="rounded-2xl border border-sky-100 bg-white px-4 py-4 shadow-sm">
+                  <p className="text-2xl font-extrabold text-sky-600">{s.value}</p>
                   <p className="mt-0.5 text-xs font-medium text-gray-400">{s.label}</p>
                 </div>
               ))}
@@ -103,7 +103,7 @@ export default function LandingPage() {
 
           {/* Product mockup */}
           <div className="relative mx-auto mt-16 max-w-5xl px-6">
-            <div className="relative overflow-hidden rounded-2xl border border-indigo-100 shadow-2xl shadow-indigo-100/80">
+            <div className="relative overflow-hidden rounded-2xl border border-sky-100 shadow-2xl shadow-sky-100/80">
               {/* Browser bar */}
               <div className="flex items-center gap-1.5 bg-gray-100 px-4 py-2.5">
                 <div className="h-2.5 w-2.5 rounded-full bg-red-300" />
@@ -114,17 +114,17 @@ export default function LandingPage() {
                 </div>
               </div>
               {/* App UI */}
-              <div className="flex" style={{ height: "380px", background: "#f8f7ff" }}>
+              <div className="flex" style={{ height: "380px", background: "#f9fafb" }}>
                 {/* Sidebar */}
-                <div className="hidden w-48 shrink-0 flex-col gap-0.5 border-r border-indigo-100/50 bg-white p-3 sm:flex">
+                <div className="hidden w-48 shrink-0 flex-col gap-0.5 border-r border-gray-100 bg-white p-3 sm:flex">
                   <div className="mb-4 flex items-center gap-2 px-2">
-                    <div className="h-5 w-5 rounded-lg bg-indigo-400" />
-                    <div className="h-2.5 w-16 rounded-md bg-indigo-100" />
+                    <div className="h-5 w-5 rounded-lg bg-sky-400" />
+                    <div className="h-2.5 w-16 rounded-md bg-sky-100" />
                   </div>
                   {[["Inicio", true], ["Agenda", false], ["Clientes", false], ["Servicios", false], ["Config.", false]].map(([item, active]) => (
-                    <div key={String(item)} className={`flex items-center gap-2 rounded-xl px-2 py-1.5 ${active ? "bg-indigo-50" : ""}`}>
-                      <div className={`h-3 w-3 rounded ${active ? "bg-indigo-400" : "bg-gray-200"}`} />
-                      <div className={`h-2 rounded ${active ? "bg-indigo-300 w-8" : "bg-gray-200 w-10"}`} />
+                    <div key={String(item)} className={`flex items-center gap-2 rounded-xl px-2 py-1.5 ${active ? "bg-sky-50" : ""}`}>
+                      <div className={`h-3 w-3 rounded ${active ? "bg-sky-400" : "bg-gray-200"}`} />
+                      <div className={`h-2 rounded ${active ? "bg-sky-300 w-8" : "bg-gray-200 w-10"}`} />
                     </div>
                   ))}
                 </div>
@@ -165,7 +165,7 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
-            <div className="absolute -inset-4 -z-10 rounded-3xl bg-gradient-to-r from-indigo-100/50 via-violet-100/50 to-pink-100/50 blur-2xl" />
+            <div className="absolute -inset-4 -z-10 rounded-3xl bg-gradient-to-r from-sky-100/50 via-violet-100/50 to-pink-100/50 blur-2xl" />
           </div>
         </section>
 
@@ -186,7 +186,7 @@ export default function LandingPage() {
         {/* ── Features ─────────────────────────────────────── */}
         <section id="features" className="mx-auto max-w-6xl px-6 py-24">
           <div className="mb-16 text-center">
-            <p className="mb-3 text-sm font-bold uppercase tracking-widest text-indigo-400">Funcionalidades</p>
+            <p className="mb-3 text-sm font-bold uppercase tracking-widest text-sky-500">Funcionalidades</p>
             <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
               Todo lo que necesitás
             </h2>
@@ -205,10 +205,10 @@ export default function LandingPage() {
         </section>
 
         {/* ── Testimonials ─────────────────────────────────── */}
-        <section id="testimonials" className="py-24" style={{ background: "linear-gradient(160deg, #f8f7ff, #f0f4ff)" }}>
+        <section id="testimonials" className="py-24" style={{ background: "linear-gradient(160deg, #f0fdf4, #ecfeff)" }}>
           <div className="mx-auto max-w-6xl px-6">
             <div className="mb-16 text-center">
-              <p className="mb-3 text-sm font-bold uppercase tracking-widest text-indigo-400">Testimonios</p>
+              <p className="mb-3 text-sm font-bold uppercase tracking-widest text-sky-500">Testimonios</p>
               <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
                 Profesionales que ya lo usan
               </h2>
@@ -234,22 +234,22 @@ export default function LandingPage() {
 
         {/* ── CTA ──────────────────────────────────────────── */}
         <section className="mx-auto max-w-6xl px-6 py-24">
-          <div className="relative overflow-hidden rounded-3xl p-16 text-center shadow-xl" style={{ background: "linear-gradient(135deg, #eef2ff 0%, #f5f3ff 50%, #fdf4ff 100%)", border: "1px solid #e0e7ff" }}>
-            <div className="absolute inset-0 opacity-40" style={{ backgroundImage: "radial-gradient(circle at 25% 50%, #c7d2fe 1px, transparent 1px), radial-gradient(circle at 75% 50%, #ddd6fe 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
+          <div className="relative overflow-hidden rounded-3xl p-16 text-center shadow-xl" style={{ background: "linear-gradient(135deg, #ecfdf5 0%, #ecfeff 50%, #e0f2fe 100%)", border: "1px solid #a7f3d0" }}>
+            <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "radial-gradient(circle at 25% 50%, #6ee7b7 1px, transparent 1px), radial-gradient(circle at 75% 50%, #67e8f9 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
             <div className="relative">
-              <h2 className="text-3xl font-extrabold text-indigo-900 sm:text-4xl">Listo para empezar?</h2>
+              <h2 className="text-3xl font-extrabold text-emerald-900 sm:text-4xl">Listo para empezar?</h2>
               <p className="mx-auto mt-4 max-w-md text-gray-500">
                 Configurá tu agenda en menos de 5 minutos. Gratis para siempre en el plan básico.
               </p>
               <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
                 <Link href="/register">
-                  <button className="flex h-12 items-center gap-2 rounded-xl bg-indigo-500 px-8 text-base font-bold text-white shadow-xl shadow-indigo-200/60 transition-all hover:-translate-y-0.5 hover:bg-indigo-600">
+                  <button className="flex h-12 items-center gap-2 rounded-xl bg-sky-500 px-8 text-base font-bold text-white shadow-xl shadow-sky-200/60 transition-all hover:-translate-y-0.5 hover:bg-sky-600">
                     Crear mi cuenta gratis
                     <ArrowRight className="h-4 w-4" />
                   </button>
                 </Link>
                 <Link href="/book/florencia-lucchini">
-                  <button className="flex h-12 items-center gap-2 rounded-xl border border-indigo-200 bg-white px-8 text-base font-medium text-indigo-600 shadow-sm transition-all hover:bg-indigo-50">
+                  <button className="flex h-12 items-center gap-2 rounded-xl border border-sky-200 bg-white px-8 text-base font-medium text-sky-600 shadow-sm transition-all hover:bg-sky-50">
                     Ver demo
                   </button>
                 </Link>
@@ -262,7 +262,7 @@ export default function LandingPage() {
       <footer className="border-t border-gray-100 py-8">
         <div className="mx-auto max-w-6xl px-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
           <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-400">
+            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-sky-400">
               <Calendar className="h-3 w-3 text-white" />
             </div>
             <span className="text-sm font-semibold text-gray-600">JaneClone</span>

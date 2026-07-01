@@ -87,40 +87,40 @@ export default async function DashboardPage() {
           value={todayAppointments.length}
           sub={`${yesterdayCount} ayer`}
           delta={todayVsYesterday}
-          bg="#eef2ff"
-          iconBg="#c7d2fe"
-          iconColor="#4f46e5"
-          textColor="#3730a3"
+          bg="#e0f2fe"
+          iconBg="#7dd3fc"
+          iconColor="#0369a1"
+          textColor="#0c4a6e"
         />
         <StatCard
           icon={Users}
           label="Clientes"
           value={totalClients}
           sub={`${totalAppointments} turnos en total`}
-          bg="#e0f2fe"
-          iconBg="#bae6fd"
-          iconColor="#0284c7"
-          textColor="#075985"
+          bg="#dcfce7"
+          iconBg="#86efac"
+          iconColor="#15803d"
+          textColor="#14532d"
         />
         <StatCard
           icon={DollarSign}
           label="Cobrado hoy"
           value={formatPrice(todayRevenue)}
           sub="ingresos del día"
-          bg="#dcfce7"
-          iconBg="#bbf7d0"
-          iconColor="#16a34a"
-          textColor="#14532d"
+          bg="#fef3c7"
+          iconBg="#fcd34d"
+          iconColor="#b45309"
+          textColor="#78350f"
         />
         <StatCard
           icon={Clock}
           label="Pendientes"
           value={pendingPayments}
           sub="sin cobrar"
-          bg="#fef9c3"
-          iconBg="#fde68a"
-          iconColor="#ca8a04"
-          textColor="#713f12"
+          bg="#fce7f3"
+          iconBg="#f9a8d4"
+          iconColor="#be185d"
+          textColor="#831843"
           alert={pendingPayments > 0}
         />
       </div>
@@ -144,11 +144,11 @@ export default async function DashboardPage() {
 
           {todayAppointments.length === 0 ? (
             <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-indigo-100 bg-indigo-50/30 py-16 text-center">
-              <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-100">
-                <Calendar className="h-7 w-7 text-indigo-300" />
+              <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-50">
+                <Calendar className="h-7 w-7 text-sky-300" />
               </div>
-              <p className="font-semibold text-indigo-300">Sin turnos hoy</p>
-              <p className="mt-1 text-sm text-indigo-200">Los nuevos turnos aparecerán acá</p>
+              <p className="font-semibold text-gray-400">Sin turnos hoy</p>
+              <p className="mt-1 text-sm text-gray-300">Los nuevos turnos aparecerán acá</p>
               <Link href={`/book/${session!.user.slug}`} target="_blank" className="mt-5">
                 <button className="rounded-xl border border-indigo-200 bg-white px-4 py-2 text-sm font-medium text-indigo-500 transition-colors hover:bg-indigo-50">
                   Compartir link de reservas
@@ -237,15 +237,15 @@ export default async function DashboardPage() {
           </div>
 
           {/* Link rápido */}
-          <div className="rounded-2xl border border-violet-100 bg-gradient-to-br from-violet-50 to-indigo-50 p-5">
-            <p className="text-sm font-semibold text-violet-800">Tu link de reservas</p>
-            <p className="mt-0.5 text-xs text-violet-400">Compartilo con tus pacientes</p>
+          <div className="rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50 to-teal-50 p-5">
+            <p className="text-sm font-semibold text-emerald-800">Tu link de reservas</p>
+            <p className="mt-0.5 text-xs text-emerald-500">Compartilo con tus pacientes</p>
             <Link href={`/book/${session!.user.slug}`} target="_blank">
-              <div className="mt-3 flex items-center gap-2 rounded-xl bg-white px-3 py-2.5 shadow-sm ring-1 ring-violet-100 transition-all hover:ring-violet-200">
-                <span className="flex-1 truncate text-xs font-medium text-violet-600">
+              <div className="mt-3 flex items-center gap-2 rounded-xl bg-white px-3 py-2.5 shadow-sm ring-1 ring-emerald-100 transition-all hover:ring-emerald-200">
+                <span className="flex-1 truncate text-xs font-medium text-emerald-700">
                   /book/{session!.user.slug}
                 </span>
-                <ArrowRight className="h-3 w-3 shrink-0 text-violet-400" />
+                <ArrowRight className="h-3 w-3 shrink-0 text-emerald-400" />
               </div>
             </Link>
           </div>
