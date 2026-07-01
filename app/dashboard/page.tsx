@@ -46,7 +46,7 @@ export default async function DashboardPage() {
         },
         include: { client: true, service: true },
         orderBy: { startTime: "asc" },
-        take: 3,
+        take: 4,
       }),
     ]);
 
@@ -56,31 +56,30 @@ export default async function DashboardPage() {
 
   const hour = today.getHours();
   const greeting = hour < 12 ? "Buenos días" : hour < 19 ? "Buenas tardes" : "Buenas noches";
-
   const todayVsYesterday = todayAppointments.length - yesterdayCount;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-7">
 
       {/* ── Header ─────────────────────────────────────────── */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-gray-800">
             {greeting}, {session!.user.name?.split(" ")[0]} 👋
           </h1>
-          <p className="mt-1 capitalize text-gray-500">
+          <p className="mt-0.5 capitalize text-gray-400">
             {format(today, "EEEE d 'de' MMMM", { locale: es })}
           </p>
         </div>
         <Link href="/dashboard/appointments">
-          <button className="hidden items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-gray-300 hover:bg-gray-50 sm:flex">
-            Ver agenda completa
+          <button className="hidden items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-600 shadow-sm transition-all hover:bg-gray-50 sm:flex">
+            Agenda completa
             <ArrowRight className="h-3.5 w-3.5" />
           </button>
         </Link>
       </div>
 
-      {/* ── Stat cards ─────────────────────────────────────── */}
+      {/* ── Stat cards — pasteles ───────────────────────────── */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           icon={Calendar}
@@ -88,66 +87,70 @@ export default async function DashboardPage() {
           value={todayAppointments.length}
           sub={`${yesterdayCount} ayer`}
           delta={todayVsYesterday}
-          gradient="from-indigo-500 to-violet-600"
-          lightBg="bg-indigo-50"
-          lightText="text-indigo-600"
+          bg="#eef2ff"
+          iconBg="#c7d2fe"
+          iconColor="#4f46e5"
+          textColor="#3730a3"
         />
         <StatCard
           icon={Users}
           label="Clientes"
           value={totalClients}
-          sub={`${totalAppointments} turnos totales`}
-          gradient="from-sky-500 to-cyan-600"
-          lightBg="bg-sky-50"
-          lightText="text-sky-600"
+          sub={`${totalAppointments} turnos en total`}
+          bg="#e0f2fe"
+          iconBg="#bae6fd"
+          iconColor="#0284c7"
+          textColor="#075985"
         />
         <StatCard
           icon={DollarSign}
           label="Cobrado hoy"
           value={formatPrice(todayRevenue)}
           sub="ingresos del día"
-          gradient="from-emerald-500 to-teal-600"
-          lightBg="bg-emerald-50"
-          lightText="text-emerald-600"
+          bg="#dcfce7"
+          iconBg="#bbf7d0"
+          iconColor="#16a34a"
+          textColor="#14532d"
         />
         <StatCard
           icon={Clock}
-          label="Cobros pendientes"
+          label="Pendientes"
           value={pendingPayments}
-          sub="turnos sin cobrar"
-          gradient="from-orange-500 to-amber-600"
-          lightBg="bg-orange-50"
-          lightText="text-orange-600"
+          sub="sin cobrar"
+          bg="#fef9c3"
+          iconBg="#fde68a"
+          iconColor="#ca8a04"
+          textColor="#713f12"
           alert={pendingPayments > 0}
         />
       </div>
 
-      {/* ── Two-column layout ───────────────────────────────── */}
+      {/* ── Content grid ────────────────────────────────────── */}
       <div className="grid gap-6 lg:grid-cols-3">
 
-        {/* Today's schedule — 2/3 */}
+        {/* Agenda — 2/3 */}
         <div className="lg:col-span-2">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="flex items-center gap-2 font-semibold text-gray-900">
+            <h2 className="flex items-center gap-2 font-semibold text-gray-800">
               <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-100">
-                <Calendar className="h-3.5 w-3.5 text-indigo-600" />
+                <Calendar className="h-3.5 w-3.5 text-indigo-500" />
               </span>
               Agenda de hoy
-              <span className="ml-1 rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-semibold text-indigo-700">
+              <span className="ml-1 rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-semibold text-indigo-600">
                 {todayAppointments.length}
               </span>
             </h2>
           </div>
 
           {todayAppointments.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-white py-16 text-center">
-              <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-50">
-                <Calendar className="h-7 w-7 text-gray-300" />
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-indigo-100 bg-indigo-50/30 py-16 text-center">
+              <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-100">
+                <Calendar className="h-7 w-7 text-indigo-300" />
               </div>
-              <p className="font-semibold text-gray-400">Sin turnos hoy</p>
-              <p className="mt-1 text-sm text-gray-300">Los nuevos turnos aparecerán acá</p>
-              <Link href={`/book/${session!.user.slug}`} target="_blank" className="mt-4">
-                <button className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+              <p className="font-semibold text-indigo-300">Sin turnos hoy</p>
+              <p className="mt-1 text-sm text-indigo-200">Los nuevos turnos aparecerán acá</p>
+              <Link href={`/book/${session!.user.slug}`} target="_blank" className="mt-5">
+                <button className="rounded-xl border border-indigo-200 bg-white px-4 py-2 text-sm font-medium text-indigo-500 transition-colors hover:bg-indigo-50">
                   Compartir link de reservas
                 </button>
               </Link>
@@ -161,24 +164,24 @@ export default async function DashboardPage() {
                     i < todayAppointments.length - 1 ? "border-b border-gray-50" : ""
                   }`}
                 >
-                  {/* Time block */}
-                  <div className="flex w-14 shrink-0 flex-col items-center rounded-xl py-2" style={{ background: `${apt.service.color}12` }}>
-                    <span className="text-sm font-bold" style={{ color: apt.service.color }}>
+                  {/* Time */}
+                  <div
+                    className="flex w-14 shrink-0 flex-col items-center rounded-xl py-2"
+                    style={{ backgroundColor: `${apt.service.color}18` }}
+                  >
+                    <span className="text-sm font-bold leading-none" style={{ color: apt.service.color }}>
                       {format(apt.startTime, "HH:mm")}
                     </span>
-                    <span className="text-[10px] text-gray-400">{format(apt.endTime, "HH:mm")}</span>
+                    <span className="mt-0.5 text-[10px] text-gray-400">{format(apt.endTime, "HH:mm")}</span>
                   </div>
 
-                  {/* Color bar */}
-                  <div className="h-10 w-1 shrink-0 rounded-full" style={{ backgroundColor: apt.service.color }} />
+                  <div className="h-8 w-1 shrink-0 rounded-full" style={{ backgroundColor: apt.service.color }} />
 
-                  {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <p className="truncate font-semibold text-gray-900">{apt.client.name}</p>
+                    <p className="truncate font-semibold text-gray-800">{apt.client.name}</p>
                     <p className="truncate text-sm text-gray-400">{apt.service.name}</p>
                   </div>
 
-                  {/* Right */}
                   <div className="flex shrink-0 items-center gap-2">
                     <span className="hidden text-sm font-semibold text-gray-600 sm:block">
                       {formatPrice(apt.service.price)}
@@ -197,50 +200,52 @@ export default async function DashboardPage() {
           )}
         </div>
 
-        {/* Sidebar — 1/3 */}
+        {/* Panel lateral — 1/3 */}
         <div className="space-y-5">
-          {/* Upcoming */}
+          {/* Próximos */}
           <div>
-            <h2 className="mb-4 flex items-center gap-2 font-semibold text-gray-900">
+            <h2 className="mb-4 flex items-center gap-2 font-semibold text-gray-800">
               <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-violet-100">
-                <TrendingUp className="h-3.5 w-3.5 text-violet-600" />
+                <TrendingUp className="h-3.5 w-3.5 text-violet-500" />
               </span>
               Próximos turnos
             </h2>
             {nextAppointments.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-gray-200 bg-white px-4 py-6 text-center text-sm text-gray-400">
+              <div className="rounded-2xl border border-dashed border-gray-100 bg-white px-4 py-6 text-center text-sm text-gray-300">
                 Sin próximos turnos
               </div>
             ) : (
               <div className="space-y-2">
                 {nextAppointments.map((apt) => (
                   <div key={apt.id} className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white p-3 shadow-sm">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-xs font-bold text-white" style={{ backgroundColor: apt.service.color }}>
+                    <div
+                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-bold text-white shadow-sm"
+                      style={{ backgroundColor: apt.service.color }}
+                    >
                       {apt.client.name.charAt(0)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="truncate text-sm font-semibold text-gray-900">{apt.client.name}</p>
+                      <p className="truncate text-sm font-semibold text-gray-800">{apt.client.name}</p>
                       <p className="text-xs text-gray-400">
                         {format(apt.startTime, "d MMM · HH:mm", { locale: es })}
                       </p>
                     </div>
-                    <StatusBadge status={apt.status} />
                   </div>
                 ))}
               </div>
             )}
           </div>
 
-          {/* Quick link */}
-          <div className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-violet-50 p-5">
-            <p className="text-sm font-semibold text-indigo-900">Tu link de reservas</p>
-            <p className="mt-1 text-xs text-indigo-600">Compartilo con tus pacientes</p>
+          {/* Link rápido */}
+          <div className="rounded-2xl border border-violet-100 bg-gradient-to-br from-violet-50 to-indigo-50 p-5">
+            <p className="text-sm font-semibold text-violet-800">Tu link de reservas</p>
+            <p className="mt-0.5 text-xs text-violet-400">Compartilo con tus pacientes</p>
             <Link href={`/book/${session!.user.slug}`} target="_blank">
-              <div className="mt-3 flex items-center gap-2 rounded-xl bg-white px-3 py-2 shadow-sm ring-1 ring-indigo-100">
-                <span className="flex-1 truncate text-xs font-medium text-indigo-700">
+              <div className="mt-3 flex items-center gap-2 rounded-xl bg-white px-3 py-2.5 shadow-sm ring-1 ring-violet-100 transition-all hover:ring-violet-200">
+                <span className="flex-1 truncate text-xs font-medium text-violet-600">
                   /book/{session!.user.slug}
                 </span>
-                <ArrowRight className="h-3 w-3 shrink-0 text-indigo-400" />
+                <ArrowRight className="h-3 w-3 shrink-0 text-violet-400" />
               </div>
             </Link>
           </div>
@@ -251,33 +256,44 @@ export default async function DashboardPage() {
 }
 
 function StatCard({
-  icon: Icon, label, value, sub, gradient, lightBg, lightText, delta, alert,
+  icon: Icon, label, value, sub, bg, iconBg, iconColor, textColor, delta, alert,
 }: {
   icon: React.ElementType;
   label: string;
   value: string | number;
   sub: string;
-  gradient: string;
-  lightBg: string;
-  lightText: string;
+  bg: string;
+  iconBg: string;
+  iconColor: string;
+  textColor: string;
   delta?: number;
   alert?: boolean;
 }) {
   return (
-    <div className={`relative overflow-hidden rounded-2xl p-5 shadow-sm transition-all hover:shadow-md ${alert ? "border-2 border-orange-200 bg-orange-50/30" : "border border-gray-100 bg-white"}`}>
+    <div
+      className="relative overflow-hidden rounded-2xl p-5 shadow-sm transition-all hover:shadow-md"
+      style={{ backgroundColor: bg, border: `1px solid ${iconBg}` }}
+    >
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm font-medium text-gray-500">{label}</p>
-          <p className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900">{value}</p>
-          <p className="mt-1 text-xs text-gray-400">{sub}</p>
+          <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: iconColor, opacity: 0.7 }}>
+            {label}
+          </p>
+          <p className="mt-2 text-3xl font-extrabold tracking-tight" style={{ color: textColor }}>
+            {value}
+          </p>
+          <p className="mt-1 text-xs" style={{ color: iconColor, opacity: 0.6 }}>{sub}</p>
           {delta !== undefined && (
-            <p className={`mt-1 text-xs font-medium ${delta > 0 ? "text-emerald-600" : delta < 0 ? "text-red-500" : "text-gray-400"}`}>
+            <p className={`mt-1 text-xs font-semibold ${delta > 0 ? "text-emerald-600" : delta < 0 ? "text-rose-500" : "text-gray-400"}`}>
               {delta > 0 ? `+${delta}` : delta} vs ayer
             </p>
           )}
         </div>
-        <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${gradient} shadow-lg`}>
-          <Icon className="h-5 w-5 text-white" />
+        <div
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl"
+          style={{ backgroundColor: iconBg }}
+        >
+          <Icon className="h-5 w-5" style={{ color: iconColor }} />
         </div>
       </div>
     </div>
@@ -286,10 +302,10 @@ function StatCard({
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { label: string; variant: "default" | "success" | "warning" | "destructive" | "secondary" }> = {
-    PENDING:   { label: "Pendiente",  variant: "warning" },
-    CONFIRMED: { label: "Confirmado", variant: "success" },
+    PENDING:   { label: "Pendiente",  variant: "warning"     },
+    CONFIRMED: { label: "Confirmado", variant: "success"     },
     CANCELLED: { label: "Cancelado",  variant: "destructive" },
-    COMPLETED: { label: "Completado", variant: "secondary" },
+    COMPLETED: { label: "Completado", variant: "secondary"   },
     NO_SHOW:   { label: "No asistió", variant: "destructive" },
   };
   const { label, variant } = map[status] ?? { label: status, variant: "secondary" };
@@ -298,8 +314,8 @@ function StatusBadge({ status }: { status: string }) {
 
 function PaymentBadge({ status }: { status: string }) {
   const map: Record<string, { label: string; variant: "default" | "success" | "warning" | "destructive" | "secondary" }> = {
-    UNPAID:   { label: "Sin pagar",   variant: "warning" },
-    PAID:     { label: "Pagado",      variant: "success" },
+    UNPAID:   { label: "Sin pagar",   variant: "warning"   },
+    PAID:     { label: "Pagado",      variant: "success"   },
     REFUNDED: { label: "Reembolsado", variant: "secondary" },
     FAILED:   { label: "Fallido",     variant: "destructive" },
   };
