@@ -1,0 +1,31 @@
+app/api/auth/reset-password/route.ts
+  s_b7d33d458833f1::t_e93d1cc0571ccd 1-50
+app/reset-password/page.tsx
+  s_b7d33d458833f1::t_fe4c6578e19592 3,11-18
+  s_b7d33d458833f1::t_e760094f172f66 1-2,4-10,19-207
+app/forgot-password/page.tsx
+  s_b7d33d458833f1::t_f770c57aa05865 1-112
+app/login/page.tsx
+  s_b7d33d458833f1::t_7e13a2fcc3b98d 216-221
+prisma/schema.prisma
+  s_b7d33d458833f1::t_75bcc26e768de2 229-242
+  s_b7d33d458833f1::t_66bbe5a334fdb1 28-34
+app/api/auth/forgot-password/route.ts
+  s_b7d33d458833f1::t_4cd6289f2b9f10 1-101
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "e4f4dfb88364aae8836bd1e26d4dbfae356552d0",
+  "prompts": {},
+  "sessions": {
+    "s_b7d33d458833f1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1e396cc2-b540-49f1-b87b-a96982e27c87",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Matias Leonangeli <matias.leonangeli@mercadolibre.com>"
+    }
+  }
+}
