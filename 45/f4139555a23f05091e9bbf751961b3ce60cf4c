@@ -1,0 +1,32 @@
+prisma/schema.prisma
+  s_b7d33d458833f1::t_2ed278277cfd96 84-86
+  s_b7d33d458833f1::t_d924e866f39ed2 231-244
+lib/patient-auth.ts
+  s_b7d33d458833f1::t_52de0cded6c020 1-39
+app/api/patient/auth/logout/route.ts
+  s_b7d33d458833f1::t_0c30ed50dd7498 1-9
+app/patient/portal/page.tsx
+  s_b7d33d458833f1::t_7562fa311decdc 1-230
+app/api/patient/auth/request/route.ts
+  s_b7d33d458833f1::t_0caa4254d1414c 1-98
+app/patient/page.tsx
+  s_b7d33d458833f1::t_98d17bbdd210f1 1-130
+app/api/patient/auth/verify/route.ts
+  s_b7d33d458833f1::t_301785431b33dc 1-47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "45f4139555a23f05091e9bbf751961b3ce60cf4c",
+  "prompts": {},
+  "sessions": {
+    "s_b7d33d458833f1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1e396cc2-b540-49f1-b87b-a96982e27c87",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Matias Leonangeli <matias.leonangeli@mercadolibre.com>"
+    }
+  }
+}
