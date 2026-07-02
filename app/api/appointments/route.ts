@@ -7,6 +7,7 @@ import { sendBookingEmails } from "@/lib/emails/send-booking-emails";
 import { getClientIp } from "@/lib/rate-limit";
 import { generateIntakeToken } from "@/lib/intake-token";
 import { checkBookingRateLimit, isDisposableEmail, isHoneypotClean } from "@/lib/abuse";
+import { createCalendarEvent } from "@/lib/google-calendar";
 
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
@@ -101,8 +102,10 @@ export async function POST(req: NextRequest) {
     intakeUrl = `${appUrl}/intake/${formResponse.id}?token=${intakeToken}`;
   }
 
-  // Send confirmation emails for free appointments immediately
+  // Send confirmation emails + create calendar event for free appointments
   if (!requiresPayment) {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+
     sendBookingEmails({
       clientName,
       clientEmail,
@@ -117,11 +120,30 @@ export async function POST(req: NextRequest) {
       currency: tenant.currency,
       notes: notes ?? null,
       tenantSlug: tenant.slug,
-      appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+      appUrl,
       appointmentId: appointment.id,
       appointmentCreatedAt: appointment.createdAt,
       intakeUrl,
-    }).catch(console.error); // fire-and-forget, don't block the response
+    }).catch(console.error);
+
+    // Sync to Google Calendar if the professional has it connected
+    if (tenant.googleRefreshToken) {
+      createCalendarEvent({
+        refreshToken: tenant.googleRefreshToken,
+        summary: `${clientName} — ${service.name}`,
+        description: `Paciente: ${clientEmail}${notes ? `\nNotas: ${notes}` : ""}`,
+        startTime: start,
+        endTime: end,
+        location: tenant.address ?? undefined,
+      }).then(async (eventId) => {
+        if (eventId) {
+          await prisma.appointment.update({
+            where: { id: appointment.id },
+            data: { googleEventId: eventId },
+          });
+        }
+      }).catch(console.error);
+    }
   }
 
   return NextResponse.json(
