@@ -25,12 +25,13 @@ model Tenant {
 
   googleRefreshToken String?
 
-  services        Service[]
-  availability    Availability[]
-  appointments    Appointment[]
-  clients         Client[]
-  intakeForms     IntakeForm[]
-  waitlistEntries WaitlistEntry[]
+  services           Service[]
+  availability       Availability[]
+  appointments       Appointment[]
+  clients            Client[]
+  intakeForms        IntakeForm[]
+  waitlistEntries    WaitlistEntry[]
+  passwordResetTokens PasswordResetToken[]
 
   @@map("tenants")
 }
@@ -224,4 +225,18 @@ enum FieldType {
   SELECT
   CHECKBOX
   DATE
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tokenHash String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("password_reset_tokens")
 }
