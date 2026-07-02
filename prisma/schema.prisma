@@ -81,8 +81,9 @@ model Client {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tenant       Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  appointments Appointment[]
+  tenant             Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  appointments       Appointment[]
+  patientMagicTokens PatientMagicToken[]
 
   @@unique([tenantId, email])
   @@map("clients")
@@ -225,6 +226,20 @@ enum FieldType {
   SELECT
   CHECKBOX
   DATE
+}
+
+model PatientMagicToken {
+  id        String    @id @default(cuid())
+  clientId  String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([clientId])
+  @@map("patient_magic_tokens")
 }
 
 model PasswordResetToken {
