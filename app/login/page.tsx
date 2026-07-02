@@ -160,7 +160,7 @@ export default function LoginPage() {
       </div>
 
       {/* ── Right panel ────────────────────────────────────── */}
-      <div className="flex flex-1 flex-col items-center justify-center bg-gray-50 px-6 py-12">
+      <div className="flex flex-1 flex-col items-center justify-center bg-gray-50 px-4 py-8 sm:px-6 sm:py-12">
         <div className="w-full max-w-sm">
 
           {/* Mobile logo */}

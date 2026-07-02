@@ -64,10 +64,10 @@ export default async function DashboardPage() {
       {/* ── Header ─────────────────────────────────────────── */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">
+          <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">
             {greeting}, {session!.user.name?.split(" ")[0]} 👋
           </h1>
-          <p className="mt-0.5 capitalize text-gray-400">
+          <p className="mt-0.5 capitalize text-sm text-gray-400">
             {format(today, "EEEE d 'de' MMMM", { locale: es })}
           </p>
         </div>
@@ -80,7 +80,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* ── Stat cards — pasteles ───────────────────────────── */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <StatCard
           icon={Calendar}
           label="Turnos hoy"
@@ -126,7 +126,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* ── Content grid ────────────────────────────────────── */}
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-3 xl:grid-cols-3">
 
         {/* Agenda — 2/3 */}
         <div className="lg:col-span-2">
@@ -271,29 +271,29 @@ function StatCard({
 }) {
   return (
     <div
-      className="relative overflow-hidden rounded-2xl p-5 shadow-sm transition-all hover:shadow-md"
+      className="relative overflow-hidden rounded-2xl p-3.5 shadow-sm transition-all hover:shadow-md sm:p-5"
       style={{ backgroundColor: bg, border: `1px solid ${iconBg}` }}
     >
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: iconColor, opacity: 0.7 }}>
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] font-bold uppercase tracking-wide sm:text-xs" style={{ color: iconColor, opacity: 0.7 }}>
             {label}
           </p>
-          <p className="mt-2 text-3xl font-extrabold tracking-tight" style={{ color: textColor }}>
+          <p className="mt-1.5 text-2xl font-extrabold tracking-tight sm:text-3xl" style={{ color: textColor }}>
             {value}
           </p>
-          <p className="mt-1 text-xs" style={{ color: iconColor, opacity: 0.6 }}>{sub}</p>
+          <p className="mt-0.5 hidden text-xs sm:block" style={{ color: iconColor, opacity: 0.6 }}>{sub}</p>
           {delta !== undefined && (
-            <p className={`mt-1 text-xs font-semibold ${delta > 0 ? "text-emerald-600" : delta < 0 ? "text-rose-500" : "text-gray-400"}`}>
+            <p className={`mt-0.5 hidden text-xs font-semibold sm:block ${delta > 0 ? "text-emerald-600" : delta < 0 ? "text-rose-500" : "text-gray-400"}`}>
               {delta > 0 ? `+${delta}` : delta} vs ayer
             </p>
           )}
         </div>
         <div
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl sm:h-11 sm:w-11 sm:rounded-2xl"
           style={{ backgroundColor: iconBg }}
         >
-          <Icon className="h-5 w-5" style={{ color: iconColor }} />
+          <Icon className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: iconColor }} />
         </div>
       </div>
     </div>

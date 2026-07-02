@@ -66,7 +66,7 @@ export default async function AppointmentsPage({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Agenda</h1>
+        <h1 className="text-xl font-bold text-gray-900 sm:text-2xl">Agenda</h1>
       </div>
 
       <Suspense fallback={<div className="h-9 w-full rounded-md bg-gray-100 animate-pulse" />}>
@@ -91,22 +91,27 @@ export default async function AppointmentsPage({
             <div className="space-y-2">
               {apts.map((apt) => (
                 <Card key={apt.id}>
-                  <CardContent className="flex items-center justify-between py-4">
-                    <div className="flex items-center gap-4">
-                      <div className="h-10 w-1 rounded-full" style={{ backgroundColor: apt.service.color }} />
-                      <div>
-                        <p className="font-medium text-gray-900">{apt.client.name}</p>
-                        <p className="text-sm text-gray-500">
-                          {apt.service.name} · {format(apt.startTime, "HH:mm")} – {format(apt.endTime, "HH:mm")}
-                        </p>
-                      </div>
-                    </div>
+                  <CardContent className="py-3 px-4">
                     <div className="flex items-center gap-3">
-                      <span className="text-sm font-medium text-gray-700">
-                        {formatPrice(apt.service.price)}
-                      </span>
-                      <PaymentBadge status={apt.paymentStatus} />
-                      <StatusBadge status={apt.status} />
+                      <div className="h-9 w-1 shrink-0 rounded-full" style={{ backgroundColor: apt.service.color }} />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-gray-900 truncate">{apt.client.name}</p>
+                        <p className="text-xs text-gray-500 truncate">
+                          {apt.service.name} · {format(apt.startTime, "HH:mm")}–{format(apt.endTime, "HH:mm")}
+                        </p>
+                        {/* Mobile: badges inline */}
+                        <div className="mt-1.5 flex flex-wrap items-center gap-1.5 sm:hidden">
+                          <span className="text-xs font-semibold text-gray-600">{formatPrice(apt.service.price)}</span>
+                          <PaymentBadge status={apt.paymentStatus} />
+                          <StatusBadge status={apt.status} />
+                        </div>
+                      </div>
+                      {/* Desktop: badges inline right */}
+                      <div className="hidden shrink-0 items-center gap-2 sm:flex">
+                        <span className="text-sm font-medium text-gray-700">{formatPrice(apt.service.price)}</span>
+                        <PaymentBadge status={apt.paymentStatus} />
+                        <StatusBadge status={apt.status} />
+                      </div>
                       <AppointmentActions
                         appointmentId={apt.id}
                         currentStatus={apt.status}
