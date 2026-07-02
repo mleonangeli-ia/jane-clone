@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "./ThemeToggle";
 
 const navGroups = [
   {
@@ -43,25 +44,36 @@ function NavContent({ onClose }: { onClose?: () => void }) {
   const slug = session?.user?.slug;
 
   return (
-    <div className="flex h-full flex-col">
-      {/* Logo + close button */}
-      <div className="flex h-16 items-center gap-3 border-b border-gray-100 px-5">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-sky-400 shadow-md shadow-sky-200/60">
+    <div className="flex h-full flex-col" style={{ backgroundColor: "var(--sidebar-bg)" }}>
+
+      {/* Logo */}
+      <div className="flex h-16 items-center gap-3 px-5" style={{ borderBottom: "1px solid var(--sidebar-border)" }}>
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-sky-400 shadow-md shadow-sky-200/40">
           <Calendar className="h-4 w-4 text-white" />
         </div>
-        <span className="flex-1 text-[15px] font-bold tracking-tight text-gray-800">JaneClone</span>
-        {onClose && (
-          <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 lg:hidden">
-            <X className="h-5 w-5" />
-          </button>
-        )}
+        <span className="flex-1 text-[15px] font-bold tracking-tight" style={{ color: "var(--text)" }}>
+          JaneClone
+        </span>
+        <div className="flex items-center gap-1">
+          <ThemeToggle />
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors lg:hidden"
+              style={{ color: "var(--text-muted)" }}
+            >
+              <X className="h-5 w-5" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto px-3 pb-3 pt-3">
         {navGroups.map((group) => (
           <div key={group.label} className="mb-5">
-            <p className="mb-1.5 px-2 text-[10px] font-bold uppercase tracking-widest text-gray-300">
+            <p className="mb-1.5 px-2 text-[10px] font-bold uppercase tracking-widest"
+               style={{ color: "var(--text-faint)" }}>
               {group.label}
             </p>
             <div className="space-y-0.5">
@@ -70,14 +82,28 @@ function NavContent({ onClose }: { onClose?: () => void }) {
                 return (
                   <Link key={href} href={href} onClick={onClose}>
                     <div
-                      className={cn(
-                        "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all",
-                        active
-                          ? "bg-sky-50 text-sky-700"
-                          : "text-gray-400 hover:bg-gray-50 hover:text-gray-700"
-                      )}
+                      className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all"
+                      style={{
+                        backgroundColor: active ? "var(--sidebar-active-bg)" : "transparent",
+                        color: active ? "var(--sidebar-active-text)" : "var(--sidebar-text)",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!active) {
+                          (e.currentTarget as HTMLElement).style.backgroundColor = "var(--bg-hover)";
+                          (e.currentTarget as HTMLElement).style.color = "var(--sidebar-text-hover)";
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!active) {
+                          (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
+                          (e.currentTarget as HTMLElement).style.color = "var(--sidebar-text)";
+                        }
+                      }}
                     >
-                      <Icon className={cn("h-4 w-4 shrink-0", active ? "text-sky-500" : "text-gray-300")} />
+                      <Icon
+                        className="h-4 w-4 shrink-0"
+                        style={{ color: active ? "var(--sidebar-icon-active)" : "var(--text-faint)" }}
+                      />
                       {label}
                     </div>
                   </Link>
@@ -92,29 +118,50 @@ function NavContent({ onClose }: { onClose?: () => void }) {
       {slug && (
         <div className="mx-3 mb-3">
           <Link href={`/book/${slug}`} target="_blank" onClick={onClose}>
-            <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 transition-all hover:bg-emerald-100">
+            <div
+              className="flex items-center gap-2 rounded-xl px-3 py-2.5 transition-all"
+              style={{
+                border: "1px solid var(--emerald-muted)",
+                backgroundColor: "var(--emerald-muted)",
+              }}
+            >
               <div className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-              <span className="flex-1 truncate text-xs font-medium text-emerald-700">/book/{slug}</span>
-              <ExternalLink className="h-3 w-3 shrink-0 text-emerald-400" />
+              <span className="flex-1 truncate text-xs font-medium" style={{ color: "var(--emerald-text)" }}>
+                /book/{slug}
+              </span>
+              <ExternalLink className="h-3 w-3 shrink-0" style={{ color: "var(--emerald-text)", opacity: 0.6 }} />
             </div>
           </Link>
         </div>
       )}
 
       {/* User */}
-      <div className="border-t border-gray-100 p-3">
+      <div className="p-3" style={{ borderTop: "1px solid var(--sidebar-border)" }}>
         <div className="flex items-center gap-3 rounded-xl px-2 py-2">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-sky-400 text-xs font-bold text-white shadow-sm">
             {session?.user?.name?.charAt(0)?.toUpperCase() ?? "?"}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-[13px] font-semibold text-gray-700">{session?.user?.name}</p>
-            <p className="truncate text-[11px] text-gray-400">{session?.user?.email}</p>
+            <p className="truncate text-[13px] font-semibold" style={{ color: "var(--text)" }}>
+              {session?.user?.name}
+            </p>
+            <p className="truncate text-[11px]" style={{ color: "var(--text-faint)" }}>
+              {session?.user?.email}
+            </p>
           </div>
         </div>
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-gray-300 transition-all hover:bg-gray-50 hover:text-gray-600"
+          className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all"
+          style={{ color: "var(--text-faint)" }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLElement).style.backgroundColor = "var(--bg-hover)";
+            (e.currentTarget as HTMLElement).style.color = "var(--text-muted)";
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
+            (e.currentTarget as HTMLElement).style.color = "var(--text-faint)";
+          }}
         >
           <LogOut className="h-4 w-4" />
           Cerrar sesión
@@ -129,32 +176,33 @@ export function Sidebar() {
 
   return (
     <>
-      {/* Desktop sidebar */}
-      <aside className="hidden h-screen w-60 shrink-0 flex-col border-r border-gray-100 bg-white lg:flex">
+      {/* Desktop */}
+      <aside className="hidden h-screen w-60 shrink-0 lg:flex lg:flex-col"
+             style={{ borderRight: "1px solid var(--sidebar-border)" }}>
         <NavContent />
       </aside>
 
-      {/* Mobile: hamburger button (shown in mobile header) */}
+      {/* Mobile hamburger */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed left-4 top-4 z-40 flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white shadow-sm lg:hidden"
-        aria-label="Abrir menú"
+        className="fixed left-4 top-4 z-40 flex h-10 w-10 items-center justify-center rounded-xl shadow-sm lg:hidden"
+        style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-muted)" }}
       >
-        <Menu className="h-5 w-5 text-gray-600" />
+        <Menu className="h-5 w-5" />
       </button>
 
-      {/* Mobile: backdrop */}
+      {/* Mobile backdrop */}
       {open && (
         <div
-          className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden"
           onClick={() => setOpen(false)}
         />
       )}
 
-      {/* Mobile: drawer */}
+      {/* Mobile drawer */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-xl transition-transform duration-300 ease-in-out lg:hidden",
+          "fixed inset-y-0 left-0 z-50 w-72 shadow-xl transition-transform duration-300 ease-in-out lg:hidden",
           open ? "translate-x-0" : "-translate-x-full"
         )}
       >

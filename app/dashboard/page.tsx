@@ -59,20 +59,23 @@ export default async function DashboardPage() {
   const todayVsYesterday = todayAppointments.length - yesterdayCount;
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-7 animate-fade-up">
 
       {/* ── Header ─────────────────────────────────────────── */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">
+          <h1 className="text-xl font-bold sm:text-2xl" style={{ color: "var(--text)", letterSpacing: "-0.03em" }}>
             {greeting}, {session!.user.name?.split(" ")[0]} 👋
           </h1>
-          <p className="mt-0.5 capitalize text-sm text-gray-400">
+          <p className="mt-0.5 capitalize text-sm" style={{ color: "var(--text-muted)" }}>
             {format(today, "EEEE d 'de' MMMM", { locale: es })}
           </p>
         </div>
         <Link href="/dashboard/appointments">
-          <button className="hidden items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-600 shadow-sm transition-all hover:bg-gray-50 sm:flex">
+          <button
+            className="hidden items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium shadow-sm transition-all sm:flex"
+            style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-muted)" }}
+          >
             Agenda completa
             <ArrowRight className="h-3.5 w-3.5" />
           </button>
@@ -80,7 +83,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* ── Stat cards — pasteles ───────────────────────────── */}
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+      <div className="stagger-children grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <StatCard
           icon={Calendar}
           label="Turnos hoy"
@@ -156,13 +159,15 @@ export default async function DashboardPage() {
               </Link>
             </div>
           ) : (
-            <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+            <div className="overflow-hidden rounded-2xl shadow-sm stagger-children"
+                 style={{ border: "1px solid var(--border)", backgroundColor: "var(--bg-card)" }}>
               {todayAppointments.map((apt, i) => (
                 <div
                   key={apt.id}
-                  className={`flex items-center gap-4 px-5 py-4 transition-colors hover:bg-gray-50/50 ${
-                    i < todayAppointments.length - 1 ? "border-b border-gray-50" : ""
-                  }`}
+                  className="flex items-center gap-4 px-5 py-4 transition-colors"
+                  style={{
+                    borderBottom: i < todayAppointments.length - 1 ? "1px solid var(--border-subtle)" : "none",
+                  }}
                 >
                   {/* Time */}
                   <div
@@ -271,7 +276,7 @@ function StatCard({
 }) {
   return (
     <div
-      className="relative overflow-hidden rounded-2xl p-3.5 shadow-sm transition-all hover:shadow-md sm:p-5"
+      className="relative overflow-hidden rounded-2xl p-3.5 shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5 sm:p-5"
       style={{ backgroundColor: bg, border: `1px solid ${iconBg}` }}
     >
       <div className="flex items-start justify-between gap-2">

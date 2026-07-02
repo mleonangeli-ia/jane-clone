@@ -1,64 +1,145 @@
 @import "tailwindcss";
 
+/* ── Light theme (default) ─────────────────────────────────── */
 :root {
   --font-inter: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
-  --background: #ffffff;
-  --foreground: #0f172a;
+
+  --bg:           #fafafa;
+  --bg-card:      #ffffff;
+  --bg-subtle:    #f5f5f5;
+  --bg-hover:     #f0f0f0;
+
+  --border:       #e8e8e8;
+  --border-subtle:#f0f0f0;
+
+  --text:         #111111;
+  --text-muted:   #666666;
+  --text-faint:   #aaaaaa;
+
+  --sidebar-bg:   #ffffff;
+  --sidebar-border:#ebebeb;
+  --sidebar-active-bg: #f0f8ff;
+  --sidebar-active-text: #0369a1;
+  --sidebar-icon-active: #38bdf8;
+  --sidebar-text: #6b7280;
+  --sidebar-text-hover: #111111;
+
+  --sky:          #38bdf8;
+  --sky-muted:    #e0f2fe;
+  --sky-text:     #0369a1;
+
+  --emerald:      #34d399;
+  --emerald-muted:#d1fae5;
+  --emerald-text: #065f46;
+}
+
+/* ── Dark theme ─────────────────────────────────────────────── */
+[data-theme="dark"] {
+  --bg:           #0a0a0a;
+  --bg-card:      #141414;
+  --bg-subtle:    #1a1a1a;
+  --bg-hover:     #222222;
+
+  --border:       #2a2a2a;
+  --border-subtle:#1f1f1f;
+
+  --text:         #f5f5f5;
+  --text-muted:   #888888;
+  --text-faint:   #444444;
+
+  --sidebar-bg:   #111111;
+  --sidebar-border:#1f1f1f;
+  --sidebar-active-bg: rgba(56,189,248,0.12);
+  --sidebar-active-text: #7dd3fc;
+  --sidebar-icon-active: #38bdf8;
+  --sidebar-text: #555555;
+  --sidebar-text-hover: #e5e5e5;
+
+  --sky:          #38bdf8;
+  --sky-muted:    rgba(56,189,248,0.12);
+  --sky-text:     #7dd3fc;
+
+  --emerald:      #34d399;
+  --emerald-muted:rgba(52,211,153,0.12);
+  --emerald-text: #6ee7b7;
+}
+
+/* ── Base ────────────────────────────────────────────────────── */
+html {
+  color-scheme: light dark;
 }
 
 body {
   font-family: var(--font-inter);
-  background: var(--background);
-  color: var(--foreground);
+  background-color: var(--bg);
+  color: var(--text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 * { box-sizing: border-box; }
 
-/* Custom scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
+/* ── Scrollbar ───────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
 
-/* Animations */
+/* ── Typography ─────────────────────────────────────────────── */
+h1, h2, h3, h4 {
+  letter-spacing: -0.025em;
+}
+
+/* ── Animations ─────────────────────────────────────────────── */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(16px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.animate-fade-up { animation: fadeUp 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+.animate-fade-up {
+  animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
-.animate-fade-in { animation: fadeIn 0.3s ease forwards; }
 
-@keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to   { opacity: 1; transform: scale(1); }
+/* Staggered entry — apply to children with data-index */
+@keyframes staggerIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-.animate-scale-in { animation: scaleIn 0.2s cubic-bezier(0.16,1,0.3,1) forwards; }
+.stagger-children > * {
+  animation: staggerIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 60ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 120ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 180ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 220ms; }
+.stagger-children > *:nth-child(n+6) { animation-delay: 260ms; }
 
+/* ── Skeleton ───────────────────────────────────────────────── */
 @keyframes shimmer {
   0%   { background-position: -200% 0; }
   100% { background-position:  200% 0; }
 }
 .skeleton {
-  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background: linear-gradient(
+    90deg,
+    var(--bg-subtle) 25%,
+    var(--bg-hover)  50%,
+    var(--bg-subtle) 75%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 8px;
 }
 
-/* Focus ring */
+/* ── Focus ───────────────────────────────────────────────────── */
 :focus-visible {
-  outline: 2px solid #6366f1;
+  outline: 2px solid var(--sky);
   outline-offset: 2px;
 }
 
-/* Selection */
+/* ── Selection ───────────────────────────────────────────────── */
 ::selection {
-  background: #ede9fe;
-  color: #4f46e5;
+  background: var(--sky-muted);
+  color: var(--sky-text);
 }
