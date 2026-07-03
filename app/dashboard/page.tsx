@@ -82,50 +82,12 @@ export default async function DashboardPage() {
         </Link>
       </div>
 
-      {/* ── Stat cards — pasteles ───────────────────────────── */}
+      {/* ── Stat cards ──────────────────────────────────────── */}
       <div className="stagger-children grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-        <StatCard
-          icon={Calendar}
-          label="Turnos hoy"
-          value={todayAppointments.length}
-          sub={`${yesterdayCount} ayer`}
-          delta={todayVsYesterday}
-          bg="#e0f2fe"
-          iconBg="#7dd3fc"
-          iconColor="#0369a1"
-          textColor="#0c4a6e"
-        />
-        <StatCard
-          icon={Users}
-          label="Clientes"
-          value={totalClients}
-          sub={`${totalAppointments} turnos en total`}
-          bg="#dcfce7"
-          iconBg="#86efac"
-          iconColor="#15803d"
-          textColor="#14532d"
-        />
-        <StatCard
-          icon={DollarSign}
-          label="Cobrado hoy"
-          value={formatPrice(todayRevenue)}
-          sub="ingresos del día"
-          bg="#fef3c7"
-          iconBg="#fcd34d"
-          iconColor="#b45309"
-          textColor="#78350f"
-        />
-        <StatCard
-          icon={Clock}
-          label="Pendientes"
-          value={pendingPayments}
-          sub="sin cobrar"
-          bg="#fce7f3"
-          iconBg="#f9a8d4"
-          iconColor="#be185d"
-          textColor="#831843"
-          alert={pendingPayments > 0}
-        />
+        <StatCard icon={Calendar}   label="Turnos hoy"       value={todayAppointments.length}    sub={`${yesterdayCount} ayer`}              delta={todayVsYesterday} accent="#38bdf8" />
+        <StatCard icon={Users}      label="Clientes"         value={totalClients}                 sub={`${totalAppointments} totales`}                                accent="#34d399" />
+        <StatCard icon={DollarSign} label="Cobrado hoy"      value={formatPrice(todayRevenue)}    sub="ingresos del día"                                              accent="#a78bfa" />
+        <StatCard icon={Clock}      label="Pendientes"       value={pendingPayments}              sub="sin cobrar"                            alert={pendingPayments > 0} accent="#fb923c" />
       </div>
 
       {/* ── Content grid ────────────────────────────────────── */}
@@ -261,44 +223,49 @@ export default async function DashboardPage() {
 }
 
 function StatCard({
-  icon: Icon, label, value, sub, bg, iconBg, iconColor, textColor, delta, alert,
+  icon: Icon, label, value, sub, accent, delta, alert,
 }: {
   icon: React.ElementType;
   label: string;
   value: string | number;
   sub: string;
-  bg: string;
-  iconBg: string;
-  iconColor: string;
-  textColor: string;
+  accent: string;
   delta?: number;
   alert?: boolean;
 }) {
   return (
     <div
-      className="relative overflow-hidden rounded-2xl p-3.5 shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5 sm:p-5"
-      style={{ backgroundColor: bg, border: `1px solid ${iconBg}` }}
+      className="relative overflow-hidden rounded-2xl p-3.5 transition-all hover:-translate-y-0.5 hover:shadow-lg sm:p-5"
+      style={{
+        backgroundColor: "var(--bg-card)",
+        border: "1px solid var(--border)",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+      }}
     >
-      <div className="flex items-start justify-between gap-2">
+      {/* Accent top bar */}
+      <div className="absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl" style={{ backgroundColor: accent }} />
+
+      <div className="flex items-start justify-between gap-2 pt-1">
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-bold uppercase tracking-wide sm:text-xs" style={{ color: iconColor, opacity: 0.7 }}>
+          <p className="text-[10px] font-bold uppercase tracking-widest sm:text-xs" style={{ color: "var(--text-faint)" }}>
             {label}
           </p>
-          <p className="mt-1.5 text-2xl font-extrabold tracking-tight sm:text-3xl" style={{ color: textColor }}>
+          <p className="mt-2 text-2xl font-black sm:text-3xl" style={{ color: "var(--text)", letterSpacing: "-0.03em" }}>
             {value}
           </p>
-          <p className="mt-0.5 hidden text-xs sm:block" style={{ color: iconColor, opacity: 0.6 }}>{sub}</p>
+          <p className="mt-0.5 hidden text-xs sm:block" style={{ color: "var(--text-muted)" }}>{sub}</p>
           {delta !== undefined && (
-            <p className={`mt-0.5 hidden text-xs font-semibold sm:block ${delta > 0 ? "text-emerald-600" : delta < 0 ? "text-rose-500" : "text-gray-400"}`}>
+            <p className={`mt-0.5 hidden text-xs font-semibold sm:block ${delta > 0 ? "text-emerald-500" : delta < 0 ? "text-rose-500" : ""}`}
+               style={delta === 0 ? { color: "var(--text-faint)" } : undefined}>
               {delta > 0 ? `+${delta}` : delta} vs ayer
             </p>
           )}
         </div>
         <div
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl sm:h-11 sm:w-11 sm:rounded-2xl"
-          style={{ backgroundColor: iconBg }}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl sm:h-10 sm:w-10"
+          style={{ backgroundColor: `${accent}18` }}
         >
-          <Icon className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: iconColor }} />
+          <Icon className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: accent }} />
         </div>
       </div>
     </div>
