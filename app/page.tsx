@@ -83,7 +83,7 @@ export default function LandingPage() {
               <h1 className="text-5xl font-black leading-[1.05] tracking-tight text-white sm:text-6xl lg:text-7xl">
                 Tu agenda online,
                 <br />
-                <span className="text-indigo-400">sin complicaciones</span>
+                <span className="text-emerald-400">sin complicaciones</span>
               </h1>
 
               <p className="mt-6 max-w-lg text-lg leading-relaxed text-white/75">
@@ -92,7 +92,7 @@ export default function LandingPage() {
 
               <div className="mt-10 flex flex-col gap-3 sm:flex-row">
                 <Link href="/register">
-                  <button className="flex h-13 items-center gap-2 rounded-xl bg-indigo-600 px-8 py-3.5 text-base font-bold text-white shadow-xl shadow-indigo-900/40 transition-all hover:-translate-y-0.5 hover:bg-indigo-500 hover:shadow-2xl">
+                  <button className="flex h-13 items-center gap-2 rounded-xl bg-gray-900 px-8 py-3.5 text-base font-bold text-white shadow-xl shadow-gray-900/40 transition-all hover:-translate-y-0.5 hover:bg-gray-800 hover:shadow-2xl">
                     Crear cuenta gratis
                     <ArrowRight className="h-5 w-5" />
                   </button>
@@ -137,7 +137,7 @@ export default function LandingPage() {
         <section id="features" className="bg-gray-950 py-28">
           <div className="mx-auto max-w-6xl px-6">
             <div className="mb-16 text-center">
-              <p className="mb-3 text-sm font-bold uppercase tracking-widest text-indigo-400">Funcionalidades</p>
+              <p className="mb-3 text-sm font-bold uppercase tracking-widest text-emerald-400">Funcionalidades</p>
               <h2 className="text-3xl font-black tracking-tight text-white sm:text-4xl" style={{ letterSpacing: "-0.03em" }}>
                 Todo lo que necesitás en un solo lugar
               </h2>
@@ -150,15 +150,15 @@ export default function LandingPage() {
               {features.map(({ icon: Icon, title, desc }, i) => (
                 <div
                   key={title}
-                  className="group relative overflow-hidden rounded-2xl border border-white/5 bg-white/5 p-6 transition-all duration-300 hover:border-indigo-500/30 hover:bg-white/8 hover:-translate-y-1"
+                  className="group relative overflow-hidden rounded-2xl border border-white/5 bg-white/5 p-6 transition-all duration-300 hover:border-emerald-500/30 hover:bg-white/8 hover:-translate-y-1"
                   style={{ animationDelay: `${i * 60}ms` }}
                 >
-                  <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-600/10">
-                    <Icon className="h-5 w-5 text-indigo-400" />
+                  <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gray-900/10">
+                    <Icon className="h-5 w-5 text-emerald-400" />
                   </div>
                   <h3 className="mb-2 font-bold text-white" style={{ letterSpacing: "-0.02em" }}>{title}</h3>
                   <p className="text-sm leading-relaxed text-gray-400">{desc}</p>
-                  <div className="absolute bottom-0 left-0 h-px w-0 bg-indigo-600 transition-all duration-500 group-hover:w-full" />
+                  <div className="absolute bottom-0 left-0 h-px w-0 bg-gray-900 transition-all duration-500 group-hover:w-full" />
                 </div>
               ))}
             </div>
@@ -169,7 +169,7 @@ export default function LandingPage() {
         <section id="testimonials" className="bg-gray-950 pb-28">
           <div className="mx-auto max-w-6xl px-6">
             <div className="mb-12 text-center">
-              <p className="mb-3 text-sm font-bold uppercase tracking-widest text-indigo-400">Testimonios</p>
+              <p className="mb-3 text-sm font-bold uppercase tracking-widest text-emerald-400">Testimonios</p>
               <h2 className="text-3xl font-black tracking-tight text-white sm:text-4xl" style={{ letterSpacing: "-0.03em" }}>
                 Profesionales que ya lo usan
               </h2>
@@ -179,7 +179,7 @@ export default function LandingPage() {
                 <div key={t.name} className="rounded-2xl border border-white/5 bg-white/5 p-6">
                   <p className="text-sm leading-relaxed text-gray-300">"{t.quote}"</p>
                   <div className="mt-5 flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-600/20 text-sm font-bold text-indigo-400">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-900/20 text-sm font-bold text-emerald-400">
                       {t.initials}
                     </div>
                     <div>
@@ -230,7 +230,7 @@ export default function LandingPage() {
       <footer className="border-t border-gray-100 bg-white py-8">
         <div className="mx-auto max-w-6xl px-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
           <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-600">
+            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gray-900">
               <Calendar className="h-3 w-3 text-white" />
             </div>
             <span className="text-sm font-bold text-gray-800">JaneClone</span>

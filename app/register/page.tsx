@@ -42,7 +42,7 @@ export default function RegisterPage() {
   return (
     <div className="flex min-h-screen">
       {/* Left */}
-      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between bg-gradient-to-br from-violet-600 via-indigo-700 to-indigo-800 p-12 text-white">
+      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between bg-gradient-to-br from-slate-800 via-gray-900 to-gray-950 p-12 text-white">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20">
             <Calendar className="h-5 w-5 text-white" />
@@ -55,21 +55,21 @@ export default function RegisterPage() {
           </h2>
           <ul className="space-y-3">
             {perks.map((p) => (
-              <li key={p} className="flex items-center gap-3 text-indigo-200">
+              <li key={p} className="flex items-center gap-3 text-gray-300">
                 <CheckCircle className="h-5 w-5 shrink-0 text-emerald-400" />
                 <span>{p}</span>
               </li>
             ))}
           </ul>
         </div>
-        <p className="text-sm text-indigo-300">Gratis para siempre en el plan básico</p>
+        <p className="text-sm text-gray-400">Gratis para siempre en el plan básico</p>
       </div>
 
       {/* Right */}
       <div className="flex flex-1 flex-col items-center justify-center bg-gray-50 px-6 py-12">
         <div className="w-full max-w-sm">
           <div className="mb-8 flex items-center justify-center gap-2 lg:hidden">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600">
               <Calendar className="h-4 w-4 text-white" />
             </div>
             <span className="text-lg font-bold text-gray-900">JaneClone</span>
@@ -99,7 +99,7 @@ export default function RegisterPage() {
               )}
               <Button
                 type="submit"
-                className="h-11 w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 shadow-md"
+                className="h-11 w-full bg-gradient-to-r from-gray-900 to-gray-800 hover:from-gray-800 hover:to-gray-700 shadow-md"
                 disabled={loading}
               >
                 {loading ? "Creando cuenta..." : "Crear cuenta gratis"}
@@ -109,7 +109,7 @@ export default function RegisterPage() {
 
           <p className="mt-6 text-center text-sm text-gray-500">
             ¿Ya tenés cuenta?{" "}
-            <Link href="/login" className="font-semibold text-indigo-600 hover:underline">
+            <Link href="/login" className="font-semibold text-emerald-600 hover:underline">
               Iniciar sesión
             </Link>
           </p>

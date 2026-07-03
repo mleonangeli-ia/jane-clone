@@ -140,7 +140,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen">
       {/* ── Left panel ─────────────────────────────────────── */}
-      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-800 p-12 text-white">
+      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between bg-gradient-to-br from-gray-900 via-gray-900 to-slate-800 p-12 text-white">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20">
             <Calendar className="h-5 w-5 text-white" />
@@ -148,12 +148,12 @@ export default function LoginPage() {
           <span className="text-xl font-bold">JaneClone</span>
         </div>
         <div>
-          <blockquote className="text-2xl font-light leading-relaxed text-indigo-100">
+          <blockquote className="text-2xl font-light leading-relaxed text-gray-100">
             "Desde que uso JaneClone mis pacientes reservan solos y yo me concentro en atender."
           </blockquote>
-          <p className="mt-4 text-sm text-indigo-300">Lic. Florencia Lucchini — Psicóloga</p>
+          <p className="mt-4 text-sm text-gray-400">Lic. Florencia Lucchini — Psicóloga</p>
         </div>
-        <div className="flex gap-8 text-indigo-200">
+        <div className="flex gap-8 text-gray-300">
           <div><p className="text-3xl font-bold text-white">500+</p><p className="text-sm">Profesionales</p></div>
           <div><p className="text-3xl font-bold text-white">50k+</p><p className="text-sm">Turnos gestionados</p></div>
         </div>
@@ -165,7 +165,7 @@ export default function LoginPage() {
 
           {/* Mobile logo */}
           <div className="mb-8 flex items-center justify-center gap-2 lg:hidden">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600">
               <Calendar className="h-4 w-4 text-white" />
             </div>
             <span className="text-lg font-bold text-gray-900">JaneClone</span>
@@ -235,8 +235,8 @@ export default function LoginPage() {
                 {/* ── CAPTCHA widget ──────────────────────── */}
                 {showCaptcha && (
                   <div className="space-y-3">
-                    <div className="rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-3">
-                      <p className="text-xs font-medium text-indigo-700">
+                    <div className="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3">
+                      <p className="text-xs font-medium text-emerald-700">
                         Demasiados intentos. Confirmá que sos humano para continuar.
                       </p>
                     </div>
@@ -255,7 +255,7 @@ export default function LoginPage() {
                   <Button
                     type="button"
                     onClick={handleCaptchaRetry}
-                    className="h-11 w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 shadow-md"
+                    className="h-11 w-full bg-gradient-to-r from-gray-900 to-gray-800 hover:from-gray-800 hover:to-gray-700 shadow-md"
                     disabled={loading || !captchaReady}
                   >
                     {loading ? "Verificando..." : "Intentar de nuevo"}
@@ -263,7 +263,7 @@ export default function LoginPage() {
                 ) : (
                   <Button
                     type="submit"
-                    className="h-11 w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 shadow-md"
+                    className="h-11 w-full bg-gradient-to-r from-gray-900 to-gray-800 hover:from-gray-800 hover:to-gray-700 shadow-md"
                     disabled={loading}
                   >
                     {loading ? "Ingresando..." : "Iniciar sesión"}
@@ -275,7 +275,7 @@ export default function LoginPage() {
 
           <p className="mt-6 text-center text-sm text-gray-500">
             ¿No tenés cuenta?{" "}
-            <Link href="/register" className="font-semibold text-indigo-600 hover:underline">
+            <Link href="/register" className="font-semibold text-emerald-600 hover:underline">
               Registrate gratis
             </Link>
           </p>

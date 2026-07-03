@@ -97,25 +97,25 @@ export default async function DashboardPage() {
         <div className="lg:col-span-2">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="flex items-center gap-2 font-semibold text-gray-800">
-              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-100">
-                <Calendar className="h-3.5 w-3.5 text-indigo-500" />
+              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-50">
+                <Calendar className="h-3.5 w-3.5 text-emerald-500" />
               </span>
               Agenda de hoy
-              <span className="ml-1 rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-semibold text-indigo-600">
+              <span className="ml-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-600">
                 {todayAppointments.length}
               </span>
             </h2>
           </div>
 
           {todayAppointments.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-indigo-100 bg-indigo-50/30 py-16 text-center">
-              <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50">
-                <Calendar className="h-7 w-7 text-indigo-300" />
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-gray-50 py-16 text-center">
+              <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100">
+                <Calendar className="h-7 w-7 text-gray-300" />
               </div>
               <p className="font-semibold text-gray-400">Sin turnos hoy</p>
               <p className="mt-1 text-sm text-gray-300">Los nuevos turnos aparecerán acá</p>
               <Link href={`/book/${session!.user.slug}`} target="_blank" className="mt-5">
-                <button className="rounded-xl border border-indigo-200 bg-white px-4 py-2 text-sm font-medium text-indigo-500 transition-colors hover:bg-indigo-50">
+                <button className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100">
                   Compartir link de reservas
                 </button>
               </Link>
@@ -172,8 +172,8 @@ export default async function DashboardPage() {
           {/* Próximos */}
           <div>
             <h2 className="mb-4 flex items-center gap-2 font-semibold text-gray-800">
-              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-violet-100">
-                <TrendingUp className="h-3.5 w-3.5 text-violet-500" />
+              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-50">
+                <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
               </span>
               Próximos turnos
             </h2>
