@@ -109,8 +109,8 @@ export default async function DashboardPage() {
 
           {todayAppointments.length === 0 ? (
             <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-indigo-100 bg-indigo-50/30 py-16 text-center">
-              <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-50">
-                <Calendar className="h-7 w-7 text-sky-300" />
+              <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50">
+                <Calendar className="h-7 w-7 text-indigo-300" />
               </div>
               <p className="font-semibold text-gray-400">Sin turnos hoy</p>
               <p className="mt-1 text-sm text-gray-300">Los nuevos turnos aparecerán acá</p>
