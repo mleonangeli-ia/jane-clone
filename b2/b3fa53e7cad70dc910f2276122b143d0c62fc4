@@ -1,0 +1,25 @@
+app/page.tsx
+  s_b7d33d458833f1::t_de608ed6826b4e 86,95,140,153,156-157,161,172,182,233
+app/dashboard/page.tsx
+  s_b7d33d458833f1::t_de608ed6826b4e 112-113
+app/globals.css
+  s_b7d33d458833f1::t_de608ed6826b4e 21-23,54
+components/layout/Sidebar.tsx
+  s_b7d33d458833f1::t_2cca2da38fe6d3 52,142
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "b2b3fa53e7cad70dc910f2276122b143d0c62fc4",
+  "prompts": {},
+  "sessions": {
+    "s_b7d33d458833f1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1e396cc2-b540-49f1-b87b-a96982e27c87",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Matias Leonangeli <matias.leonangeli@mercadolibre.com>"
+    }
+  }
+}
