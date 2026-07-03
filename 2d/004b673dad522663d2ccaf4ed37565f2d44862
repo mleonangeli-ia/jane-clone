@@ -1,0 +1,37 @@
+prisma/schema.prisma
+  s_b7d33d458833f1::t_87b7b364c08565 94
+  s_b7d33d458833f1::t_58e824a5aceed0 121
+  s_b7d33d458833f1::t_8a40796c3bccf9 23-28,41
+  s_b7d33d458833f1::t_929c906871b365 267-314
+components/invoices/InvoiceCreateButton.tsx
+  s_b7d33d458833f1::t_69d004626930f0 1-33
+app/api/invoices/route.ts
+  s_b7d33d458833f1::t_d69c01b07786d2 1-89
+app/api/invoices/[id]/route.ts
+  s_b7d33d458833f1::t_739db91f020e5f 1-51
+components/layout/Sidebar.tsx
+  s_b7d33d458833f1::t_b552c40070abc4 9
+  s_b7d33d458833f1::t_16263673628760 35-37
+components/invoices/InvoiceStatusButton.tsx
+  s_b7d33d458833f1::t_340a5dcbb49af7 1-32
+app/dashboard/invoices/[id]/print/page.tsx
+  s_b7d33d458833f1::t_cb00557048a067 1-160
+app/dashboard/invoices/page.tsx
+  s_b7d33d458833f1::t_698942f62c491a 1-210
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "2d004b673dad522663d2ccaf4ed37565f2d44862",
+  "prompts": {},
+  "sessions": {
+    "s_b7d33d458833f1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1e396cc2-b540-49f1-b87b-a96982e27c87",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Matias Leonangeli <matias.leonangeli@mercadolibre.com>"
+    }
+  }
+}
