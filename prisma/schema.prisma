@@ -20,6 +20,12 @@ model Tenant {
   logoUrl           String?
   accentColor       String   @default("#4F46E5")
   cancelWindowHours Int      @default(2)
+
+  // Datos de facturación
+  taxId             String?  // CUIT / CUIL
+  taxCondition      String?  // Monotributista, Responsable Inscripto, etc.
+  invoiceCounter    Int      @default(0)
+
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
@@ -32,6 +38,7 @@ model Tenant {
   intakeForms        IntakeForm[]
   waitlistEntries    WaitlistEntry[]
   passwordResetTokens PasswordResetToken[]
+  invoices           Invoice[]
 
   @@map("tenants")
 }
@@ -84,6 +91,7 @@ model Client {
   tenant             Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   appointments       Appointment[]
   patientMagicTokens PatientMagicToken[]
+  invoices           Invoice[]
 
   @@unique([tenantId, email])
   @@map("clients")
@@ -110,6 +118,7 @@ model Appointment {
   client         Client        @relation(fields: [clientId], references: [id])
   payment        Payment?
   intakeResponse FormResponse?
+  invoice        Invoice?
 
   @@map("appointments")
 }
@@ -254,4 +263,52 @@ model PasswordResetToken {
 
   @@index([tenantId])
   @@map("password_reset_tokens")
+}
+
+model Invoice {
+  id            String        @id @default(cuid())
+  tenantId      String
+  appointmentId String?       @unique
+  clientId      String
+
+  number        Int           // correlativo por tenant
+  status        InvoiceStatus @default(ISSUED)
+
+  // Snapshot del emisor al momento de emitir
+  issuerName    String
+  issuerTaxId   String?
+  issuerAddress String?
+  issuerEmail   String
+
+  // Snapshot del receptor
+  recipientName  String
+  recipientEmail String
+
+  // Concepto y montos (en centavos)
+  description   String
+  amount        Int
+  taxRate       Int           @default(0)
+  taxAmount     Int           @default(0)
+  total         Int
+
+  currency      String        @default("ARS")
+  notes         String?
+  issuedAt      DateTime      @default(now())
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  appointment Appointment? @relation(fields: [appointmentId], references: [id])
+  client      Client       @relation(fields: [clientId], references: [id])
+
+  @@unique([tenantId, number])
+  @@index([tenantId])
+  @@map("invoices")
+}
+
+enum InvoiceStatus {
+  ISSUED
+  PAID
+  CANCELLED
 }
