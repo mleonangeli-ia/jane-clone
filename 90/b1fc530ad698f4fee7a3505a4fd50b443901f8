@@ -1,0 +1,39 @@
+prisma/schema.prisma
+  s_b7d33d458833f1::t_4f0aee39376eb0 334
+app/invoice/[id]/page.tsx
+  s_b7d33d458833f1::t_015576bc5b0c46 32-42
+app/api/invoices/[id]/release/route.ts
+  s_b7d33d458833f1::t_1132180c5e14bd 1-25,27-113
+  s_b7d33d458833f1::t_f5b9c811e5a789 26
+components/invoices/InvoiceEditForm.tsx
+  s_b7d33d458833f1::t_0441b113d0bcb4 1-241
+app/api/invoices/route.ts
+  s_b7d33d458833f1::t_95b871a9aaf2f1 94-96,98
+  s_b7d33d458833f1::t_9013c0aa1f0dec 77
+app/api/invoices/[id]/route.ts
+  s_b7d33d458833f1::t_9ba73b4321b0a8 18,29-62,76
+app/dashboard/invoices/[id]/page.tsx
+  s_b7d33d458833f1::t_11f5dab59c135b 1-70
+components/invoices/AppointmentInvoiceButton.tsx
+  s_b7d33d458833f1::t_81de01213ec923 70-74
+app/dashboard/invoices/page.tsx
+  s_b7d33d458833f1::t_d1b6587dc948ef 183-204
+  s_b7d33d458833f1::t_cf1ef7ef1b5661 219
+  s_b7d33d458833f1::t_1c01c0b25e57bb 206
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "90b1fc530ad698f4fee7a3505a4fd50b443901f8",
+  "prompts": {},
+  "sessions": {
+    "s_b7d33d458833f1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1e396cc2-b540-49f1-b87b-a96982e27c87",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Matias Leonangeli <matias.leonangeli@mercadolibre.com>"
+    }
+  }
+}
