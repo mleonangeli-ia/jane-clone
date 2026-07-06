@@ -1,0 +1,33 @@
+app/book/[slug]/reschedule/page.tsx
+  s_b7d33d458833f1::t_10c87ea58d5855 1-174
+app/patient/portal/page.tsx
+  s_b7d33d458833f1::t_350c4db121099f 142,144
+  s_b7d33d458833f1::t_fc14bce1357420 209-232
+  s_b7d33d458833f1::t_9310dcae00cae8 20-23
+  s_b7d33d458833f1::t_bc0cb5155ea005 5-6,8
+lib/emails/client-confirmation.ts
+  s_b7d33d458833f1::t_06b0a1b1dea0a3 15
+  s_b7d33d458833f1::t_92a0ca2e82ed7c 125-129
+app/api/appointments/reschedule/route.ts
+  s_b7d33d458833f1::t_8b80ed10a9b42c 1-142
+lib/emails/send-booking-emails.ts
+  s_b7d33d458833f1::t_e99fc51954eb47 30-31,44
+components/booking/RescheduleCalendar.tsx
+  s_b7d33d458833f1::t_7d50429d1859b5 1-230
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "19c0e012cbd59e3ac0d793095114d2900c83c80d",
+  "prompts": {},
+  "sessions": {
+    "s_b7d33d458833f1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1e396cc2-b540-49f1-b87b-a96982e27c87",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Matias Leonangeli <matias.leonangeli@mercadolibre.com>"
+    }
+  }
+}
