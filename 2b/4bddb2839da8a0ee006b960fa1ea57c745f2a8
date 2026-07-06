@@ -1,0 +1,30 @@
+app/dashboard/appointments/page.tsx
+  s_b7d33d458833f1::t_c558a97823a0f1 116-122
+  s_b7d33d458833f1::t_e47e3ae01e3a69 40
+  s_b7d33d458833f1::t_ada7d61ba017d3 10
+app/api/invoices/route.ts
+  s_b7d33d458833f1::t_3989f6d15fc289 5-9
+  s_b7d33d458833f1::t_5843586d5a47d3 93-182
+lib/invoice-token.ts
+  s_b7d33d458833f1::t_1718bd0c033cc6 1-17
+components/invoices/AppointmentInvoiceButton.tsx
+  s_b7d33d458833f1::t_b88996a65b63ba 1-93
+app/invoice/[id]/page.tsx
+  s_b7d33d458833f1::t_7a74a1e10531be 1-192
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "2b4bddb2839da8a0ee006b960fa1ea57c745f2a8",
+  "prompts": {},
+  "sessions": {
+    "s_b7d33d458833f1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1e396cc2-b540-49f1-b87b-a96982e27c87",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Matias Leonangeli <matias.leonangeli@mercadolibre.com>"
+    }
+  }
+}
