@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { resend, FROM_EMAIL } from "@/lib/resend";
+import { generateInvoiceToken } from "@/lib/invoice-token";
+import { formatPrice } from "@/lib/utils";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 // GET — list all invoices for this tenant
 export async function GET(req: NextRequest) {
@@ -85,5 +90,94 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  return NextResponse.json(newInvoice, { status: 201 });
+  // Send invoice email to patient
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const token  = generateInvoiceToken(newInvoice.id, newInvoice.createdAt);
+  const invoiceUrl = `${appUrl}/invoice/${newInvoice.id}?token=${token}`;
+
+  resend.emails.send({
+    from: FROM_EMAIL,
+    to: appointment.client.email,
+    subject: `Tu comprobante N°${String(invoiceNumber).padStart(4,"0")} — ${appointment.tenant.name}`,
+    html: invoiceEmailHtml({
+      clientName:   appointment.client.name,
+      tenantName:   appointment.tenant.name,
+      serviceName:  appointment.service.name,
+      fecha:        format(appointment.startTime, "d 'de' MMMM 'de' yyyy", { locale: es }),
+      total:        formatPrice(total),
+      invoiceNum:   String(invoiceNumber).padStart(4, "0"),
+      invoiceUrl,
+    }),
+  }).catch(console.error);
+
+  return NextResponse.json({ ...newInvoice, invoiceUrl }, { status: 201 });
+}
+
+function invoiceEmailHtml(p: {
+  clientName: string; tenantName: string; serviceName: string;
+  fecha: string; total: string; invoiceNum: string; invoiceUrl: string;
+}) {
+  return `<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f9f8f3;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 0;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;border:1px solid #e5e0d8;overflow:hidden;max-width:560px;">
+        <tr>
+          <td style="background:linear-gradient(135deg,#5a7e6a,#3d6452);padding:32px 40px;text-align:center;">
+            <p style="margin:0;color:#a8d4b8;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;">Comprobante N°${p.invoiceNum}</p>
+            <h1 style="margin:8px 0 0;color:#ffffff;font-size:22px;font-weight:800;">Tu comprobante está listo</h1>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:40px;">
+            <p style="margin:0 0 16px;color:#3a3028;font-size:16px;">Hola <strong>${p.clientName}</strong>,</p>
+            <p style="margin:0 0 28px;color:#7a7068;font-size:15px;line-height:1.6;">
+              ${p.tenantName} emitió tu comprobante por la atención del <strong>${p.fecha}</strong>.
+            </p>
+
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f1ea;border-radius:12px;margin-bottom:28px;">
+              <tr>
+                <td style="padding:20px 24px;">
+                  <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="padding:6px 0;border-bottom:1px solid #e5e0d8;">
+                        <span style="color:#7a7068;font-size:13px;">Servicio</span>
+                        <span style="float:right;color:#1a1814;font-weight:600;font-size:14px;">${p.serviceName}</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:6px 0;">
+                        <span style="color:#7a7068;font-size:13px;">Total</span>
+                        <span style="float:right;color:#5a7e6a;font-weight:800;font-size:16px;">${p.total}</span>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <div style="text-align:center;margin-bottom:24px;">
+              <a href="${p.invoiceUrl}"
+                 style="display:inline-block;background:#5a7e6a;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;padding:14px 32px;border-radius:12px;">
+                Ver y descargar comprobante
+              </a>
+            </div>
+
+            <p style="margin:0;color:#b8b0a4;font-size:12px;text-align:center;">
+              El link es válido permanentemente. Podés guardar o imprimir el comprobante desde la página.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#f5f1ea;border-top:1px solid #e5e0d8;padding:16px 40px;text-align:center;">
+            <p style="margin:0;color:#b8b0a4;font-size:11px;">JaneClone · Plataforma de turnos</p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
 }

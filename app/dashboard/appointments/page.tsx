@@ -7,6 +7,7 @@ import { formatPrice } from "@/lib/utils";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { AppointmentActions } from "@/components/appointments/AppointmentActions";
+import { AppointmentInvoiceButton } from "@/components/invoices/AppointmentInvoiceButton";
 import { Suspense } from "react";
 import { AppointmentsFilters } from "@/components/appointments/AppointmentsFilters";
 import Link from "next/link";
@@ -36,7 +37,7 @@ export default async function AppointmentsPage({
   const [rawAppointments, services] = await Promise.all([
     prisma.appointment.findMany({
       where,
-      include: { client: true, service: true },
+      include: { client: true, service: true, invoice: { select: { id: true } } },
       orderBy: { startTime: "desc" },
       skip,
       take: PAGE_SIZE + 1,
@@ -112,6 +113,13 @@ export default async function AppointmentsPage({
                         <PaymentBadge status={apt.paymentStatus} />
                         <StatusBadge status={apt.status} />
                       </div>
+                      {apt.status === "COMPLETED" || apt.paymentStatus === "PAID" ? (
+                        <AppointmentInvoiceButton
+                          appointmentId={apt.id}
+                          servicePrice={apt.service.price}
+                          existingInvoiceId={apt.invoice?.id}
+                        />
+                      ) : null}
                       <AppointmentActions
                         appointmentId={apt.id}
                         currentStatus={apt.status}
