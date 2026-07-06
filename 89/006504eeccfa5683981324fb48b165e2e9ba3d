@@ -1,0 +1,46 @@
+lib/afip/crypto.ts
+  s_b7d33d458833f1::t_e07cfb078bf06d 1-48
+app/api/afip/config/route.ts
+  s_b7d33d458833f1::t_f485c2bf1efd1a 1-36
+app/api/afip/authorize/route.ts
+  s_b7d33d458833f1::t_40a46e7c5ce7bc 1-106
+app/dashboard/settings/afip/page.tsx
+  s_b7d33d458833f1::t_2bc5b788ac01b6 1-127
+lib/afip/wsfe.ts
+  s_b7d33d458833f1::t_83b4ed096e9130 1-175
+components/afip/AfipConfigForm.tsx
+  s_b7d33d458833f1::t_fc7eb007ccba0b 1-195
+app/dashboard/invoices/[id]/print/page.tsx
+  s_b7d33d458833f1::t_fcb1811e32552c 140-171
+prisma/schema.prisma
+  s_b7d33d458833f1::t_3bf40f5bce17bd 32-39
+  s_b7d33d458833f1::t_e168f51ba5645b 313-320
+components/afip/AfipAuthorizeButton.tsx
+  s_b7d33d458833f1::t_f2486523fea9f0 1-57
+app/api/afip/status/route.ts
+  s_b7d33d458833f1::t_c161adbc0c8129 1-28
+app/dashboard/invoices/page.tsx
+  s_b7d33d458833f1::t_202400bd58cc69 11
+  s_b7d33d458833f1::t_f15a316a16d3d1 193
+lib/afip/wsaa.ts
+  s_b7d33d458833f1::t_e2bc4d3d1259d4 1-2,5-11,13-15,22-23,28,31-32,34-39,161,214,222,228-241,243-246,248-252,254-256,258,260-261,263-265,267-268,270-272
+  s_b7d33d458833f1::t_0033b157a966ff 3-4,12,16-21,24-27,29-30,33,40-160,162-213,215-221,223-227,242,247,253,257,259,262,266,269
+components/settings/SettingsForm.tsx
+  s_b7d33d458833f1::t_718c6ae048a400 159-171
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "89006504eeccfa5683981324fb48b165e2e9ba3d",
+  "prompts": {},
+  "sessions": {
+    "s_b7d33d458833f1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1e396cc2-b540-49f1-b87b-a96982e27c87",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Matias Leonangeli <matias.leonangeli@mercadolibre.com>"
+    }
+  }
+}
