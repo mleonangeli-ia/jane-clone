@@ -1,0 +1,56 @@
+app/api/staff/[id]/route.ts
+  s_b7d33d458833f1::t_aaa779e205f1c1 1-52
+components/staff/StaffForm.tsx
+  s_b7d33d458833f1::t_fd655e29059e8f 1-110
+app/book/[slug]/team/[staffSlug]/page.tsx
+  s_b7d33d458833f1::t_849c320d759b32 1-151
+app/book/[slug]/page.tsx
+  s_b7d33d458833f1::t_c25491afbb09fe 25-28
+  s_b7d33d458833f1::t_44dc5a03da0be2 93-131,135-139
+app/dashboard/staff/page.tsx
+  s_b7d33d458833f1::t_4c19c8c43983f7 1-93
+components/staff/StaffCard.tsx
+  s_b7d33d458833f1::t_745ac39610a8fa 1-134
+app/api/slots/route.ts
+  s_b7d33d458833f1::t_293f4b458a6074 29-30,39,41-43,48
+components/booking/BookingForm.tsx
+  s_b7d33d458833f1::t_1e25b1a0fdf1fc 22
+  s_b7d33d458833f1::t_b8fc8a624b1943 26
+  s_b7d33d458833f1::t_0700a8765cc23f 52,58
+app/book/[slug]/team/[staffSlug]/[serviceId]/page.tsx
+  s_b7d33d458833f1::t_b44ac52c421da7 1-117
+components/layout/Sidebar.tsx
+  s_b7d33d458833f1::t_70c5e06505288e 9,37
+app/api/staff/route.ts
+  s_b7d33d458833f1::t_e9a69607e347d2 1-61
+components/booking/BookingCalendar.tsx
+  s_b7d33d458833f1::t_b10377ec82dd2f 22,25
+  s_b7d33d458833f1::t_3bd865ed4308f2 44-45
+  s_b7d33d458833f1::t_0248ecad1dd91f 60
+prisma/schema.prisma
+  s_b7d33d458833f1::t_ccdabb2137d385 37-42,44-45
+  s_b7d33d458833f1::t_9a8dccd91993de 120-121,129
+  s_b7d33d458833f1::t_7ca336d6a97125 24-26
+  s_b7d33d458833f1::t_15d0bbe0120252 322-356
+app/api/appointments/route.ts
+  s_b7d33d458833f1::t_1502af2b42cc8b 16
+  s_b7d33d458833f1::t_c06887be13038a 85
+app/api/staff/[id]/availability/route.ts
+  s_b7d33d458833f1::t_88e0ef4b7528a0 1-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "4ecbf0b9bcd8228c33b85c698b8586f272bd4264",
+  "prompts": {},
+  "sessions": {
+    "s_b7d33d458833f1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1e396cc2-b540-49f1-b87b-a96982e27c87",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Matias Leonangeli <matias.leonangeli@mercadolibre.com>"
+    }
+  }
+}
