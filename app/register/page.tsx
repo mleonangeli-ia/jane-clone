@@ -42,7 +42,7 @@ export default function RegisterPage() {
   return (
     <div className="flex min-h-screen">
       {/* Left */}
-      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between bg-gradient-to-br from-slate-800 via-gray-900 to-gray-950 p-12 text-white">
+      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between bg-gradient-to-br from-[#1c1a14] via-[#1e1c16] to-[#242018] p-12 text-white">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20">
             <Calendar className="h-5 w-5 text-white" />
@@ -99,7 +99,7 @@ export default function RegisterPage() {
               )}
               <Button
                 type="submit"
-                className="h-11 w-full bg-gradient-to-r from-gray-900 to-gray-800 hover:from-gray-800 hover:to-gray-700 shadow-md"
+                className="h-11 w-full bg-gradient-to-r from-[#5a7e6a] to-[#3d6452] hover:from-[#4a6e5a] hover:to-[#2d5442] shadow-md"
                 disabled={loading}
               >
                 {loading ? "Creando cuenta..." : "Crear cuenta gratis"}

@@ -47,7 +47,7 @@ export default function LandingPage() {
               </button>
             </Link>
             <Link href="/register">
-              <button className="rounded-xl bg-white px-4 py-2 text-sm font-bold text-gray-900 shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl">
+              <button className="rounded-xl bg-white px-4 py-2 text-sm font-bold text-[#1a1814] shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl">
                 Empezar gratis
               </button>
             </Link>
@@ -92,7 +92,7 @@ export default function LandingPage() {
 
               <div className="mt-10 flex flex-col gap-3 sm:flex-row">
                 <Link href="/register">
-                  <button className="flex h-13 items-center gap-2 rounded-xl bg-gray-900 px-8 py-3.5 text-base font-bold text-white shadow-xl shadow-gray-900/40 transition-all hover:-translate-y-0.5 hover:bg-gray-800 hover:shadow-2xl">
+                  <button className="flex h-13 items-center gap-2 rounded-xl bg-[#5a7e6a] px-8 py-3.5 text-base font-bold text-white shadow-xl shadow-[#5a7e6a]/40 transition-all hover:-translate-y-0.5 hover:bg-[#4a6e5a] hover:shadow-2xl">
                     Crear cuenta gratis
                     <ArrowRight className="h-5 w-5" />
                   </button>
@@ -134,7 +134,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── Features ─────────────────────────────────────────── */}
-        <section id="features" className="bg-gray-950 py-28">
+        <section id="features" className="bg-[#1c1a14] py-28">
           <div className="mx-auto max-w-6xl px-6">
             <div className="mb-16 text-center">
               <p className="mb-3 text-sm font-bold uppercase tracking-widest text-emerald-400">Funcionalidades</p>
@@ -153,12 +153,12 @@ export default function LandingPage() {
                   className="group relative overflow-hidden rounded-2xl border border-white/5 bg-white/5 p-6 transition-all duration-300 hover:border-emerald-500/30 hover:bg-white/8 hover:-translate-y-1"
                   style={{ animationDelay: `${i * 60}ms` }}
                 >
-                  <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gray-900/10">
+                  <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-[#5a7e6a]/10">
                     <Icon className="h-5 w-5 text-emerald-400" />
                   </div>
                   <h3 className="mb-2 font-bold text-white" style={{ letterSpacing: "-0.02em" }}>{title}</h3>
                   <p className="text-sm leading-relaxed text-gray-400">{desc}</p>
-                  <div className="absolute bottom-0 left-0 h-px w-0 bg-gray-900 transition-all duration-500 group-hover:w-full" />
+                  <div className="absolute bottom-0 left-0 h-px w-0 bg-[#5a7e6a] transition-all duration-500 group-hover:w-full" />
                 </div>
               ))}
             </div>
@@ -166,7 +166,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── Testimonials ─────────────────────────────────────── */}
-        <section id="testimonials" className="bg-gray-950 pb-28">
+        <section id="testimonials" className="bg-[#1c1a14] pb-28">
           <div className="mx-auto max-w-6xl px-6">
             <div className="mb-12 text-center">
               <p className="mb-3 text-sm font-bold uppercase tracking-widest text-emerald-400">Testimonios</p>
@@ -179,7 +179,7 @@ export default function LandingPage() {
                 <div key={t.name} className="rounded-2xl border border-white/5 bg-white/5 p-6">
                   <p className="text-sm leading-relaxed text-gray-300">"{t.quote}"</p>
                   <div className="mt-5 flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-900/20 text-sm font-bold text-emerald-400">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#5a7e6a]/20 text-sm font-bold text-[#5a7e6a]">
                       {t.initials}
                     </div>
                     <div>
@@ -212,7 +212,7 @@ export default function LandingPage() {
             </p>
             <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
               <Link href="/register">
-                <button className="flex h-13 items-center gap-2 rounded-xl bg-white px-10 py-3.5 text-base font-black text-gray-900 shadow-2xl transition-all hover:-translate-y-0.5">
+                <button className="flex h-13 items-center gap-2 rounded-xl bg-white px-10 py-3.5 text-base font-black text-[#1a1814] shadow-2xl transition-all hover:-translate-y-0.5">
                   Crear mi cuenta gratis
                   <ArrowRight className="h-5 w-5" />
                 </button>
@@ -230,7 +230,7 @@ export default function LandingPage() {
       <footer className="border-t border-gray-100 bg-white py-8">
         <div className="mx-auto max-w-6xl px-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
           <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gray-900">
+            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#5a7e6a]">
               <Calendar className="h-3 w-3 text-white" />
             </div>
             <span className="text-sm font-bold text-gray-800">JaneClone</span>

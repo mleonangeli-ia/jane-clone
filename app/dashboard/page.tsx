@@ -84,10 +84,10 @@ export default async function DashboardPage() {
 
       {/* ── Stat cards ──────────────────────────────────────── */}
       <div className="stagger-children grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-        <StatCard icon={Calendar}   label="Turnos hoy"       value={todayAppointments.length}    sub={`${yesterdayCount} ayer`}              delta={todayVsYesterday} accent="#38bdf8" />
-        <StatCard icon={Users}      label="Clientes"         value={totalClients}                 sub={`${totalAppointments} totales`}                                accent="#34d399" />
-        <StatCard icon={DollarSign} label="Cobrado hoy"      value={formatPrice(todayRevenue)}    sub="ingresos del día"                                              accent="#a78bfa" />
-        <StatCard icon={Clock}      label="Pendientes"       value={pendingPayments}              sub="sin cobrar"                            alert={pendingPayments > 0} accent="#fb923c" />
+        <StatCard icon={Calendar}   label="Turnos hoy"       value={todayAppointments.length}    sub={`${yesterdayCount} ayer`}              delta={todayVsYesterday} accent="#5a7e6a" />
+        <StatCard icon={Users}      label="Clientes"         value={totalClients}                 sub={`${totalAppointments} totales`}                                accent="#3d8060" />
+        <StatCard icon={DollarSign} label="Cobrado hoy"      value={formatPrice(todayRevenue)}    sub="ingresos del día"                                              accent="#c8922a" />
+        <StatCard icon={Clock}      label="Pendientes"       value={pendingPayments}              sub="sin cobrar"                            alert={pendingPayments > 0} accent="#d4745a" />
       </div>
 
       {/* ── Content grid ────────────────────────────────────── */}

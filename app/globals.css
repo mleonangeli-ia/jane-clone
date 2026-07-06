@@ -1,73 +1,98 @@
 @import "tailwindcss";
 
-/* ── Light theme (default) ─────────────────────────────────── */
+/* ────────────────────────────────────────────────────────────
+   LIGHT — Warm pastel palette (posts.design inspired)
+   Background: warm cream   Brand: sage green   Accent: peach
+   ──────────────────────────────────────────────────────────── */
 :root {
   --font-inter: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
 
-  --bg:           #fafafa;
+  /* Surfaces */
+  --bg:           #faf8f3;
   --bg-card:      #ffffff;
-  --bg-subtle:    #f5f5f5;
-  --bg-hover:     #f0f0f0;
+  --bg-subtle:    #f3efe8;
+  --bg-hover:     #ebe6dd;
 
-  --border:       #e8e8e8;
-  --border-subtle:#f0f0f0;
+  /* Borders */
+  --border:       #dfd7cc;
+  --border-subtle:#ece7df;
 
-  --text:         #111111;
-  --text-muted:   #666666;
-  --text-faint:   #aaaaaa;
+  /* Text */
+  --text:         #1a1814;
+  --text-muted:   #7a7068;
+  --text-faint:   #b8b0a4;
 
-  --sidebar-bg:   #ffffff;
-  --sidebar-border:#ebebeb;
-  --sidebar-active-bg: #f0fdf4;
-  --sidebar-active-text: #059669;
-  --sidebar-icon-active: #10b981;
-  --sidebar-text: #6b7280;
-  --sidebar-text-hover: #111111;
+  /* Sidebar */
+  --sidebar-bg:          #f5f1ea;
+  --sidebar-border:      #e8e2d8;
+  --sidebar-active-bg:   #dff0e8;
+  --sidebar-active-text: #2d5c40;
+  --sidebar-icon-active: #4a8060;
+  --sidebar-text:        #907e6e;
+  --sidebar-text-hover:  #1a1814;
 
-  --sky:          #38bdf8;
-  --sky-muted:    #e0f2fe;
-  --sky-text:     #0369a1;
+  /* Sage — primary brand */
+  --sage:       #5a7e6a;
+  --sage-light: #d8ede2;
+  --sage-dark:  #2d5c40;
 
-  --emerald:      #34d399;
-  --emerald-muted:#d1fae5;
-  --emerald-text: #065f46;
+  /* Peach — secondary */
+  --peach:       #d4745a;
+  --peach-light: #fde4d8;
+
+  /* Amber — tertiary */
+  --amber:       #c8922a;
+  --amber-light: #fdf0d0;
+
+  /* Emerald / success */
+  --emerald:      #3d8060;
+  --emerald-muted:#d4ede4;
+  --emerald-text: #1a5c3a;
 }
 
-/* ── Dark theme ─────────────────────────────────────────────── */
+/* ────────────────────────────────────────────────────────────
+   DARK — Warm charcoal + muted sage accents
+   ──────────────────────────────────────────────────────────── */
 [data-theme="dark"] {
-  --bg:           #0a0a0a;
-  --bg-card:      #141414;
-  --bg-subtle:    #1a1a1a;
-  --bg-hover:     #222222;
+  --bg:           #141210;
+  --bg-card:      #1e1c18;
+  --bg-subtle:    #262420;
+  --bg-hover:     #2e2c28;
 
-  --border:       #2a2a2a;
-  --border-subtle:#1f1f1f;
+  --border:       #383430;
+  --border-subtle:#2a2824;
 
-  --text:         #f5f5f5;
-  --text-muted:   #888888;
-  --text-faint:   #444444;
+  --text:         #f0ece6;
+  --text-muted:   #8a8278;
+  --text-faint:   #524e48;
 
-  --sidebar-bg:   #111111;
-  --sidebar-border:#1f1f1f;
-  --sidebar-active-bg: rgba(56,189,248,0.12);
-  --sidebar-active-text: #7dd3fc;
-  --sidebar-icon-active: #10b981;
-  --sidebar-text: #555555;
-  --sidebar-text-hover: #e5e5e5;
+  --sidebar-bg:          #181614;
+  --sidebar-border:      #262420;
+  --sidebar-active-bg:   rgba(90,126,106,0.18);
+  --sidebar-active-text: #90c4a8;
+  --sidebar-icon-active: #6aaa88;
+  --sidebar-text:        #5a5650;
+  --sidebar-text-hover:  #e8e4de;
 
-  --sky:          #38bdf8;
-  --sky-muted:    rgba(56,189,248,0.12);
-  --sky-text:     #7dd3fc;
+  --sage:       #5a7e6a;
+  --sage-light: rgba(90,126,106,0.18);
+  --sage-dark:  #90c4a8;
 
-  --emerald:      #34d399;
-  --emerald-muted:rgba(52,211,153,0.12);
-  --emerald-text: #6ee7b7;
+  --peach:       #d4745a;
+  --peach-light: rgba(212,116,90,0.18);
+
+  --amber:       #c8922a;
+  --amber-light: rgba(200,146,42,0.18);
+
+  --emerald:      #3d8060;
+  --emerald-muted:rgba(61,128,96,0.18);
+  --emerald-text: #6ab490;
 }
 
-/* ── Base ────────────────────────────────────────────────────── */
-html {
-  color-scheme: light dark;
-}
+/* ────────────────────────────────────────────────────────────
+   BASE
+   ──────────────────────────────────────────────────────────── */
+html { color-scheme: light dark; }
 
 body {
   font-family: var(--font-inter);
@@ -80,66 +105,46 @@ body {
 
 * { box-sizing: border-box; }
 
-/* ── Scrollbar ───────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
 
-/* ── Typography ─────────────────────────────────────────────── */
-h1, h2, h3, h4 {
-  letter-spacing: -0.025em;
-}
+h1, h2, h3, h4 { letter-spacing: -0.025em; }
 
-/* ── Animations ─────────────────────────────────────────────── */
+:focus-visible { outline: 2px solid var(--sage); outline-offset: 2px; }
+::selection { background: var(--sage-light); color: var(--sage-dark); }
+
+/* ────────────────────────────────────────────────────────────
+   ANIMATIONS — posts.design inspired
+   ──────────────────────────────────────────────────────────── */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.animate-fade-up {
-  animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
+.animate-fade-up { animation: fadeUp 0.4s cubic-bezier(0.16,1,0.3,1) both; }
 
-/* Staggered entry — apply to children with data-index */
 @keyframes staggerIn {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.stagger-children > * {
-  animation: staggerIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
+.stagger-children > * { animation: staggerIn 0.35s cubic-bezier(0.16,1,0.3,1) both; }
 .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
 .stagger-children > *:nth-child(2) { animation-delay: 60ms; }
 .stagger-children > *:nth-child(3) { animation-delay: 120ms; }
 .stagger-children > *:nth-child(4) { animation-delay: 180ms; }
-.stagger-children > *:nth-child(5) { animation-delay: 220ms; }
-.stagger-children > *:nth-child(n+6) { animation-delay: 260ms; }
+.stagger-children > *:nth-child(n+5) { animation-delay: 220ms; }
 
-/* ── Skeleton ───────────────────────────────────────────────── */
 @keyframes shimmer {
   0%   { background-position: -200% 0; }
   100% { background-position:  200% 0; }
 }
 .skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--bg-subtle) 25%,
-    var(--bg-hover)  50%,
-    var(--bg-subtle) 75%
-  );
+  background: linear-gradient(90deg, var(--bg-subtle) 25%, var(--bg-hover) 50%, var(--bg-subtle) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
-  border-radius: 8px;
+  border-radius: 12px;
 }
 
-/* ── Focus ───────────────────────────────────────────────────── */
-:focus-visible {
-  outline: 2px solid var(--sky);
-  outline-offset: 2px;
-}
-
-/* ── Selection ───────────────────────────────────────────────── */
-::selection {
-  background: var(--sky-muted);
-  color: var(--sky-text);
-}
+@keyframes pulse-soft { 0%,100% { opacity:1; } 50% { opacity:.5; } }
+.animate-pulse { animation: pulse-soft 2s ease-in-out infinite; }
