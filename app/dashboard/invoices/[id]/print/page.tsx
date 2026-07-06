@@ -137,6 +137,38 @@ export default async function InvoicePrintPage({ params }: { params: Promise<{ i
             </div>
           )}
 
+          {/* AFIP CAE section */}
+          {invoice.afipCae && (
+            <div className="mx-10 mb-6 rounded-xl border border-emerald-200 bg-emerald-50 p-5">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-widest text-emerald-700">
+                    Comprobante Autorizado por AFIP
+                  </p>
+                  <div className="mt-2 space-y-1 text-sm text-emerald-800">
+                    <p><span className="font-semibold">CAE:</span> {invoice.afipCae}</p>
+                    <p><span className="font-semibold">Vto. CAE:</span> {invoice.afipCaeVenc ? format(invoice.afipCaeVenc, "dd/MM/yyyy") : ""}</p>
+                    <p><span className="font-semibold">Pto. Venta:</span> {String(invoice.afipPtoVta ?? 1).padStart(5, "0")}</p>
+                    <p><span className="font-semibold">Nro. Comprobante:</span> {String(invoice.afipCbteNro ?? 1).padStart(8, "0")}</p>
+                  </div>
+                </div>
+                {invoice.afipQr && (
+                  <div className="text-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(invoice.afipQr)}&size=100x100`}
+                      alt="QR AFIP"
+                      width={100}
+                      height={100}
+                      className="rounded-lg"
+                    />
+                    <p className="mt-1 text-[9px] text-emerald-600">Ver en AFIP</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Footer */}
           <div className="border-t border-gray-100 p-10 pt-6 text-center">
             <p className="text-xs text-gray-400">

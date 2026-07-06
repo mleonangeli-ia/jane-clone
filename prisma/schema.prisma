@@ -29,6 +29,14 @@ model Tenant {
   taxCondition      String?  // Monotributista, Responsable Inscripto, etc.
   invoiceCounter    Int      @default(0)
 
+  // AFIP - Facturación electrónica
+  afipEnabled       Boolean  @default(false)
+  afipEnv           String   @default("homologacion") // "homologacion" | "produccion"
+  afipPuntoVenta    Int?     @default(1)
+  afipTipoComp      Int?     @default(11) // 11=FactC, 6=FactB, 1=FactA
+  afipCert          String?  // PEM certificate (almacenado encriptado)
+  afipKey           String?  // PEM private key (almacenado encriptado)
+
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
@@ -301,6 +309,14 @@ model Invoice {
   currency      String        @default("ARS")
   notes         String?
   issuedAt      DateTime      @default(now())
+
+  // AFIP
+  afipCae       String?
+  afipCaeVenc   DateTime?
+  afipTipoComp  Int?
+  afipPtoVta    Int?
+  afipCbteNro   Int?
+  afipQr        String?
 
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt

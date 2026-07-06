@@ -8,6 +8,7 @@ import { FileText, Download, ExternalLink, Plus } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { InvoiceCreateButton } from "@/components/invoices/InvoiceCreateButton";
+import { AfipAuthorizeButton } from "@/components/afip/AfipAuthorizeButton";
 import { InvoiceStatusButton } from "@/components/invoices/InvoiceStatusButton";
 
 export default async function InvoicesPage() {
@@ -189,6 +190,7 @@ export default async function InvoicesPage() {
                     </button>
                   </Link>
                   {inv.status === "ISSUED" && <InvoiceStatusButton invoiceId={inv.id} />}
+                  <AfipAuthorizeButton invoiceId={inv.id} hasCae={!!inv.afipCae} />
                 </div>
               </div>
             ))}

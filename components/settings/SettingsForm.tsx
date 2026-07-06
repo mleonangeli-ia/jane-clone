@@ -156,6 +156,19 @@ export function SettingsForm({ tenant, isGoogleConnected }: { tenant: Tenant; is
           {searchParams?.get("gc") === "error" && <p className="mt-2 text-sm text-red-500">Error al conectar. Intentá de nuevo.</p>}
         </CardContent>
       </Card>
+
+      {/* AFIP */}
+      <Card>
+        <CardHeader><CardTitle>Facturación Electrónica AFIP</CardTitle></CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-gray-500">Emití comprobantes electrónicos con CAE. Requiere certificado digital de AFIP.</p>
+            <a href="/dashboard/settings/afip">
+              <Button variant="outline" size="sm">Configurar AFIP</Button>
+            </a>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
