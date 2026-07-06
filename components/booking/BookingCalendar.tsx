@@ -19,9 +19,10 @@ type Props = {
   availability: AvailabilitySlot[];
   accentColor: string;
   locale?: Locale;
+  staffId?: string; // for clinic staff booking
 };
 
-export function BookingCalendar({ tenantId, tenantSlug, service, availability, accentColor, locale = "es" }: Props) {
+export function BookingCalendar({ tenantId, tenantSlug, service, availability, accentColor, locale = "es", staffId }: Props) {
   const t = getT(locale);
   const dateFnsLocale = DATE_FNS_LOCALE[locale] ?? es;
 
@@ -40,7 +41,8 @@ export function BookingCalendar({ tenantId, tenantSlug, service, availability, a
     setSelectedDate(date);
     setSelectedTime(null);
     setLoadingSlots(true);
-    const res = await fetch(`/api/slots?tenantId=${tenantId}&serviceId=${service.id}&date=${format(date, "yyyy-MM-dd")}`);
+    const staffParam = staffId ? `&staffId=${staffId}` : "";
+    const res = await fetch(`/api/slots?tenantId=${tenantId}&serviceId=${service.id}&date=${format(date, "yyyy-MM-dd")}${staffParam}`);
     const data = await res.json();
     setSlots(data.slots ?? []);
     setLoadingSlots(false);
@@ -55,6 +57,7 @@ export function BookingCalendar({ tenantId, tenantSlug, service, availability, a
         time={selectedTime}
         accentColor={accentColor}
         locale={locale}
+        staffId={staffId}
         onBack={() => setStep("calendar")}
       />
     );

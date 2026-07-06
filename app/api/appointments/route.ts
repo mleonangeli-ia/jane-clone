@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
 
   const body = await req.json();
-  const { tenantId, serviceId, startTime, clientName, clientEmail, clientPhone, notes, _hp } = body;
+  const { tenantId, serviceId, staffId, startTime, clientName, clientEmail, clientPhone, notes, _hp } = body;
 
   // ── Abuse prevention ──────────────────────────────────────────
   // 1. Honeypot — silently accept but discard (bots won't know)
@@ -82,6 +82,7 @@ export async function POST(req: NextRequest) {
       tenantId,
       serviceId,
       clientId: client.id,
+      staffId: staffId ?? undefined,
       startTime: start,
       endTime: end,
       status,

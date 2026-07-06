@@ -26,7 +26,8 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const tenantId = searchParams.get("tenantId");
   const serviceId = searchParams.get("serviceId");
-  const dateStr = searchParams.get("date");
+  const staffId   = searchParams.get("staffId"); // optional — for clinic staff
+  const dateStr   = searchParams.get("date");
 
   if (!tenantId || !serviceId || !dateStr) {
     return NextResponse.json({ error: "Missing params" }, { status: 400 });
@@ -35,14 +36,16 @@ export async function GET(req: NextRequest) {
   const date = parseISO(dateStr);
   const dayOfWeek = date.getDay();
 
+  // Staff availability overrides tenant availability when staffId is present
   const [availability, service, existingAppointments, tenantData] = await Promise.all([
-    prisma.availability.findUnique({
-      where: { tenantId_dayOfWeek: { tenantId, dayOfWeek } },
-    }),
+    staffId
+      ? prisma.staffAvailability.findUnique({ where: { staffId_dayOfWeek: { staffId, dayOfWeek } } })
+      : prisma.availability.findUnique({ where: { tenantId_dayOfWeek: { tenantId, dayOfWeek } } }),
     prisma.service.findUnique({ where: { id: serviceId } }),
     prisma.appointment.findMany({
       where: {
         tenantId,
+        ...(staffId ? { staffId } : {}),
         startTime: { gte: startOfDay(date), lte: endOfDay(date) },
         status: { notIn: ["CANCELLED"] },
       },

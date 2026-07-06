@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   Calendar, Users, Briefcase, Clock, Settings,
   LogOut, LayoutDashboard, ExternalLink,
-  BarChart2, ClipboardList, BellPlus, Menu, X, FileText,
+  BarChart2, ClipboardList, BellPlus, Menu, X, FileText, UserPlus,
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
@@ -34,6 +34,7 @@ const navGroups = [
     items: [
       { href: "/dashboard/waitlist",  label: "Lista de espera", icon: BellPlus  },
       { href: "/dashboard/reports",   label: "Reportes",        icon: BarChart2 },
+      { href: "/dashboard/staff",     label: "Equipo",         icon: UserPlus  },
       { href: "/dashboard/invoices",  label: "Comprobantes",    icon: FileText  },
     ],
   },

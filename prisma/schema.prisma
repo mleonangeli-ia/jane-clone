@@ -21,6 +21,9 @@ model Tenant {
   accentColor       String   @default("#4F46E5")
   cancelWindowHours Int      @default(2)
 
+  // Clínica / multi-profesional
+  isClinic          Boolean  @default(false)
+
   // Datos de facturación
   taxId             String?  // CUIT / CUIL
   taxCondition      String?  // Monotributista, Responsable Inscripto, etc.
@@ -31,14 +34,15 @@ model Tenant {
 
   googleRefreshToken String?
 
-  services           Service[]
-  availability       Availability[]
-  appointments       Appointment[]
-  clients            Client[]
-  intakeForms        IntakeForm[]
-  waitlistEntries    WaitlistEntry[]
+  services            Service[]
+  availability        Availability[]
+  appointments        Appointment[]
+  clients             Client[]
+  intakeForms         IntakeForm[]
+  waitlistEntries     WaitlistEntry[]
   passwordResetTokens PasswordResetToken[]
-  invoices           Invoice[]
+  invoices            Invoice[]
+  staff               Staff[]
 
   @@map("tenants")
 }
@@ -113,6 +117,8 @@ model Appointment {
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
 
+  staffId        String?
+  staff          Staff?        @relation(fields: [staffId], references: [id])
   tenant         Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   service        Service       @relation(fields: [serviceId], references: [id])
   client         Client        @relation(fields: [clientId], references: [id])
@@ -120,6 +126,7 @@ model Appointment {
   intakeResponse FormResponse?
   invoice        Invoice?
 
+  @@index([staffId])
   @@map("appointments")
 }
 
@@ -311,4 +318,39 @@ enum InvoiceStatus {
   ISSUED
   PAID
   CANCELLED
+}
+
+model Staff {
+  id          String   @id @default(cuid())
+  tenantId    String
+  name        String
+  slug        String
+  title       String?  // Lic., Dr., Dra., etc.
+  bio         String?
+  phone       String?
+  accentColor String   @default("#10b981")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant       Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  availability StaffAvailability[]
+  appointments Appointment[]
+
+  @@unique([tenantId, slug])
+  @@map("staff")
+}
+
+model StaffAvailability {
+  id        String  @id @default(cuid())
+  staffId   String
+  dayOfWeek Int
+  startTime String
+  endTime   String
+  isActive  Boolean @default(true)
+
+  staff Staff @relation(fields: [staffId], references: [id], onDelete: Cascade)
+
+  @@unique([staffId, dayOfWeek])
+  @@map("staff_availability")
 }

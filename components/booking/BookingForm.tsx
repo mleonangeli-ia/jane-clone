@@ -19,10 +19,11 @@ type Props = {
   time: string;
   accentColor: string;
   locale?: Locale;
+  staffId?: string;
   onBack: () => void;
 };
 
-export function BookingForm({ tenantId, service, date, time, accentColor, locale = "es", onBack }: Props) {
+export function BookingForm({ tenantId, service, date, time, accentColor, locale = "es", staffId, onBack }: Props) {
   const t = getT(locale);
   const tf = t.form;
   const dateFnsLocale = DATE_FNS[locale];
@@ -48,12 +49,13 @@ export function BookingForm({ tenantId, service, date, time, accentColor, locale
       body: JSON.stringify({
         tenantId,
         serviceId: service.id,
+        staffId: staffId ?? undefined,
         startTime: startTime.toISOString(),
         clientName: data.get("name"),
         clientEmail: data.get("email"),
         clientPhone: data.get("phone"),
         notes: data.get("notes"),
-        _hp: data.get("_hp"), // honeypot field
+        _hp: data.get("_hp"),
       }),
     });
 

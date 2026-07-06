@@ -22,7 +22,10 @@ export default async function BookingPage({ params }: { params: Promise<{ slug: 
 
   const tenant = await prisma.tenant.findUnique({
     where: { slug },
-    include: { services: { where: { isActive: true }, orderBy: { createdAt: "asc" } } },
+    include: {
+      services: { where: { isActive: true }, orderBy: { createdAt: "asc" } },
+      staff:    { where: { isActive: true }, orderBy: { createdAt: "asc" } },
+    },
   });
 
   if (!tenant) notFound();
@@ -87,10 +90,53 @@ export default async function BookingPage({ params }: { params: Promise<{ slug: 
         </div>
       </div>
 
+      {/* ── Team (if clinic) ─────────────────────────────────── */}
+      {tenant.isClinic && tenant.staff.length > 0 && (
+        <div className="mx-auto max-w-md px-5 pt-6">
+          <h2 className="mb-4 text-base font-bold text-gray-900">
+            {locale === "en" ? "Choose a professional" : locale === "pt" ? "Escolha um profissional" : "Elegí un profesional"}
+          </h2>
+          <div className="space-y-3">
+            {tenant.staff.map((member) => {
+              const mi = member.name.split(" ").find(p => !["Lic.", "Dr.", "Dra.", "Mg.", "Prof."].includes(p))?.charAt(0) ?? member.name.charAt(0);
+              return (
+                <Link key={member.id} href={`/book/${slug}/team/${member.slug}`}>
+                  <div className="group flex cursor-pointer items-center gap-4 overflow-hidden rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
+                    <div className="h-0.5 w-full absolute top-0 left-0 rounded-t-2xl opacity-0" style={{ backgroundColor: member.accentColor }} />
+                    <div
+                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-xl font-black text-white shadow-md"
+                      style={{ background: `linear-gradient(135deg, ${member.accentColor}, ${member.accentColor}bb)` }}
+                    >
+                      {mi.toUpperCase()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-gray-900">{member.name}</p>
+                      {member.bio && <p className="text-xs text-gray-400 truncate">{member.bio}</p>}
+                    </div>
+                    <div
+                      className="flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold text-white"
+                      style={{ backgroundColor: member.accentColor }}
+                    >
+                      {locale === "en" ? "Book" : locale === "pt" ? "Agendar" : "Reservar"}
+                      <ArrowRight className="h-3 w-3" />
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+          <div className="mt-8 border-t border-gray-100 pt-6" />
+        </div>
+      )}
+
       {/* ── Services ─────────────────────────────────────────── */}
       <div className="mx-auto max-w-md px-5 pb-16 pt-6">
         <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-base font-bold text-gray-900">{t.booking.chooseService}</h2>
+          <h2 className="text-base font-bold text-gray-900">
+            {tenant.isClinic && tenant.staff.length > 0
+              ? (locale === "en" ? "Or choose a service directly" : locale === "pt" ? "Ou escolha um serviço direto" : "O elegí un servicio directo")
+              : t.booking.chooseService}
+          </h2>
           <span className="rounded-full px-3 py-1 text-xs font-semibold text-white" style={{ backgroundColor: ac }}>
             {tenant.services.length} {locale === "en" ? "available" : locale === "pt" ? "disponíveis" : "disponibles"}
           </span>
