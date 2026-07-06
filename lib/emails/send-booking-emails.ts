@@ -27,7 +27,8 @@ export async function sendBookingEmails(p: BookingEmailParams) {
   const bookingUrl = `${p.appUrl}/book/${p.tenantSlug}`;
   const dashboardUrl = `${p.appUrl}/dashboard/appointments`;
   const token = generateCancelToken(p.appointmentId, p.appointmentCreatedAt);
-  const cancelUrl = `${p.appUrl}/book/${p.tenantSlug}/self-cancel?id=${p.appointmentId}&token=${token}`;
+  const cancelUrl    = `${p.appUrl}/book/${p.tenantSlug}/self-cancel?id=${p.appointmentId}&token=${token}`;
+  const rescheduleUrl = `${p.appUrl}/book/${p.tenantSlug}/reschedule?id=${p.appointmentId}&token=${token}`;
 
   const client = clientConfirmationEmail({
     clientName: p.clientName,
@@ -40,6 +41,7 @@ export async function sendBookingEmails(p: BookingEmailParams) {
     currency: p.currency,
     bookingUrl,
     cancelUrl,
+    rescheduleUrl,
     intakeUrl: p.intakeUrl,
   });
 

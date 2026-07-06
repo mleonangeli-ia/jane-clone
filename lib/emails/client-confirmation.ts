@@ -12,6 +12,7 @@ type Params = {
   currency: string;
   bookingUrl: string;
   cancelUrl: string | null;
+  rescheduleUrl?: string | null;
   intakeUrl: string | null;
 };
 
@@ -121,15 +122,11 @@ export function clientConfirmationEmail(p: Params) {
 
         <tr>
           <td style="padding:0 40px 32px;">
-            ${
-              p.cancelUrl
-                ? `<div style="text-align:center;margin-bottom:8px;">
-              <a href="${p.cancelUrl}" style="display:inline-block;padding:10px 24px;background:#ef4444;color:#ffffff;font-size:13px;font-weight:600;border-radius:8px;text-decoration:none;">Cancelar turno</a>
-            </div>`
-                : `<p style="margin:0 0 8px;color:#6b7280;font-size:13px;text-align:center;">
-              Si necesitás cancelar o reprogramar, contactá al profesional.
-            </p>`
-            }
+            ${p.cancelUrl || p.rescheduleUrl ? `
+            <div style="text-align:center;">
+              ${p.rescheduleUrl ? `<a href="${p.rescheduleUrl}" style="display:inline-block;margin:0 6px 8px;padding:10px 24px;background:#111827;color:#ffffff;font-size:13px;font-weight:600;border-radius:8px;text-decoration:none;">Reagendar turno</a>` : ""}
+              ${p.cancelUrl ? `<a href="${p.cancelUrl}" style="display:inline-block;margin:0 6px 8px;padding:10px 24px;background:#f9fafb;color:#6b7280;font-size:13px;font-weight:600;border-radius:8px;text-decoration:none;border:1px solid #e5e7eb;">Cancelar turno</a>` : ""}
+            </div>` : `<p style="margin:0 0 8px;color:#6b7280;font-size:13px;text-align:center;">Si necesitás cancelar o reprogramar, contactá al profesional.</p>`}
           </td>
         </tr>
 

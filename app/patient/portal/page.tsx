@@ -2,9 +2,10 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getPatientSession } from "@/lib/patient-auth";
 import { formatPrice } from "@/lib/utils";
-import { format, isPast, isFuture } from "date-fns";
+import { generateCancelToken } from "@/lib/cancel-token";
+import { format, isPast, isFuture, differenceInHours } from "date-fns";
 import { es } from "date-fns/locale";
-import { Calendar, Clock, MapPin, CheckCircle, XCircle, AlertCircle, LogOut } from "lucide-react";
+import { Calendar, Clock, MapPin, CheckCircle, XCircle, AlertCircle, LogOut, CalendarClock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 
@@ -16,7 +17,10 @@ export default async function PatientPortalPage() {
     where: { id: clientId },
     include: {
       appointments: {
-        include: { service: true, tenant: true },
+        include: {
+          service: true,
+          tenant: { select: { name: true, address: true, slug: true, accentColor: true, cancelWindowHours: true } },
+        },
         orderBy: { startTime: "desc" },
         take: 50,
       },
@@ -135,8 +139,9 @@ type Apt = {
   status: string;
   paymentStatus: string;
   notes: string | null;
+  createdAt: Date;
   service: { name: string; color: string; price: number; duration: number };
-  tenant: { name: string; address: string | null; slug: string; accentColor: string };
+  tenant: { name: string; address: string | null; slug: string; accentColor: string; cancelWindowHours: number };
 };
 
 function AppointmentCard({ apt, isUpcoming }: { apt: Apt; isUpcoming: boolean }) {
@@ -201,17 +206,30 @@ function AppointmentCard({ apt, isUpcoming }: { apt: Apt; isUpcoming: boolean })
           </div>
         </div>
 
-        {/* Cancel CTA for upcoming confirmed */}
-        {isUpcoming && !isCancelled && apt.status === "CONFIRMED" && (
-          <div className="mt-3 border-t border-gray-50 pt-3">
-            <Link
-              href={`/book/${apt.tenant.slug}?cancel=${apt.id}`}
-              className="text-xs text-red-400 hover:text-red-600 hover:underline"
-            >
-              Cancelar turno
-            </Link>
-          </div>
-        )}
+        {/* Actions for upcoming confirmed */}
+        {isUpcoming && !isCancelled && apt.status === "CONFIRMED" && (() => {
+          const token = generateCancelToken(apt.id, apt.createdAt);
+          const hoursLeft = differenceInHours(apt.startTime, new Date());
+          const canAct = hoursLeft >= (apt.tenant.cancelWindowHours ?? 2);
+          if (!canAct) return null;
+          return (
+            <div className="mt-3 flex items-center gap-4 border-t border-gray-50 pt-3">
+              <Link
+                href={`/book/${apt.tenant.slug}/reschedule?id=${apt.id}&token=${token}`}
+                className="flex items-center gap-1 text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                <CalendarClock className="h-3.5 w-3.5" />
+                Reagendar
+              </Link>
+              <Link
+                href={`/book/${apt.tenant.slug}/self-cancel?id=${apt.id}&token=${token}`}
+                className="text-xs text-red-400 hover:text-red-600 transition-colors"
+              >
+                Cancelar
+              </Link>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
