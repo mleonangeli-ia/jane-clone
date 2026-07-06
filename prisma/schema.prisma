@@ -331,6 +331,7 @@ model Invoice {
 }
 
 enum InvoiceStatus {
+  DRAFT
   ISSUED
   PAID
   CANCELLED

@@ -67,6 +67,11 @@ export function AppointmentInvoiceButton({
       return;
     }
 
+    // Redirect to the invoice edit page
+    if (json.id || json.editUrl) {
+      router.push(json.editUrl ?? `/dashboard/invoices/${json.id}`);
+      return;
+    }
     setUrl(json.invoiceUrl ?? null);
     setDone(true);
     router.refresh();

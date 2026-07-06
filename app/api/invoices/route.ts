@@ -74,6 +74,7 @@ export async function POST(req: NextRequest) {
       appointmentId,
       clientId:      appointment.clientId,
       number:        invoiceNumber,
+      status:        "DRAFT" as const,
       issuerName:    appointment.tenant.name,
       issuerTaxId:   appointment.tenant.taxId,
       issuerAddress: appointment.tenant.address,
@@ -90,27 +91,11 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  // Send invoice email to patient
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-  const token  = generateInvoiceToken(newInvoice.id, newInvoice.createdAt);
-  const invoiceUrl = `${appUrl}/invoice/${newInvoice.id}?token=${token}`;
+  // Draft created — redirect to edit page, email sent on release
+  const appUrl  = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const editUrl = `${appUrl}/dashboard/invoices/${newInvoice.id}`;
 
-  resend.emails.send({
-    from: FROM_EMAIL,
-    to: appointment.client.email,
-    subject: `Tu comprobante N°${String(invoiceNumber).padStart(4,"0")} — ${appointment.tenant.name}`,
-    html: invoiceEmailHtml({
-      clientName:   appointment.client.name,
-      tenantName:   appointment.tenant.name,
-      serviceName:  appointment.service.name,
-      fecha:        format(appointment.startTime, "d 'de' MMMM 'de' yyyy", { locale: es }),
-      total:        formatPrice(total),
-      invoiceNum:   String(invoiceNumber).padStart(4, "0"),
-      invoiceUrl,
-    }),
-  }).catch(console.error);
-
-  return NextResponse.json({ ...newInvoice, invoiceUrl }, { status: 201 });
+  return NextResponse.json({ ...newInvoice, editUrl }, { status: 201 });
 }
 
 function invoiceEmailHtml(p: {

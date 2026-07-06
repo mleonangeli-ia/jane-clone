@@ -180,17 +180,30 @@ export default async function InvoicesPage() {
                 </span>
                 <InvoiceStatusBadge status={inv.status} />
                 <div className="flex items-center gap-2">
-                  <Link href={`/dashboard/invoices/${inv.id}/print`} target="_blank">
-                    <button
-                      className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
-                      style={{ backgroundColor: "var(--bg-subtle)", color: "var(--text-muted)" }}
-                      title="Ver / Imprimir"
-                    >
-                      <Download className="h-3.5 w-3.5" />
-                    </button>
-                  </Link>
+                  {/* Draft → edit link; Issued → print link */}
+                  {inv.status === "DRAFT" ? (
+                    <Link href={`/dashboard/invoices/${inv.id}`}>
+                      <button
+                        className="rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-colors"
+                        style={{ backgroundColor: "var(--amber-light)", color: "var(--amber)" }}
+                        title="Completar y liberar"
+                      >
+                        Completar
+                      </button>
+                    </Link>
+                  ) : (
+                    <Link href={`/dashboard/invoices/${inv.id}/print`} target="_blank">
+                      <button
+                        className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
+                        style={{ backgroundColor: "var(--bg-subtle)", color: "var(--text-muted)" }}
+                        title="Ver / Imprimir"
+                      >
+                        <Download className="h-3.5 w-3.5" />
+                      </button>
+                    </Link>
+                  )}
                   {inv.status === "ISSUED" && <InvoiceStatusButton invoiceId={inv.id} />}
-                  <AfipAuthorizeButton invoiceId={inv.id} hasCae={!!inv.afipCae} />
+                  {inv.status !== "DRAFT" && <AfipAuthorizeButton invoiceId={inv.id} hasCae={!!inv.afipCae} />}
                 </div>
               </div>
             ))}
@@ -203,6 +216,7 @@ export default async function InvoicesPage() {
 
 function InvoiceStatusBadge({ status }: { status: string }) {
   const map: Record<string, { label: string; variant: "default" | "success" | "warning" | "destructive" | "secondary" }> = {
+    DRAFT:     { label: "Borrador",  variant: "secondary"   },
     ISSUED:    { label: "Emitido",   variant: "warning"     },
     PAID:      { label: "Cobrado",   variant: "success"     },
     CANCELLED: { label: "Anulado",   variant: "destructive" },

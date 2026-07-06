@@ -29,6 +29,17 @@ export default async function PublicInvoicePage({
     notFound();
   }
 
+  // Drafts are not yet public
+  if (invoice.status === "DRAFT") {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4 text-center">
+        <div className="mb-4 text-4xl">🔒</div>
+        <h1 className="text-xl font-semibold text-gray-700">Comprobante no disponible</h1>
+        <p className="mt-2 text-gray-400">Este comprobante aún no fue liberado por el profesional.</p>
+      </div>
+    );
+  }
+
   const num     = String(invoice.number).padStart(4, "0");
   const fecha   = format(invoice.issuedAt, "d 'de' MMMM 'de' yyyy", { locale: es });
   const taxLabel = invoice.taxRate > 0 ? `IVA ${invoice.taxRate}%` : null;
