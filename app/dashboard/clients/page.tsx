@@ -8,6 +8,7 @@ import { es } from "date-fns/locale";
 import Link from "next/link";
 import { Suspense } from "react";
 import { ClientsSearch } from "@/components/clients/ClientsSearch";
+import { ClientsExportButton, ClientsImportButton } from "@/components/clients/ClientsImportExport";
 
 export default async function ClientsPage({
   searchParams,
@@ -36,9 +37,17 @@ export default async function ClientsPage({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Clientes</h1>
-        <span className="text-sm text-gray-500">{clients.length} clientes</span>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-xl font-bold sm:text-2xl" style={{ color: "var(--text)", letterSpacing: "-0.03em" }}>
+            Clientes
+          </h1>
+          <p className="text-sm" style={{ color: "var(--text-muted)" }}>{clients.length} clientes registrados</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <ClientsImportButton />
+          <ClientsExportButton />
+        </div>
       </div>
 
       <Suspense fallback={<div className="h-9 w-48 rounded-md bg-gray-100 animate-pulse" />}>
