@@ -56,20 +56,45 @@ export default function LandingPage() {
       </header>
 
       <main>
-        {/* ── Hero con imagen de fondo ──────────────────────── */}
+        {/* ── Hero — fondo abstracto: grilla de calendario / organización ── */}
         <section className="relative flex min-h-[90vh] items-center overflow-hidden">
 
-          {/* Imagen de fondo */}
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage: "url('https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1920&q=80')",
-            }}
-          />
+          {/* Fondo base: gradiente cálido oscuro */}
+          <div className="absolute inset-0" style={{ background: "linear-gradient(145deg, #1a1c14 0%, #1e2016 40%, #161a14 100%)" }} />
 
-          {/* Overlay oscuro en gradiente */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/30" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          {/* Patrón de grilla — evoca agenda/calendario */}
+          <svg className="absolute inset-0 h-full w-full opacity-[0.07]" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+                <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#7ab890" strokeWidth="0.8"/>
+              </pattern>
+              <pattern id="dots" width="60" height="60" patternUnits="userSpaceOnUse">
+                <circle cx="30" cy="30" r="1.5" fill="#7ab890"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)"/>
+            <rect width="100%" height="100%" fill="url(#dots)"/>
+          </svg>
+
+          {/* Círculos decorativos — sugieren ciclos, tiempo, salud */}
+          <svg className="absolute inset-0 h-full w-full" xmlns="http://www.w3.org/2000/svg" style={{ opacity: 0.06 }}>
+            <circle cx="75%" cy="20%" r="280" fill="none" stroke="#5a7e6a" strokeWidth="1.5"/>
+            <circle cx="75%" cy="20%" r="200" fill="none" stroke="#5a7e6a" strokeWidth="1"/>
+            <circle cx="75%" cy="20%" r="120" fill="none" stroke="#5a7e6a" strokeWidth="0.8"/>
+            <circle cx="10%" cy="80%" r="160" fill="none" stroke="#5a7e6a" strokeWidth="1"/>
+            <circle cx="10%" cy="80%" r="90"  fill="none" stroke="#5a7e6a" strokeWidth="0.6"/>
+          </svg>
+
+          {/* Líneas diagonales sutiles — dinamismo */}
+          <svg className="absolute inset-0 h-full w-full" xmlns="http://www.w3.org/2000/svg" style={{ opacity: 0.04 }}>
+            {[0,1,2,3,4,5,6,7,8].map(i => (
+              <line key={i} x1={`${i * 14}%`} y1="0" x2={`${i * 14 + 30}%`} y2="100%"
+                    stroke="#7ab890" strokeWidth="1"/>
+            ))}
+          </svg>
+
+          {/* Gradiente de fade bottom */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#1a1c14]/80 via-transparent to-transparent" />
 
           {/* Contenido */}
           <div className="relative mx-auto max-w-6xl w-full px-6 py-32">
@@ -134,8 +159,17 @@ export default function LandingPage() {
         </section>
 
         {/* ── Features ─────────────────────────────────────────── */}
-        <section id="features" className="bg-[#1c1a14] py-28">
-          <div className="mx-auto max-w-6xl px-6">
+        <section id="features" className="relative py-28 overflow-hidden" style={{ backgroundColor: "#1c1a14" }}>
+          {/* Hexagonal / medical cross pattern */}
+          <svg className="absolute inset-0 h-full w-full opacity-[0.04]" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="hex" width="80" height="70" patternUnits="userSpaceOnUse">
+                <polygon points="40,5 70,20 70,50 40,65 10,50 10,20" fill="none" stroke="#7ab890" strokeWidth="0.8"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#hex)"/>
+          </svg>
+          <div className="relative mx-auto max-w-6xl px-6">
             <div className="mb-16 text-center">
               <p className="mb-3 text-sm font-bold uppercase tracking-widest text-emerald-400">Funcionalidades</p>
               <h2 className="text-3xl font-black tracking-tight text-white sm:text-4xl" style={{ letterSpacing: "-0.03em" }}>
@@ -193,15 +227,45 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── CTA final ──────────────────────────────────────── */}
+        {/* ── CTA final — fondo abstracto: ondas / flujo de cuidado ── */}
         <section className="relative overflow-hidden">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage: "url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80')",
-            }}
-          />
-          <div className="absolute inset-0 bg-black/65" />
+          {/* Fondo base */}
+          <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, #141210 0%, #1a1e14 50%, #121410 100%)" }} />
+
+          {/* Patrón de ondas suaves — fluidez, bienestar */}
+          <svg className="absolute inset-0 h-full w-full" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style={{ opacity: 0.12 }}>
+            <defs>
+              <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%"   stopColor="#5a7e6a" stopOpacity="0"/>
+                <stop offset="50%"  stopColor="#5a7e6a" stopOpacity="1"/>
+                <stop offset="100%" stopColor="#5a7e6a" stopOpacity="0"/>
+              </linearGradient>
+            </defs>
+            {[0,1,2,3,4].map(i => (
+              <path key={i}
+                d={`M0,${80 + i*40} Q${250 + i*20},${40 + i*30} ${500 + i*10},${80 + i*40} T1000,${80 + i*40} T1500,${80 + i*40} T2000,${80 + i*40}`}
+                fill="none" stroke="url(#waveGrad)" strokeWidth={1.5 - i * 0.2}
+              />
+            ))}
+          </svg>
+
+          {/* Círculos concéntricos — conexión profesional-paciente */}
+          <svg className="absolute right-0 top-0 h-full" xmlns="http://www.w3.org/2000/svg" style={{ opacity: 0.06, width: "50%" }}>
+            <circle cx="80%" cy="50%" r="35%" fill="none" stroke="#d4745a" strokeWidth="1"/>
+            <circle cx="80%" cy="50%" r="25%" fill="none" stroke="#d4745a" strokeWidth="0.8"/>
+            <circle cx="80%" cy="50%" r="15%" fill="none" stroke="#d4745a" strokeWidth="0.5"/>
+            <circle cx="80%" cy="50%" r="6%"  fill="#d4745a" fillOpacity="0.15"/>
+          </svg>
+
+          {/* Puntos en grid — organización */}
+          <svg className="absolute inset-0 h-full w-full opacity-[0.05]" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="dotsCta" width="40" height="40" patternUnits="userSpaceOnUse">
+                <circle cx="20" cy="20" r="1" fill="#c8922a"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#dotsCta)"/>
+          </svg>
 
           <div className="relative px-8 py-24 text-center">
             <h2 className="text-3xl font-black text-white sm:text-5xl" style={{ letterSpacing: "-0.03em" }}>
