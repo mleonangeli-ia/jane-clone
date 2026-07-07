@@ -2,8 +2,17 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { formatPrice } from "@/lib/utils";
-import { format } from "date-fns";
+import { format, subDays } from "date-fns";
+import { es } from "date-fns/locale";
 import Link from "next/link";
+import { TrendingUp, TrendingDown, Minus, Users, Calendar, DollarSign, BarChart2 } from "lucide-react";
+import { RevenueChart }      from "@/components/charts/RevenueChart";
+import { ServicesPieChart }  from "@/components/charts/ServicesPieChart";
+import { WeekdayChart }      from "@/components/charts/WeekdayChart";
+import { PaymentStatusChart } from "@/components/charts/PaymentStatusChart";
+import { ClientGrowthChart } from "@/components/charts/ClientGrowthChart";
+
+const DAY_LABELS = ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"];
 
 export default async function ReportsPage({
   searchParams,
@@ -13,111 +22,99 @@ export default async function ReportsPage({
   const session = await getServerSession(authOptions);
   const tenantId = session!.user.id;
   const { period: rawPeriod } = await searchParams;
-
   const period = rawPeriod === "week" || rawPeriod === "3months" ? rawPeriod : "month";
 
-  const days = period === "week" ? 7 : period === "3months" ? 90 : 30;
-  const now = new Date();
-  const to = now;
-  const from = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
-  const prevFrom = new Date(from.getTime() - days * 24 * 60 * 60 * 1000);
-  const prevTo = from;
+  const days     = period === "week" ? 7 : period === "3months" ? 90 : 30;
+  const now      = new Date();
+  const from     = subDays(now, days);
+  const prevFrom = subDays(from, days);
 
   const [appointments, prevAppointments, allClients] = await Promise.all([
     prisma.appointment.findMany({
-      where: {
-        tenantId,
-        status: { notIn: ["CANCELLED"] },
-        startTime: { gte: from, lte: to },
-      },
+      where: { tenantId, startTime: { gte: from, lte: now } },
       include: { service: true, client: true },
     }),
     prisma.appointment.findMany({
-      where: {
-        tenantId,
-        status: { notIn: ["CANCELLED"] },
-        startTime: { gte: prevFrom, lte: prevTo },
-      },
-      include: { service: true, client: true },
+      where: { tenantId, status: { notIn: ["CANCELLED"] }, startTime: { gte: prevFrom, lte: from } },
+      include: { service: true },
     }),
-    prisma.client.findMany({ where: { tenantId } }),
+    prisma.client.findMany({ where: { tenantId }, orderBy: { createdAt: "asc" } }),
   ]);
 
-  const totalRevenue = appointments
-    .filter((a) => a.paymentStatus === "PAID")
-    .reduce((sum, a) => sum + a.service.price, 0);
+  const active = appointments.filter(a => a.status !== "CANCELLED");
 
-  const prevRevenue = prevAppointments
-    .filter((a) => a.paymentStatus === "PAID")
-    .reduce((sum, a) => sum + a.service.price, 0);
+  // ── KPIs ──────────────────────────────────────────────────────
+  const totalRevenue  = active.filter(a => a.paymentStatus === "PAID").reduce((s, a) => s + a.service.price, 0);
+  const prevRevenue   = prevAppointments.filter(a => a.paymentStatus === "PAID").reduce((s, a) => s + a.service.price, 0);
+  const revenueChange = prevRevenue === 0 ? (totalRevenue > 0 ? 100 : 0) : Math.round(((totalRevenue - prevRevenue) / prevRevenue) * 100);
 
-  const revenueChange =
-    prevRevenue === 0
-      ? totalRevenue > 0
-        ? 100
-        : 0
-      : Math.round(((totalRevenue - prevRevenue) / prevRevenue) * 100);
+  const totalApts   = active.length;
+  const prevApts    = prevAppointments.length;
+  const aptsChange  = prevApts === 0 ? (totalApts > 0 ? 100 : 0) : Math.round(((totalApts - prevApts) / prevApts) * 100);
 
-  const totalAppointments = appointments.length;
+  const newClients  = allClients.filter(c => new Date(c.createdAt) >= from).length;
+  const completedCount = appointments.filter(a => a.status === "COMPLETED").length;
+  const noShowCount    = appointments.filter(a => a.status === "NO_SHOW").length;
+  const noShowRate  = completedCount + noShowCount > 0
+    ? Math.round(noShowCount / (completedCount + noShowCount) * 100) : 0;
 
-  const byStatus = appointments.reduce<Record<string, number>>((acc, a) => {
-    acc[a.status] = (acc[a.status] ?? 0) + 1;
-    return acc;
-  }, {});
-
-  const completedCount = byStatus["COMPLETED"] ?? 0;
-  const noShowCount = byStatus["NO_SHOW"] ?? 0;
-  const noShowRate =
-    completedCount + noShowCount > 0
-      ? Math.round((noShowCount / (completedCount + noShowCount)) * 100)
-      : 0;
-
-  const newClients = appointments.filter((a) => {
-    const created = new Date(a.client.createdAt);
-    return created >= from && created <= to;
-  }).length;
-
-  const serviceCount = appointments.reduce<Record<string, { name: string; count: number }>>(
-    (acc, a) => {
-      if (!acc[a.serviceId]) acc[a.serviceId] = { name: a.service.name, count: 0 };
-      acc[a.serviceId].count += 1;
-      return acc;
-    },
-    {}
-  );
-  const serviceList = Object.values(serviceCount).sort((a, b) => b.count - a.count);
-  const topService = serviceList[0]?.name ?? "—";
-
-  const clientMap = appointments.reduce<
-    Record<string, { name: string; email: string; count: number; revenue: number }>
-  >((acc, a) => {
-    if (!acc[a.clientId]) {
-      acc[a.clientId] = { name: a.client.name, email: a.client.email, count: 0, revenue: 0 };
-    }
-    acc[a.clientId].count += 1;
-    if (a.paymentStatus === "PAID") acc[a.clientId].revenue += a.service.price;
-    return acc;
-  }, {});
-  const top5Clients = Object.values(clientMap)
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 5);
-
-  const revenueByDay = appointments
-    .filter((a) => a.paymentStatus === "PAID")
+  // ── Revenue by day ────────────────────────────────────────────
+  const revenueByDay = active
+    .filter(a => a.paymentStatus === "PAID")
     .reduce<Record<string, number>>((acc, a) => {
-      const day = format(new Date(a.startTime), "yyyy-MM-dd");
-      acc[day] = (acc[day] ?? 0) + a.service.price;
+      const key = format(a.startTime, "yyyy-MM-dd");
+      acc[key] = (acc[key] ?? 0) + a.service.price;
       return acc;
     }, {});
 
-  const allDays: { date: string; revenue: number }[] = [];
-  for (let i = 0; i < days; i++) {
-    const d = new Date(from.getTime() + i * 24 * 60 * 60 * 1000);
+  const revenueData = Array.from({ length: days }, (_, i) => {
+    const d   = subDays(now, days - 1 - i);
     const key = format(d, "yyyy-MM-dd");
-    allDays.push({ date: key, revenue: revenueByDay[key] ?? 0 });
-  }
+    return { date: key, revenue: revenueByDay[key] ?? 0 };
+  });
 
-  const maxRevenue = Math.max(...allDays.map((d) => d.revenue), 0);
+  // ── Services breakdown ────────────────────────────────────────
+  const serviceCounts = active.reduce<Record<string, { name: string; count: number }>>((acc, a) => {
+    if (!acc[a.serviceId]) acc[a.serviceId] = { name: a.service.name, count: 0 };
+    acc[a.serviceId].count++;
+    return acc;
+  }, {});
+  const servicesData = Object.values(serviceCounts).sort((a, b) => b.count - a.count).slice(0, 6);
+
+  // ── By weekday ────────────────────────────────────────────────
+  const weekdayCounts = [0, 0, 0, 0, 0, 0, 0];
+  active.forEach(a => { weekdayCounts[a.startTime.getDay()]++; });
+  const weekdayData = DAY_LABELS.map((day, i) => ({ day, count: weekdayCounts[i] }));
+
+  // ── Payment status ────────────────────────────────────────────
+  const paymentData = [
+    { name: "Pagado",     value: active.filter(a => a.paymentStatus === "PAID").length,     color: "#2563eb" },
+    { name: "Sin pagar",  value: active.filter(a => a.paymentStatus === "UNPAID").length,   color: "#bfdbfe" },
+  ].filter(d => d.value > 0);
+
+  // ── Client growth (cumulative) ────────────────────────────────
+  const clientsByDay = allClients.reduce<Record<string, number>>((acc, c) => {
+    const key = format(new Date(c.createdAt), "yyyy-MM-dd");
+    acc[key] = (acc[key] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  let cumulative = allClients.filter(c => new Date(c.createdAt) < from).length;
+  const clientGrowthData = Array.from({ length: days }, (_, i) => {
+    const d   = subDays(now, days - 1 - i);
+    const key = format(d, "yyyy-MM-dd");
+    cumulative += clientsByDay[key] ?? 0;
+    return { date: key, total: cumulative };
+  });
+
+  // ── Top clients ───────────────────────────────────────────────
+  const clientMap = active.reduce<Record<string, { name: string; count: number; revenue: number }>>((acc, a) => {
+    if (!acc[a.clientId]) acc[a.clientId] = { name: a.client.name, count: 0, revenue: 0 };
+    acc[a.clientId].count++;
+    if (a.paymentStatus === "PAID") acc[a.clientId].revenue += a.service.price;
+    return acc;
+  }, {});
+  const top5Clients = Object.values(clientMap).sort((a, b) => b.count - a.count).slice(0, 5);
 
   const periods = [
     { key: "week", label: "Semana" },
@@ -125,191 +122,163 @@ export default async function ReportsPage({
     { key: "3months", label: "3 meses" },
   ];
 
-  const statusConfig: Record<string, { label: string; color: string }> = {
-    PENDING: { label: "Pendiente", color: "bg-yellow-100 text-yellow-700" },
-    CONFIRMED: { label: "Confirmado", color: "bg-blue-100 text-blue-700" },
-    COMPLETED: { label: "Completado", color: "bg-green-100 text-green-700" },
-    NO_SHOW: { label: "No asistió", color: "bg-red-100 text-red-700" },
-    CANCELLED: { label: "Cancelado", color: "bg-gray-100 text-gray-600" },
-  };
-
-  const totalServiceCount = serviceList.reduce((s, sv) => s + sv.count, 0);
-
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold text-gray-900">Reportes</h1>
-        <div className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white p-1">
-          {periods.map((p) => (
-            <Link
-              key={p.key}
-              href={`/dashboard/reports?period=${p.key}`}
-              className={`rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${
-                period === p.key
-                  ? "bg-indigo-600 text-white"
-                  : "text-gray-600 hover:bg-gray-50"
-              }`}
-            >
-              {p.label}
+    <div className="space-y-8 animate-fade-up">
+
+      {/* Header + period selector */}
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-xl font-bold sm:text-2xl" style={{ color: "var(--text)", letterSpacing: "-0.03em" }}>
+            Estadísticas
+          </h1>
+          <p className="mt-0.5 text-sm" style={{ color: "var(--text-muted)" }}>
+            Últim{period === "week" ? "a semana" : period === "month" ? "os 30 días" : "os 90 días"}
+          </p>
+        </div>
+        <div className="flex rounded-xl p-1" style={{ backgroundColor: "var(--bg-subtle)", border: "1px solid var(--border)" }}>
+          {periods.map(p => (
+            <Link key={p.key} href={`?period=${p.key}`}>
+              <span
+                className="inline-block rounded-lg px-4 py-1.5 text-sm font-medium transition-all"
+                style={{
+                  backgroundColor: period === p.key ? "var(--bg-card)" : "transparent",
+                  color: period === p.key ? "var(--text)" : "var(--text-muted)",
+                  boxShadow: period === p.key ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
+                }}
+              >
+                {p.label}
+              </span>
             </Link>
           ))}
         </div>
       </div>
 
-      {/* Summary cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {/* Revenue */}
-        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Ingresos</p>
-          <p className="mt-2 text-2xl font-bold text-gray-900">{formatPrice(totalRevenue)}</p>
-          <div className="mt-2 flex items-center gap-1.5">
-            <span
-              className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
-                revenueChange >= 0
-                  ? "bg-green-100 text-green-700"
-                  : "bg-red-100 text-red-700"
-              }`}
-            >
-              {revenueChange >= 0 ? "+" : ""}
-              {revenueChange}%
-            </span>
-            <span className="text-xs text-gray-400">vs período anterior</span>
-          </div>
-        </div>
-
-        {/* Appointments */}
-        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
-            Total turnos
-          </p>
-          <p className="mt-2 text-2xl font-bold text-gray-900">{totalAppointments}</p>
-          <p className="mt-2 text-xs text-gray-400">En el período seleccionado</p>
-        </div>
-
-        {/* No-show rate */}
-        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
-            Tasa de no-show
-          </p>
-          <p className="mt-2 text-2xl font-bold text-gray-900">{noShowRate}%</p>
-          <p className="mt-2 text-xs text-gray-400">
-            {noShowCount} de {completedCount + noShowCount} completados
-          </p>
-        </div>
-
-        {/* New clients */}
-        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
-            Clientes nuevos
-          </p>
-          <p className="mt-2 text-2xl font-bold text-gray-900">{newClients}</p>
-          <p className="mt-2 text-xs text-gray-400">Servicio más pedido: {topService}</p>
-        </div>
+      {/* ── KPI cards ─────────────────────────────────────────── */}
+      <div className="stagger-children grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <KpiCard icon={DollarSign} label="Ingresos" value={formatPrice(totalRevenue)} change={revenueChange} accent="#2563eb" />
+        <KpiCard icon={Calendar}   label="Turnos"   value={String(totalApts)}         change={aptsChange}    accent="#3b82f6" />
+        <KpiCard icon={Users}      label="Nuevos clientes" value={String(newClients)}  accent="#60a5fa" />
+        <KpiCard icon={BarChart2}  label="Tasa no-show"    value={`${noShowRate}%`}    accent={noShowRate > 15 ? "#ef4444" : "#93c5fd"} alert={noShowRate > 15} />
       </div>
 
-      {/* Revenue chart */}
-      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-        <h2 className="mb-4 text-base font-semibold text-gray-900">Ingresos por día</h2>
-        {maxRevenue === 0 ? (
-          <div className="flex h-32 items-center justify-center text-sm text-gray-400">
-            Sin ingresos en este período
-          </div>
-        ) : (
-          <div className="flex items-end gap-1 h-32 overflow-x-auto pb-6">
-            {allDays.map((d) => {
-              const height = maxRevenue > 0 ? (d.revenue / maxRevenue) * 100 : 0;
-              return (
-                <div key={d.date} className="flex flex-col items-center flex-1 min-w-[8px]">
-                  <div
-                    className="w-full rounded-t bg-indigo-500 transition-all"
-                    style={{ height: `${height}%` }}
-                    title={`${d.date}: ${formatPrice(d.revenue)}`}
-                  />
-                  {days <= 30 && (
-                    <span className="mt-1 text-[9px] text-gray-400 rotate-0 whitespace-nowrap">
-                      {d.date.slice(8)}
-                    </span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
+      {/* ── Main chart: revenue ───────────────────────────────── */}
+      <ChartCard title="Ingresos por día" subtitle={`Total: ${formatPrice(totalRevenue)}`}>
+        <RevenueChart data={revenueData} period={period} />
+      </ChartCard>
+
+      {/* ── Two columns ──────────────────────────────────────── */}
+      <div className="grid gap-5 lg:grid-cols-2">
+        <ChartCard title="Turnos por servicio" subtitle={`${totalApts} total`}>
+          {servicesData.length > 0
+            ? <ServicesPieChart data={servicesData} />
+            : <EmptyChart />}
+        </ChartCard>
+
+        <ChartCard title="Turnos por día de la semana" subtitle="Distribución histórica">
+          <WeekdayChart data={weekdayData} />
+        </ChartCard>
       </div>
 
-      {/* Status breakdown */}
-      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-        <h2 className="mb-4 text-base font-semibold text-gray-900">Desglose por estado</h2>
-        <div className="flex flex-wrap gap-3">
-          {Object.entries(statusConfig).map(([status, cfg]) => (
-            <div key={status} className={`flex items-center gap-2 rounded-full px-3 py-1.5 ${cfg.color}`}>
-              <span className="text-sm font-medium">{cfg.label}</span>
-              <span className="text-sm font-bold">{byStatus[status] ?? 0}</span>
-            </div>
-          ))}
-        </div>
+      {/* ── Two columns ──────────────────────────────────────── */}
+      <div className="grid gap-5 lg:grid-cols-2">
+        <ChartCard title="Estado de cobro" subtitle="Turnos activos">
+          {paymentData.length > 0
+            ? <PaymentStatusChart data={paymentData} />
+            : <EmptyChart />}
+        </ChartCard>
+
+        <ChartCard title="Crecimiento de clientes" subtitle={`${allClients.length} total`}>
+          <ClientGrowthChart data={clientGrowthData} period={period} />
+        </ChartCard>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Top 5 clients */}
-        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-base font-semibold text-gray-900">Top 5 clientes</h2>
-          {top5Clients.length === 0 ? (
-            <p className="text-sm text-gray-400">Sin turnos en este período</p>
-          ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-100 text-left text-xs font-medium uppercase tracking-wider text-gray-400">
-                  <th className="pb-2">Cliente</th>
-                  <th className="pb-2 text-center">Turnos</th>
-                  <th className="pb-2 text-right">Cobrado</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {top5Clients.map((c) => (
-                  <tr key={c.email}>
-                    <td className="py-2">
-                      <p className="font-medium text-gray-900">{c.name}</p>
-                      <p className="text-xs text-gray-400">{c.email}</p>
-                    </td>
-                    <td className="py-2 text-center text-gray-700">{c.count}</td>
-                    <td className="py-2 text-right font-medium text-gray-900">
-                      {formatPrice(c.revenue)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+      {/* ── Top clients table ─────────────────────────────────── */}
+      {top5Clients.length > 0 && (
+        <div className="overflow-hidden rounded-2xl" style={{ border: "1px solid var(--border)", backgroundColor: "var(--bg-card)" }}>
+          <div className="border-b px-5 py-4 flex items-center justify-between" style={{ borderColor: "var(--border-subtle)", backgroundColor: "var(--bg-subtle)" }}>
+            <p className="font-semibold" style={{ color: "var(--text)" }}>Top pacientes</p>
+            <p className="text-xs" style={{ color: "var(--text-faint)" }}>por cantidad de turnos</p>
+          </div>
+          <div className="divide-y" style={{ borderColor: "var(--border-subtle)" }}>
+            {top5Clients.map((c, i) => (
+              <div key={c.name} className="flex items-center gap-4 px-5 py-3.5">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
+                      style={{ backgroundColor: i === 0 ? "#2563eb" : i === 1 ? "#3b82f6" : "#93c5fd" }}>
+                  {i + 1}
+                </span>
+                <span className="flex-1 text-sm font-medium truncate" style={{ color: "var(--text)" }}>{c.name}</span>
+                <span className="text-sm" style={{ color: "var(--text-muted)" }}>{c.count} turno{c.count !== 1 ? "s" : ""}</span>
+                {c.revenue > 0 && (
+                  <span className="text-sm font-semibold" style={{ color: "var(--text)" }}>{formatPrice(c.revenue)}</span>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
+      )}
+    </div>
+  );
+}
 
-        {/* Services breakdown */}
-        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-base font-semibold text-gray-900">Servicios más demandados</h2>
-          {serviceList.length === 0 ? (
-            <p className="text-sm text-gray-400">Sin turnos en este período</p>
-          ) : (
-            <div className="space-y-3">
-              {serviceList.map((s) => {
-                const pct = totalServiceCount > 0 ? (s.count / totalServiceCount) * 100 : 0;
-                return (
-                  <div key={s.name} className="flex items-center gap-3">
-                    <span className="w-32 text-sm truncate text-gray-700">{s.name}</span>
-                    <div className="flex-1 rounded-full bg-gray-100 h-2">
-                      <div
-                        className="rounded-full bg-indigo-500 h-2"
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                    <span className="text-sm text-gray-500 w-8 text-right">{s.count}</span>
-                  </div>
-                );
-              })}
+// ── Sub-components ───────────────────────────────────────────────
+
+function KpiCard({ icon: Icon, label, value, change, accent, alert }: {
+  icon: React.ElementType;
+  label: string;
+  value: string;
+  change?: number;
+  accent: string;
+  alert?: boolean;
+}) {
+  return (
+    <div className="relative overflow-hidden rounded-2xl p-4 transition-all hover:-translate-y-0.5 sm:p-5"
+         style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border)" }}>
+      <div className="absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl" style={{ backgroundColor: accent }} />
+      <div className="flex items-start justify-between gap-2 pt-1">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-widest sm:text-xs" style={{ color: "var(--text-faint)" }}>{label}</p>
+          <p className="mt-2 text-2xl font-black sm:text-3xl" style={{ color: "var(--text)", letterSpacing: "-0.03em" }}>{value}</p>
+          {change !== undefined && (
+            <div className="mt-1 flex items-center gap-1">
+              {change > 0 ? <TrendingUp className="h-3 w-3 text-emerald-500" /> :
+               change < 0 ? <TrendingDown className="h-3 w-3 text-red-400" /> :
+               <Minus className="h-3 w-3" style={{ color: "var(--text-faint)" }} />}
+              <span className={`text-xs font-semibold ${change > 0 ? "text-emerald-500" : change < 0 ? "text-red-400" : ""}`}
+                    style={change === 0 ? { color: "var(--text-faint)" } : undefined}>
+                {change > 0 ? "+" : ""}{change}% vs anterior
+              </span>
             </div>
           )}
         </div>
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+             style={{ backgroundColor: `${accent}18` }}>
+          <Icon className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: accent }} />
+        </div>
       </div>
+    </div>
+  );
+}
+
+function ChartCard({ title, subtitle, children }: {
+  title: string;
+  subtitle: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="overflow-hidden rounded-2xl" style={{ border: "1px solid var(--border)", backgroundColor: "var(--bg-card)" }}>
+      <div className="border-b px-5 py-4" style={{ borderColor: "var(--border-subtle)", backgroundColor: "var(--bg-subtle)" }}>
+        <p className="font-semibold" style={{ color: "var(--text)" }}>{title}</p>
+        <p className="text-xs mt-0.5" style={{ color: "var(--text-faint)" }}>{subtitle}</p>
+      </div>
+      <div className="p-5">{children}</div>
+    </div>
+  );
+}
+
+function EmptyChart() {
+  return (
+    <div className="flex h-40 items-center justify-center text-sm" style={{ color: "var(--text-faint)" }}>
+      Sin datos para este período
     </div>
   );
 }
