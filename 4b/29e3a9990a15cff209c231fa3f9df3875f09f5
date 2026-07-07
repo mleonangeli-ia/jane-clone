@@ -1,0 +1,58 @@
+app/page.tsx
+  s_b7d33d458833f1::t_c9d12469b9c0b7 69,72,81-85,92,104,111,120,167,174,187,190-191,195,203,206,216,239-241,297
+app/login/page.tsx
+  s_b7d33d458833f1::t_8cec0a36c3ca38 258,266,278
+app/dashboard/staff/page.tsx
+  s_b7d33d458833f1::t_c64aa5a73d2b87 54,56,59
+app/patient/portal/page.tsx
+  s_b7d33d458833f1::t_c64aa5a73d2b87 73-74,77,149
+app/dashboard/settings/afip/page.tsx
+  s_b7d33d458833f1::t_c64aa5a73d2b87 82,112,121
+app/dashboard/page.tsx
+  s_b7d33d458833f1::t_8cec0a36c3ca38 87,100-101,104,175-176,207,209,258
+app/book/[slug]/page.tsx
+  s_b7d33d458833f1::t_c64aa5a73d2b87 60,178
+components/afip/AfipConfigForm.tsx
+  s_b7d33d458833f1::t_c64aa5a73d2b87 120,134,148,155,166
+tsconfig.tsbuildinfo
+  s_8c6bc0f418be34::t_b8f3d28f310fa6 1
+app/globals.css
+  s_b7d33d458833f1::t_e2d3ed8f660274 115
+  s_b7d33d458833f1::t_93fb7051a3323d 5,28-30,35-37,71-73,77-79
+components/invoices/InvoiceEditForm.tsx
+  s_b7d33d458833f1::t_c64aa5a73d2b87 103,105,108,113,138,223,232
+components/afip/AfipAuthorizeButton.tsx
+  s_b7d33d458833f1::t_c64aa5a73d2b87 14,43
+components/layout/Sidebar.tsx
+  s_b7d33d458833f1::t_8cec0a36c3ca38 53,143
+app/api/invoices/[id]/release/route.ts
+  s_b7d33d458833f1::t_c64aa5a73d2b87 71,87,94
+components/invoices/AppointmentInvoiceButton.tsx
+  s_b7d33d458833f1::t_c64aa5a73d2b87 28,39-40
+app/register/page.tsx
+  s_b7d33d458833f1::t_8cec0a36c3ca38 59,102,112
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "4b29e3a9990a15cff209c231fa3f9df3875f09f5",
+  "prompts": {},
+  "sessions": {
+    "s_8c6bc0f418be34": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c201ad1a-7c66-4b52-ba4c-55006f2c6ddf",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Matias Leonangeli <matias.leonangeli@mercadolibre.com>"
+    },
+    "s_b7d33d458833f1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1e396cc2-b540-49f1-b87b-a96982e27c87",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Matias Leonangeli <matias.leonangeli@mercadolibre.com>"
+    }
+  }
+}
