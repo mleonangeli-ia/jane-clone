@@ -17,11 +17,6 @@ const features = [
   { icon: Zap,        title: "Recordatorios automáticos", desc: "Emails automáticos al confirmar. Menos no-shows, más tranquilidad." },
 ];
 
-const testimonials = [
-  { quote: "Desde que uso JaneClone mis pacientes reservan solos. Ya no pierdo tiempo coordinando.", name: "Lic. Florencia L.", role: "Psicóloga, CABA",     initials: "FL" },
-  { quote: "Configuré todo en 10 minutos y al día siguiente ya tenía mis primeras reservas.",       name: "Dr. Martín S.",   role: "Kinesiólogo, Rosario", initials: "MS" },
-  { quote: "El cobro con MercadoPago me cambió la vida. Cero turnos sin pagar.",                   name: "Lic. Ana R.",     role: "Nutricionista, Cba.",  initials: "AR" },
-];
 
 export default function LandingPage() {
   return (
@@ -38,7 +33,6 @@ export default function LandingPage() {
           </div>
           <nav className="hidden items-center gap-6 md:flex">
             <a href="#features" className="text-sm text-white/70 hover:text-white transition-colors">Funcionalidades</a>
-            <a href="#testimonials" className="text-sm text-white/70 hover:text-white transition-colors">Testimonios</a>
           </nav>
           <div className="flex items-center gap-2.5">
             <Link href="/login">
@@ -199,33 +193,6 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── Testimonials ─────────────────────────────────────── */}
-        <section id="testimonials" className="bg-[#0f1729] pb-28">
-          <div className="mx-auto max-w-6xl px-6">
-            <div className="mb-12 text-center">
-              <p className="mb-3 text-sm font-bold uppercase tracking-widest text-blue-400">Testimonios</p>
-              <h2 className="text-3xl font-black tracking-tight text-white sm:text-4xl" style={{ letterSpacing: "-0.03em" }}>
-                Profesionales que ya lo usan
-              </h2>
-            </div>
-            <div className="grid gap-5 sm:grid-cols-3">
-              {testimonials.map((t) => (
-                <div key={t.name} className="rounded-2xl border border-white/5 bg-white/5 p-6">
-                  <p className="text-sm leading-relaxed text-gray-300">"{t.quote}"</p>
-                  <div className="mt-5 flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#2563eb]/20 text-sm font-bold text-[#2563eb]">
-                      {t.initials}
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-white">{t.name}</p>
-                      <p className="text-xs text-gray-500">{t.role}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
 
         {/* ── CTA final — fondo abstracto: ondas / flujo de cuidado ── */}
         <section className="relative overflow-hidden">
