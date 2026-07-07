@@ -79,7 +79,7 @@ export default async function AfipSettingsPage() {
           href="https://auth.afip.gob.ar/contribuyente_/login.xhtml"
           target="_blank"
           className="inline-flex items-center gap-1.5 font-medium"
-          style={{ color: "var(--sage)" }}
+          style={{ color: "var(--blue)" }}
         >
           Ir a AFIP <ExternalLink className="h-3.5 w-3.5" />
         </a>
@@ -109,7 +109,7 @@ function PrereqItem({
     <div className="flex items-center justify-between rounded-xl px-4 py-3" style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border)" }}>
       <div className="flex items-center gap-3">
         {ok
-          ? <ShieldCheck className="h-4 w-4 text-emerald-500 shrink-0" />
+          ? <ShieldCheck className="h-4 w-4 text-blue-500 shrink-0" />
           : <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0" />
         }
         <div>
@@ -118,7 +118,7 @@ function PrereqItem({
         </div>
       </div>
       {!ok && link && (
-        <Link href={link} className="text-xs font-medium" style={{ color: "var(--sage)" }}>
+        <Link href={link} className="text-xs font-medium" style={{ color: "var(--blue)" }}>
           {linkText}
         </Link>
       )}

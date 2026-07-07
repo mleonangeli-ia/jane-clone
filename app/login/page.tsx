@@ -255,7 +255,7 @@ export default function LoginPage() {
                   <Button
                     type="button"
                     onClick={handleCaptchaRetry}
-                    className="h-11 w-full bg-gradient-to-r from-[#5a7e6a] to-[#3d6452] hover:from-[#4a6e5a] hover:to-[#2d5442] shadow-md"
+                    className="h-11 w-full bg-gradient-to-r from-[#2563eb] to-[#1d4ed8] hover:from-[#1d4ed8] hover:to-[#1e40af] shadow-md"
                     disabled={loading || !captchaReady}
                   >
                     {loading ? "Verificando..." : "Intentar de nuevo"}
@@ -263,7 +263,7 @@ export default function LoginPage() {
                 ) : (
                   <Button
                     type="submit"
-                    className="h-11 w-full bg-gradient-to-r from-[#5a7e6a] to-[#3d6452] hover:from-[#4a6e5a] hover:to-[#2d5442] shadow-md"
+                    className="h-11 w-full bg-gradient-to-r from-[#2563eb] to-[#1d4ed8] hover:from-[#1d4ed8] hover:to-[#1e40af] shadow-md"
                     disabled={loading}
                   >
                     {loading ? "Ingresando..." : "Iniciar sesión"}
@@ -275,7 +275,7 @@ export default function LoginPage() {
 
           <p className="mt-6 text-center text-sm text-gray-500">
             ¿No tenés cuenta?{" "}
-            <Link href="/register" className="font-semibold text-emerald-600 hover:underline">
+            <Link href="/register" className="font-semibold text-blue-600 hover:underline">
               Registrate gratis
             </Link>
           </p>

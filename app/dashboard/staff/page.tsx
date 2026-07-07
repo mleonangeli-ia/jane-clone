@@ -51,12 +51,12 @@ export default async function StaffPage() {
 
       {/* Info banner when no staff */}
       {staffList.length === 0 && (
-        <div className="rounded-2xl border border-emerald-100 bg-emerald-50 px-5 py-4">
+        <div className="rounded-2xl border border-blue-100 bg-blue-50 px-5 py-4">
           <div className="flex items-start gap-3">
-            <Users className="h-5 w-5 shrink-0 text-emerald-500 mt-0.5" />
+            <Users className="h-5 w-5 shrink-0 text-blue-500 mt-0.5" />
             <div>
               <p className="font-semibold text-emerald-800">Activá el modo clínica</p>
-              <p className="mt-1 text-sm text-emerald-600">
+              <p className="mt-1 text-sm text-blue-600">
                 Al agregar profesionales, tu página de reservas mostrará primero el equipo para que los pacientes elijan con quién atenderse.
               </p>
             </div>

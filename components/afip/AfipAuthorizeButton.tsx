@@ -11,7 +11,7 @@ export function AfipAuthorizeButton({ invoiceId, hasCae }: { invoiceId: string; 
 
   if (hasCae) {
     return (
-      <span className="flex items-center gap-1 text-xs font-semibold text-emerald-600">
+      <span className="flex items-center gap-1 text-xs font-semibold text-blue-600">
         <ShieldCheck className="h-3.5 w-3.5" /> CAE
       </span>
     );
@@ -40,7 +40,7 @@ export function AfipAuthorizeButton({ invoiceId, hasCae }: { invoiceId: string; 
         onClick={authorize}
         disabled={loading}
         className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-white transition-all disabled:opacity-60"
-        style={{ backgroundColor: "var(--sage)" }}
+        style={{ backgroundColor: "var(--blue)" }}
         title="Autorizar en AFIP"
       >
         {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ShieldCheck className="h-3.5 w-3.5" />}

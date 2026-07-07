@@ -68,7 +68,7 @@ function invoiceEmailHtml(p: {
     <tr><td align="center">
       <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;border:1px solid #e5e0d8;overflow:hidden;max-width:560px;">
         <tr>
-          <td style="background:linear-gradient(135deg,#5a7e6a,#3d6452);padding:32px 40px;text-align:center;">
+          <td style="background:linear-gradient(135deg,#2563eb,#1d4ed8);padding:32px 40px;text-align:center;">
             <p style="margin:0;color:#a8d4b8;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;">Comprobante N°${p.invoiceNum}</p>
             <h1 style="margin:8px 0 0;color:#ffffff;font-size:22px;font-weight:800;">Tu comprobante está disponible</h1>
           </td>
@@ -84,14 +84,14 @@ function invoiceEmailHtml(p: {
                 <td style="padding:16px 24px;">
                   <div style="display:flex;justify-content:space-between;">
                     <span style="color:#7a7068;font-size:14px;">Total</span>
-                    <span style="color:#5a7e6a;font-weight:800;font-size:18px;">${p.total}</span>
+                    <span style="color:#2563eb;font-weight:800;font-size:18px;">${p.total}</span>
                   </div>
                 </td>
               </tr>
             </table>
             <div style="text-align:center;margin-bottom:20px;">
               <a href="${p.invoiceUrl}"
-                 style="display:inline-block;background:#5a7e6a;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;padding:14px 32px;border-radius:12px;">
+                 style="display:inline-block;background:#2563eb;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;padding:14px 32px;border-radius:12px;">
                 Ver y descargar comprobante
               </a>
             </div>

@@ -66,10 +66,10 @@ export default function LandingPage() {
           <svg className="absolute inset-0 h-full w-full opacity-[0.07]" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
-                <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#7ab890" strokeWidth="0.8"/>
+                <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#7db8e8" strokeWidth="0.8"/>
               </pattern>
               <pattern id="dots" width="60" height="60" patternUnits="userSpaceOnUse">
-                <circle cx="30" cy="30" r="1.5" fill="#7ab890"/>
+                <circle cx="30" cy="30" r="1.5" fill="#7db8e8"/>
               </pattern>
             </defs>
             <rect width="100%" height="100%" fill="url(#grid)"/>
@@ -78,18 +78,18 @@ export default function LandingPage() {
 
           {/* Círculos decorativos — sugieren ciclos, tiempo, salud */}
           <svg className="absolute inset-0 h-full w-full" xmlns="http://www.w3.org/2000/svg" style={{ opacity: 0.06 }}>
-            <circle cx="75%" cy="20%" r="280" fill="none" stroke="#5a7e6a" strokeWidth="1.5"/>
-            <circle cx="75%" cy="20%" r="200" fill="none" stroke="#5a7e6a" strokeWidth="1"/>
-            <circle cx="75%" cy="20%" r="120" fill="none" stroke="#5a7e6a" strokeWidth="0.8"/>
-            <circle cx="10%" cy="80%" r="160" fill="none" stroke="#5a7e6a" strokeWidth="1"/>
-            <circle cx="10%" cy="80%" r="90"  fill="none" stroke="#5a7e6a" strokeWidth="0.6"/>
+            <circle cx="75%" cy="20%" r="280" fill="none" stroke="#2563eb" strokeWidth="1.5"/>
+            <circle cx="75%" cy="20%" r="200" fill="none" stroke="#2563eb" strokeWidth="1"/>
+            <circle cx="75%" cy="20%" r="120" fill="none" stroke="#2563eb" strokeWidth="0.8"/>
+            <circle cx="10%" cy="80%" r="160" fill="none" stroke="#2563eb" strokeWidth="1"/>
+            <circle cx="10%" cy="80%" r="90"  fill="none" stroke="#2563eb" strokeWidth="0.6"/>
           </svg>
 
           {/* Líneas diagonales sutiles — dinamismo */}
           <svg className="absolute inset-0 h-full w-full" xmlns="http://www.w3.org/2000/svg" style={{ opacity: 0.04 }}>
             {[0,1,2,3,4,5,6,7,8].map(i => (
               <line key={i} x1={`${i * 14}%`} y1="0" x2={`${i * 14 + 30}%`} y2="100%"
-                    stroke="#7ab890" strokeWidth="1"/>
+                    stroke="#7db8e8" strokeWidth="1"/>
             ))}
           </svg>
 
@@ -101,14 +101,14 @@ export default function LandingPage() {
             <div className="max-w-2xl">
 
               <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm font-medium text-white backdrop-blur-sm">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-pulse" />
                 Para profesionales de la salud
               </div>
 
               <h1 className="text-5xl font-black leading-[1.05] tracking-tight text-white sm:text-6xl lg:text-7xl">
                 Tu agenda online,
                 <br />
-                <span className="text-emerald-400">sin complicaciones</span>
+                <span className="text-blue-400">sin complicaciones</span>
               </h1>
 
               <p className="mt-6 max-w-lg text-lg leading-relaxed text-white/75">
@@ -117,7 +117,7 @@ export default function LandingPage() {
 
               <div className="mt-10 flex flex-col gap-3 sm:flex-row">
                 <Link href="/register">
-                  <button className="flex h-13 items-center gap-2 rounded-xl bg-[#5a7e6a] px-8 py-3.5 text-base font-bold text-white shadow-xl shadow-[#5a7e6a]/40 transition-all hover:-translate-y-0.5 hover:bg-[#4a6e5a] hover:shadow-2xl">
+                  <button className="flex h-13 items-center gap-2 rounded-xl bg-[#2563eb] px-8 py-3.5 text-base font-bold text-white shadow-xl shadow-[#2563eb]/40 transition-all hover:-translate-y-0.5 hover:bg-[#1d4ed8] hover:shadow-2xl">
                     Crear cuenta gratis
                     <ArrowRight className="h-5 w-5" />
                   </button>
@@ -164,14 +164,14 @@ export default function LandingPage() {
           <svg className="absolute inset-0 h-full w-full opacity-[0.04]" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <pattern id="hex" width="80" height="70" patternUnits="userSpaceOnUse">
-                <polygon points="40,5 70,20 70,50 40,65 10,50 10,20" fill="none" stroke="#7ab890" strokeWidth="0.8"/>
+                <polygon points="40,5 70,20 70,50 40,65 10,50 10,20" fill="none" stroke="#7db8e8" strokeWidth="0.8"/>
               </pattern>
             </defs>
             <rect width="100%" height="100%" fill="url(#hex)"/>
           </svg>
           <div className="relative mx-auto max-w-6xl px-6">
             <div className="mb-16 text-center">
-              <p className="mb-3 text-sm font-bold uppercase tracking-widest text-emerald-400">Funcionalidades</p>
+              <p className="mb-3 text-sm font-bold uppercase tracking-widest text-blue-400">Funcionalidades</p>
               <h2 className="text-3xl font-black tracking-tight text-white sm:text-4xl" style={{ letterSpacing: "-0.03em" }}>
                 Todo lo que necesitás en un solo lugar
               </h2>
@@ -184,15 +184,15 @@ export default function LandingPage() {
               {features.map(({ icon: Icon, title, desc }, i) => (
                 <div
                   key={title}
-                  className="group relative overflow-hidden rounded-2xl border border-white/5 bg-white/5 p-6 transition-all duration-300 hover:border-emerald-500/30 hover:bg-white/8 hover:-translate-y-1"
+                  className="group relative overflow-hidden rounded-2xl border border-white/5 bg-white/5 p-6 transition-all duration-300 hover:border-blue-500/30 hover:bg-white/8 hover:-translate-y-1"
                   style={{ animationDelay: `${i * 60}ms` }}
                 >
-                  <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-[#5a7e6a]/10">
-                    <Icon className="h-5 w-5 text-emerald-400" />
+                  <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-[#2563eb]/10">
+                    <Icon className="h-5 w-5 text-blue-400" />
                   </div>
                   <h3 className="mb-2 font-bold text-white" style={{ letterSpacing: "-0.02em" }}>{title}</h3>
                   <p className="text-sm leading-relaxed text-gray-400">{desc}</p>
-                  <div className="absolute bottom-0 left-0 h-px w-0 bg-[#5a7e6a] transition-all duration-500 group-hover:w-full" />
+                  <div className="absolute bottom-0 left-0 h-px w-0 bg-[#2563eb] transition-all duration-500 group-hover:w-full" />
                 </div>
               ))}
             </div>
@@ -200,10 +200,10 @@ export default function LandingPage() {
         </section>
 
         {/* ── Testimonials ─────────────────────────────────────── */}
-        <section id="testimonials" className="bg-[#1c1a14] pb-28">
+        <section id="testimonials" className="bg-[#0f1729] pb-28">
           <div className="mx-auto max-w-6xl px-6">
             <div className="mb-12 text-center">
-              <p className="mb-3 text-sm font-bold uppercase tracking-widest text-emerald-400">Testimonios</p>
+              <p className="mb-3 text-sm font-bold uppercase tracking-widest text-blue-400">Testimonios</p>
               <h2 className="text-3xl font-black tracking-tight text-white sm:text-4xl" style={{ letterSpacing: "-0.03em" }}>
                 Profesionales que ya lo usan
               </h2>
@@ -213,7 +213,7 @@ export default function LandingPage() {
                 <div key={t.name} className="rounded-2xl border border-white/5 bg-white/5 p-6">
                   <p className="text-sm leading-relaxed text-gray-300">"{t.quote}"</p>
                   <div className="mt-5 flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#5a7e6a]/20 text-sm font-bold text-[#5a7e6a]">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#2563eb]/20 text-sm font-bold text-[#2563eb]">
                       {t.initials}
                     </div>
                     <div>
@@ -236,9 +236,9 @@ export default function LandingPage() {
           <svg className="absolute inset-0 h-full w-full" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style={{ opacity: 0.12 }}>
             <defs>
               <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%"   stopColor="#5a7e6a" stopOpacity="0"/>
-                <stop offset="50%"  stopColor="#5a7e6a" stopOpacity="1"/>
-                <stop offset="100%" stopColor="#5a7e6a" stopOpacity="0"/>
+                <stop offset="0%"   stopColor="#2563eb" stopOpacity="0"/>
+                <stop offset="50%"  stopColor="#2563eb" stopOpacity="1"/>
+                <stop offset="100%" stopColor="#2563eb" stopOpacity="0"/>
               </linearGradient>
             </defs>
             {[0,1,2,3,4].map(i => (
@@ -294,7 +294,7 @@ export default function LandingPage() {
       <footer className="border-t border-gray-100 bg-white py-8">
         <div className="mx-auto max-w-6xl px-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
           <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#5a7e6a]">
+            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#2563eb]">
               <Calendar className="h-3 w-3 text-white" />
             </div>
             <span className="text-sm font-bold text-gray-800">JaneClone</span>

@@ -25,7 +25,7 @@ export function AppointmentInvoiceButton({
       <a
         href={`/dashboard/invoices`}
         className="flex items-center gap-1 text-xs font-medium transition-colors"
-        style={{ color: "var(--sage)" }}
+        style={{ color: "var(--blue)" }}
       >
         <FileText className="h-3.5 w-3.5" />
         Ver comprobante
@@ -36,8 +36,8 @@ export function AppointmentInvoiceButton({
   if (done && url) {
     return (
       <div className="flex items-center gap-1.5">
-        <CheckCircle className="h-3.5 w-3.5 text-emerald-500" />
-        <a href={url} target="_blank" className="text-xs font-medium text-emerald-600 hover:underline flex items-center gap-0.5">
+        <CheckCircle className="h-3.5 w-3.5 text-blue-500" />
+        <a href={url} target="_blank" className="text-xs font-medium text-blue-600 hover:underline flex items-center gap-0.5">
           Comprobante enviado <ExternalLink className="h-3 w-3" />
         </a>
       </div>

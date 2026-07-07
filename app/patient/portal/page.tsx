@@ -70,11 +70,11 @@ export default async function PatientPortalPage() {
             <p className="text-xl font-extrabold text-sky-600">{upcoming.length}</p>
             <p className="mt-0.5 text-xs text-sky-400">Próximos</p>
           </div>
-          <div className="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-center">
-            <p className="text-xl font-extrabold text-emerald-600">
+          <div className="rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-center">
+            <p className="text-xl font-extrabold text-blue-600">
               {client.appointments.filter((a) => a.status === "COMPLETED").length}
             </p>
-            <p className="mt-0.5 text-xs text-emerald-400">Completados</p>
+            <p className="mt-0.5 text-xs text-blue-400">Completados</p>
           </div>
           <div className="rounded-2xl border border-gray-100 bg-white px-4 py-3 text-center shadow-sm">
             <p className="text-xl font-extrabold text-gray-700">{client.appointments.length}</p>
@@ -146,7 +146,7 @@ type Apt = {
 
 function AppointmentCard({ apt, isUpcoming }: { apt: Apt; isUpcoming: boolean }) {
   const statusIcon = {
-    CONFIRMED:  <CheckCircle className="h-4 w-4 text-emerald-500" />,
+    CONFIRMED:  <CheckCircle className="h-4 w-4 text-blue-500" />,
     PENDING:    <AlertCircle className="h-4 w-4 text-yellow-500" />,
     CANCELLED:  <XCircle    className="h-4 w-4 text-red-400"     />,
     COMPLETED:  <CheckCircle className="h-4 w-4 text-gray-400"   />,

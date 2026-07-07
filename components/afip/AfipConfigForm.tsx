@@ -117,7 +117,7 @@ export function AfipConfigForm({ initial, tipoCompOptions }: Props) {
       {/* Certificate */}
       <div className="space-y-1.5">
         <Label className="text-xs font-bold uppercase tracking-widest" style={{ color: "var(--text-faint)" }}>
-          Certificado (.crt / .pem) {initial.hasCert && <span className="text-emerald-500 font-normal">— ya cargado</span>}
+          Certificado (.crt / .pem) {initial.hasCert && <span className="text-blue-500 font-normal">— ya cargado</span>}
         </Label>
         <textarea
           value={cert}
@@ -131,7 +131,7 @@ export function AfipConfigForm({ initial, tipoCompOptions }: Props) {
 
       <div className="space-y-1.5">
         <Label className="text-xs font-bold uppercase tracking-widest" style={{ color: "var(--text-faint)" }}>
-          Clave Privada (.key / .pem) {initial.hasCert && <span className="text-emerald-500 font-normal">— ya cargada</span>}
+          Clave Privada (.key / .pem) {initial.hasCert && <span className="text-blue-500 font-normal">— ya cargada</span>}
         </Label>
         <textarea
           value={key}
@@ -145,14 +145,14 @@ export function AfipConfigForm({ initial, tipoCompOptions }: Props) {
 
       {/* Test result */}
       {testResult && (
-        <div className={`flex items-start gap-2 rounded-xl px-4 py-3 text-sm ${testResult.ok ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-600"}`}>
+        <div className={`flex items-start gap-2 rounded-xl px-4 py-3 text-sm ${testResult.ok ? "bg-blue-50 text-blue-700" : "bg-red-50 text-red-600"}`}>
           {testResult.ok ? <ShieldCheck className="h-4 w-4 mt-0.5 shrink-0" /> : <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />}
           {testResult.msg}
         </div>
       )}
 
       {success && (
-        <div className="rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700 flex items-center gap-2">
+        <div className="rounded-xl bg-blue-50 px-4 py-3 text-sm text-blue-700 flex items-center gap-2">
           <ShieldCheck className="h-4 w-4" /> Configuración guardada
         </div>
       )}
@@ -163,7 +163,7 @@ export function AfipConfigForm({ initial, tipoCompOptions }: Props) {
           onClick={save}
           disabled={saving}
           className="flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:-translate-y-0.5 disabled:opacity-60"
-          style={{ backgroundColor: "var(--sage)" }}
+          style={{ backgroundColor: "var(--blue)" }}
         >
           {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
           Guardar configuración

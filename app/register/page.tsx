@@ -56,7 +56,7 @@ export default function RegisterPage() {
           <ul className="space-y-3">
             {perks.map((p) => (
               <li key={p} className="flex items-center gap-3 text-gray-300">
-                <CheckCircle className="h-5 w-5 shrink-0 text-emerald-400" />
+                <CheckCircle className="h-5 w-5 shrink-0 text-blue-400" />
                 <span>{p}</span>
               </li>
             ))}
@@ -99,7 +99,7 @@ export default function RegisterPage() {
               )}
               <Button
                 type="submit"
-                className="h-11 w-full bg-gradient-to-r from-[#5a7e6a] to-[#3d6452] hover:from-[#4a6e5a] hover:to-[#2d5442] shadow-md"
+                className="h-11 w-full bg-gradient-to-r from-[#2563eb] to-[#1d4ed8] hover:from-[#1d4ed8] hover:to-[#1e40af] shadow-md"
                 disabled={loading}
               >
                 {loading ? "Creando cuenta..." : "Crear cuenta gratis"}
@@ -109,7 +109,7 @@ export default function RegisterPage() {
 
           <p className="mt-6 text-center text-sm text-gray-500">
             ¿Ya tenés cuenta?{" "}
-            <Link href="/login" className="font-semibold text-emerald-600 hover:underline">
+            <Link href="/login" className="font-semibold text-blue-600 hover:underline">
               Iniciar sesión
             </Link>
           </p>

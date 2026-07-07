@@ -100,17 +100,17 @@ export function InvoiceEditForm({
 
       {/* Released banner */}
       {released && pubUrl && (
-        <div className="flex items-center justify-between rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4">
+        <div className="flex items-center justify-between rounded-2xl border border-blue-200 bg-blue-50 px-5 py-4">
           <div className="flex items-center gap-2">
-            <CheckCircle className="h-5 w-5 text-emerald-500" />
+            <CheckCircle className="h-5 w-5 text-blue-500" />
             <div>
               <p className="font-semibold text-emerald-800">Comprobante liberado</p>
-              <p className="text-sm text-emerald-600">El email fue enviado al paciente con el link de descarga.</p>
+              <p className="text-sm text-blue-600">El email fue enviado al paciente con el link de descarga.</p>
             </div>
           </div>
           <a href={pubUrl} target="_blank"
              className="flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold text-white"
-             style={{ backgroundColor: "#5a7e6a" }}>
+             style={{ backgroundColor: "#2563eb" }}>
             Ver como paciente
             <ExternalLink className="h-4 w-4" />
           </a>
@@ -135,7 +135,7 @@ export function InvoiceEditForm({
           )}
           <div className="flex justify-between border-t pt-3" style={{ borderColor: "var(--border)" }}>
             <span className="font-bold" style={{ color: "var(--text)" }}>Total</span>
-            <span className="text-xl font-black" style={{ color: "var(--sage)" }}>{formatPrice(total)}</span>
+            <span className="text-xl font-black" style={{ color: "var(--blue)" }}>{formatPrice(total)}</span>
           </div>
         </div>
       </div>
@@ -220,7 +220,7 @@ export function InvoiceEditForm({
           </button>
 
           {saveOk && (
-            <span className="flex items-center gap-1 text-sm text-emerald-600">
+            <span className="flex items-center gap-1 text-sm text-blue-600">
               <CheckCircle className="h-4 w-4" /> Guardado
             </span>
           )}
@@ -229,7 +229,7 @@ export function InvoiceEditForm({
             onClick={release}
             disabled={releasing}
             className="flex items-center gap-2 rounded-xl px-6 py-2.5 text-sm font-bold text-white shadow-lg transition-all hover:-translate-y-0.5 disabled:opacity-60"
-            style={{ backgroundColor: "var(--sage)" }}
+            style={{ backgroundColor: "var(--blue)" }}
           >
             {releasing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             Liberar al paciente

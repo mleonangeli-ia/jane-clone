@@ -84,7 +84,7 @@ export default async function DashboardPage() {
 
       {/* ── Stat cards ──────────────────────────────────────── */}
       <div className="stagger-children grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-        <StatCard icon={Calendar}   label="Turnos hoy"       value={todayAppointments.length}    sub={`${yesterdayCount} ayer`}              delta={todayVsYesterday} accent="#5a7e6a" />
+        <StatCard icon={Calendar}   label="Turnos hoy"       value={todayAppointments.length}    sub={`${yesterdayCount} ayer`}              delta={todayVsYesterday} accent="#2563eb" />
         <StatCard icon={Users}      label="Clientes"         value={totalClients}                 sub={`${totalAppointments} totales`}                                accent="#3d8060" />
         <StatCard icon={DollarSign} label="Cobrado hoy"      value={formatPrice(todayRevenue)}    sub="ingresos del día"                                              accent="#c8922a" />
         <StatCard icon={Clock}      label="Pendientes"       value={pendingPayments}              sub="sin cobrar"                            alert={pendingPayments > 0} accent="#d4745a" />
@@ -97,11 +97,11 @@ export default async function DashboardPage() {
         <div className="lg:col-span-2">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="flex items-center gap-2 font-semibold text-gray-800">
-              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-50">
-                <Calendar className="h-3.5 w-3.5 text-emerald-500" />
+              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-blue-50">
+                <Calendar className="h-3.5 w-3.5 text-blue-500" />
               </span>
               Agenda de hoy
-              <span className="ml-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-600">
+              <span className="ml-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-600">
                 {todayAppointments.length}
               </span>
             </h2>
@@ -172,8 +172,8 @@ export default async function DashboardPage() {
           {/* Próximos */}
           <div>
             <h2 className="mb-4 flex items-center gap-2 font-semibold text-gray-800">
-              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-50">
-                <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
+              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-blue-50">
+                <TrendingUp className="h-3.5 w-3.5 text-blue-500" />
               </span>
               Próximos turnos
             </h2>
@@ -204,9 +204,9 @@ export default async function DashboardPage() {
           </div>
 
           {/* Link rápido */}
-          <div className="rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50 to-teal-50 p-5">
+          <div className="rounded-2xl border border-blue-100 bg-gradient-to-br from-emerald-50 to-teal-50 p-5">
             <p className="text-sm font-semibold text-emerald-800">Tu link de reservas</p>
-            <p className="mt-0.5 text-xs text-emerald-500">Compartilo con tus pacientes</p>
+            <p className="mt-0.5 text-xs text-blue-500">Compartilo con tus pacientes</p>
             <Link href={`/book/${session!.user.slug}`} target="_blank">
               <div className="mt-3 flex items-center gap-2 rounded-xl bg-white px-3 py-2.5 shadow-sm ring-1 ring-emerald-100 transition-all hover:ring-emerald-200">
                 <span className="flex-1 truncate text-xs font-medium text-emerald-700">
@@ -255,7 +255,7 @@ function StatCard({
           </p>
           <p className="mt-0.5 hidden text-xs sm:block" style={{ color: "var(--text-muted)" }}>{sub}</p>
           {delta !== undefined && (
-            <p className={`mt-0.5 hidden text-xs font-semibold sm:block ${delta > 0 ? "text-emerald-500" : delta < 0 ? "text-rose-500" : ""}`}
+            <p className={`mt-0.5 hidden text-xs font-semibold sm:block ${delta > 0 ? "text-blue-500" : delta < 0 ? "text-rose-500" : ""}`}
                style={delta === 0 ? { color: "var(--text-faint)" } : undefined}>
               {delta > 0 ? `+${delta}` : delta} vs ayer
             </p>

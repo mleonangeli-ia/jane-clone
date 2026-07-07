@@ -2,7 +2,7 @@
 
 /* ────────────────────────────────────────────────────────────
    LIGHT — Warm pastel palette (posts.design inspired)
-   Background: warm cream   Brand: sage green   Accent: peach
+   Background: warm cream   Brand: blue   Accent: peach
    ──────────────────────────────────────────────────────────── */
 :root {
   --font-inter: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
@@ -25,16 +25,16 @@
   /* Sidebar */
   --sidebar-bg:          #f5f1ea;
   --sidebar-border:      #e8e2d8;
-  --sidebar-active-bg:   #dff0e8;
-  --sidebar-active-text: #2d5c40;
-  --sidebar-icon-active: #4a8060;
+  --sidebar-active-bg:   #eff6ff;
+  --sidebar-active-text: #1d4ed8;
+  --sidebar-icon-active: #3b82f6;
   --sidebar-text:        #907e6e;
   --sidebar-text-hover:  #1a1814;
 
   /* Sage — primary brand */
-  --sage:       #5a7e6a;
-  --sage-light: #d8ede2;
-  --sage-dark:  #2d5c40;
+  --sage:       #2563eb;
+  --sage-light: #dbeafe;
+  --sage-dark:  #1e40af;
 
   /* Peach — secondary */
   --peach:       #d4745a;
@@ -68,15 +68,15 @@
 
   --sidebar-bg:          #181614;
   --sidebar-border:      #262420;
-  --sidebar-active-bg:   rgba(90,126,106,0.18);
-  --sidebar-active-text: #90c4a8;
-  --sidebar-icon-active: #6aaa88;
+  --sidebar-active-bg:   rgba(37,99,235,0.18);
+  --sidebar-active-text: #93c5fd;
+  --sidebar-icon-active: #60a5fa;
   --sidebar-text:        #5a5650;
   --sidebar-text-hover:  #e8e4de;
 
-  --sage:       #5a7e6a;
-  --sage-light: rgba(90,126,106,0.18);
-  --sage-dark:  #90c4a8;
+  --sage:       #2563eb;
+  --sage-light: rgba(37,99,235,0.18);
+  --sage-dark:  #93c5fd;
 
   --peach:       #d4745a;
   --peach-light: rgba(212,116,90,0.18);
@@ -112,7 +112,7 @@ body {
 
 h1, h2, h3, h4 { letter-spacing: -0.025em; }
 
-:focus-visible { outline: 2px solid var(--sage); outline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 ::selection { background: var(--sage-light); color: var(--sage-dark); }
 
 /* ────────────────────────────────────────────────────────────

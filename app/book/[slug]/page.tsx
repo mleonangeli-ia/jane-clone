@@ -57,7 +57,7 @@ export default async function BookingPage({ params }: { params: Promise<{ slug: 
               >
                 {initial}
               </div>
-              <div className="absolute bottom-1 right-1 flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-emerald-400">
+              <div className="absolute bottom-1 right-1 flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-blue-400">
                 <div className="h-2 w-2 rounded-full bg-white" />
               </div>
             </div>
@@ -175,7 +175,7 @@ export default async function BookingPage({ params }: { params: Promise<{ slug: 
                           {formatDuration(service.duration)}
                         </span>
                         {service.price === 0 && (
-                          <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-600">
+                          <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-600">
                             {t.booking.free}
                           </span>
                         )}
