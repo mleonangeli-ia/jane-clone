@@ -1,0 +1,32 @@
+components/charts/RevenueChart.tsx
+  s_b7d33d458833f1::t_8d0442cd575ae1 8-11,15-33,35-44,46-79
+  s_b7d33d458833f1::t_13e92b33be6863 1-7,12-14,34,45,80-81
+components/charts/PaymentStatusChart.tsx
+  s_b7d33d458833f1::t_46526a0f48c2e6 6-24
+components/charts/ClientGrowthChart.tsx
+  s_b7d33d458833f1::t_82839218f02763 9-29,31-33,35-68
+  s_b7d33d458833f1::t_def7f9e8b9a70c 1-8,30,34,69-70
+components/charts/ServicesPieChart.tsx
+  s_b7d33d458833f1::t_6026f8d658d811 1-2,4,6,9,13,28,30,52-53
+  s_b7d33d458833f1::t_d535b63af8d7b0 3,5,7-8,10-12,14-27,29,31-51
+app/dashboard/reports/page.tsx
+  s_b7d33d458833f1::t_593d44749de981 5-6,8-15,27-30,34,38-39,41,44-49,51-53,55-68,70-74,76-79,82,84-87,89-93,95-98,102-104,106-108,110-117,126-150,156-162,164-167,169-175,177-179,182-188,190-192,195-216,218-223,225-249,253-256,261-281
+components/charts/WeekdayChart.tsx
+  s_b7d33d458833f1::t_3f3604a95cb3da 7-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "452ef1d52516ef75398509fe09fc9702e563e579",
+  "prompts": {},
+  "sessions": {
+    "s_b7d33d458833f1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1e396cc2-b540-49f1-b87b-a96982e27c87",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Matias Leonangeli <matias.leonangeli@mercadolibre.com>"
+    }
+  }
+}
