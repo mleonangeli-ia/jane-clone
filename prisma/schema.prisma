@@ -51,6 +51,7 @@ model Tenant {
   passwordResetTokens PasswordResetToken[]
   invoices            Invoice[]
   staff               Staff[]
+  pushSubscriptions   PushSubscription[]
 
   @@map("tenants")
 }
@@ -370,4 +371,18 @@ model StaffAvailability {
 
   @@unique([staffId, dayOfWeek])
   @@map("staff_availability")
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  tenantId  String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("push_subscriptions")
 }

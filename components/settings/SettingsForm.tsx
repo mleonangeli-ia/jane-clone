@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { NEXT_PUBLIC_APP_URL } from "@/lib/constants";
+import { PushNotificationToggle } from "@/components/settings/PushNotificationToggle";
 
 type Tenant = {
   id: string;
@@ -167,6 +168,14 @@ export function SettingsForm({ tenant, isGoogleConnected }: { tenant: Tenant; is
               <Button variant="outline" size="sm">Configurar AFIP</Button>
             </a>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Push Notifications */}
+      <Card>
+        <CardHeader><CardTitle>Notificaciones Push</CardTitle></CardHeader>
+        <CardContent>
+          <PushNotificationToggle />
         </CardContent>
       </Card>
     </div>

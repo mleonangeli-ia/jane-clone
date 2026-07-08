@@ -8,6 +8,9 @@ import { getClientIp } from "@/lib/rate-limit";
 import { generateIntakeToken } from "@/lib/intake-token";
 import { checkBookingRateLimit, isDisposableEmail, isHoneypotClean } from "@/lib/abuse";
 import { createCalendarEvent } from "@/lib/google-calendar";
+import { sendPushToTenant } from "@/lib/push/send";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
@@ -145,6 +148,13 @@ export async function POST(req: NextRequest) {
         }
       }).catch(console.error);
     }
+
+    // Push notification to the professional
+    sendPushToTenant(tenantId, {
+      title: "📅 Nuevo turno reservado",
+      body:  `${clientName} · ${service.name} · ${format(start, "d MMM HH:mm", { locale: es })}`,
+      url:   "/dashboard/appointments",
+    }).catch(console.error);
   }
 
   return NextResponse.json(
