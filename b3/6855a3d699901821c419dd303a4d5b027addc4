@@ -1,0 +1,32 @@
+app/dashboard/page.tsx
+  s_b7d33d458833f1::t_55a5b10c510f69 87,104
+app/register/page.tsx
+  s_b7d33d458833f1::t_55a5b10c510f69 59,112
+  s_b7d33d458833f1::t_9bfdfaf957d297 45,102
+app/page.tsx
+  s_b7d33d458833f1::t_55a5b10c510f69 57,75-79,98,105,114,168,184-185,189,206-208,264
+  s_b7d33d458833f1::t_9bfdfaf957d297 91
+components/layout/BottomNav.tsx
+  s_b7d33d458833f1::t_55a5b10c510f69 31,36,43
+components/layout/Sidebar.tsx
+  s_b7d33d458833f1::t_9bfdfaf957d297 53,143
+app/login/page.tsx
+  s_b7d33d458833f1::t_55a5b10c510f69 278
+  s_b7d33d458833f1::t_9bfdfaf957d297 143,258,266
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "b36855a3d699901821c419dd303a4d5b027addc4",
+  "prompts": {},
+  "sessions": {
+    "s_b7d33d458833f1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1e396cc2-b540-49f1-b87b-a96982e27c87",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Matias Leonangeli <matias.leonangeli@mercadolibre.com>"
+    }
+  }
+}
