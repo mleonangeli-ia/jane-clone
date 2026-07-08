@@ -140,7 +140,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen">
       {/* ── Left panel ─────────────────────────────────────── */}
-      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between bg-gradient-to-br from-[#1c1a14] via-[#1c1a14] to-[#242018] p-12 text-white">
+      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between bg-gradient-to-br from-[#0c2d4e] via-[#0a1e3d] to-[#071528] p-12 text-white">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20">
             <Calendar className="h-5 w-5 text-white" />
@@ -255,7 +255,7 @@ export default function LoginPage() {
                   <Button
                     type="button"
                     onClick={handleCaptchaRetry}
-                    className="h-11 w-full bg-gradient-to-r from-[#2563eb] to-[#1d4ed8] hover:from-[#1d4ed8] hover:to-[#1e40af] shadow-md"
+                    className="h-11 w-full bg-gradient-to-r from-sky-400 to-sky-600 hover:from-sky-500 hover:to-sky-700 shadow-md"
                     disabled={loading || !captchaReady}
                   >
                     {loading ? "Verificando..." : "Intentar de nuevo"}
@@ -263,7 +263,7 @@ export default function LoginPage() {
                 ) : (
                   <Button
                     type="submit"
-                    className="h-11 w-full bg-gradient-to-r from-[#2563eb] to-[#1d4ed8] hover:from-[#1d4ed8] hover:to-[#1e40af] shadow-md"
+                    className="h-11 w-full bg-gradient-to-r from-sky-400 to-sky-600 hover:from-sky-500 hover:to-sky-700 shadow-md"
                     disabled={loading}
                   >
                     {loading ? "Ingresando..." : "Iniciar sesión"}
@@ -275,7 +275,7 @@ export default function LoginPage() {
 
           <p className="mt-6 text-center text-sm text-gray-500">
             ¿No tenés cuenta?{" "}
-            <Link href="/register" className="font-semibold text-blue-600 hover:underline">
+            <Link href="/register" className="font-semibold text-sky-700 hover:underline">
               Registrate gratis
             </Link>
           </p>

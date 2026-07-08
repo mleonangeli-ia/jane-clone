@@ -84,7 +84,7 @@ export default async function DashboardPage() {
 
       {/* ── Stat cards ──────────────────────────────────────── */}
       <div className="stagger-children grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-        <StatCard icon={Calendar}   label="Turnos hoy"       value={todayAppointments.length}    sub={`${yesterdayCount} ayer`}              delta={todayVsYesterday} accent="#2563eb" />
+        <StatCard icon={Calendar}   label="Turnos hoy"       value={todayAppointments.length}    sub={`${yesterdayCount} ayer`}              delta={todayVsYesterday} accent="#0284c7" />
         <StatCard icon={Users}      label="Clientes"         value={totalClients}                 sub={`${totalAppointments} totales`}                                accent="#3d8060" />
         <StatCard icon={DollarSign} label="Cobrado hoy"      value={formatPrice(todayRevenue)}    sub="ingresos del día"                                              accent="#c8922a" />
         <StatCard icon={Clock}      label="Pendientes"       value={pendingPayments}              sub="sin cobrar"                            alert={pendingPayments > 0} accent="#d4745a" />
@@ -101,7 +101,7 @@ export default async function DashboardPage() {
                 <Calendar className="h-3.5 w-3.5 text-blue-500" />
               </span>
               Agenda de hoy
-              <span className="ml-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-600">
+              <span className="ml-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-sky-700">
                 {todayAppointments.length}
               </span>
             </h2>

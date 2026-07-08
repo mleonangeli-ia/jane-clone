@@ -1,92 +1,92 @@
 @import "tailwindcss";
 
 /* ────────────────────────────────────────────────────────────
-   LIGHT — Warm pastel palette (posts.design inspired)
-   Background: warm cream   Brand: blue   Accent: peach
+   LIGHT — Celeste & Blue pastel palette
+   Background: sky-50   Brand: sky-600   Sidebar: sky-100
    ──────────────────────────────────────────────────────────── */
 :root {
   --font-inter: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
 
   /* Surfaces */
-  --bg:           #faf8f3;
+  --bg:           #f0f9ff;
   --bg-card:      #ffffff;
-  --bg-subtle:    #f3efe8;
-  --bg-hover:     #ebe6dd;
+  --bg-subtle:    #e0f2fe;
+  --bg-hover:     #bae6fd;
 
   /* Borders */
-  --border:       #dfd7cc;
-  --border-subtle:#ece7df;
+  --border:       #bae6fd;
+  --border-subtle:#e0f2fe;
 
   /* Text */
-  --text:         #1a1814;
-  --text-muted:   #7a7068;
-  --text-faint:   #b8b0a4;
+  --text:         #0c4a6e;
+  --text-muted:   #0369a1;
+  --text-faint:   #7dd3fc;
 
   /* Sidebar */
-  --sidebar-bg:          #f5f1ea;
-  --sidebar-border:      #e8e2d8;
-  --sidebar-active-bg:   #eff6ff;
-  --sidebar-active-text: #1d4ed8;
-  --sidebar-icon-active: #3b82f6;
-  --sidebar-text:        #907e6e;
-  --sidebar-text-hover:  #1a1814;
+  --sidebar-bg:          #e0f2fe;
+  --sidebar-border:      #bae6fd;
+  --sidebar-active-bg:   #bae6fd;
+  --sidebar-active-text: #0369a1;
+  --sidebar-icon-active: #0284c7;
+  --sidebar-text:        #38bdf8;
+  --sidebar-text-hover:  #0c4a6e;
 
-  /* Sage — primary brand */
-  --sage:       #2563eb;
-  --sage-light: #dbeafe;
-  --sage-dark:  #1e40af;
+  /* Sky — primary brand */
+  --blue:       #0284c7;
+  --blue-light: #e0f2fe;
+  --blue-dark:  #0369a1;
 
-  /* Peach — secondary */
-  --peach:       #d4745a;
-  --peach-light: #fde4d8;
+  /* Cyan — secondary */
+  --peach:       #06b6d4;
+  --peach-light: #cffafe;
 
   /* Amber — tertiary */
-  --amber:       #c8922a;
-  --amber-light: #fdf0d0;
+  --amber:       #f59e0b;
+  --amber-light: #fef3c7;
 
   /* Emerald / success */
-  --emerald:      #3d8060;
-  --emerald-muted:#d4ede4;
-  --emerald-text: #1a5c3a;
+  --emerald:      #059669;
+  --emerald-muted:#d1fae5;
+  --emerald-text: #065f46;
 }
 
 /* ────────────────────────────────────────────────────────────
-   DARK — Warm charcoal + muted sage accents
+   DARK — Deep navy + muted sky accents
    ──────────────────────────────────────────────────────────── */
 [data-theme="dark"] {
-  --bg:           #141210;
-  --bg-card:      #1e1c18;
-  --bg-subtle:    #262420;
-  --bg-hover:     #2e2c28;
+  --bg:           #0c1929;
+  --bg-card:      #112131;
+  --bg-subtle:    #163047;
+  --bg-hover:     #1e3d59;
 
-  --border:       #383430;
-  --border-subtle:#2a2824;
+  --border:       #1e4976;
+  --border-subtle:#163047;
 
-  --text:         #f0ece6;
-  --text-muted:   #8a8278;
-  --text-faint:   #524e48;
+  --text:         #e0f2fe;
+  --text-muted:   #7dd3fc;
+  --text-faint:   #1e4976;
 
-  --sidebar-bg:          #181614;
-  --sidebar-border:      #262420;
-  --sidebar-active-bg:   rgba(37,99,235,0.18);
-  --sidebar-active-text: #93c5fd;
-  --sidebar-icon-active: #60a5fa;
-  --sidebar-text:        #5a5650;
-  --sidebar-text-hover:  #e8e4de;
+  --sidebar-bg:          #0a1628;
+  --sidebar-border:      #163047;
+  --sidebar-active-bg:   rgba(2,132,199,0.2);
+  --sidebar-active-text: #7dd3fc;
+  --sidebar-icon-active: #38bdf8;
+  --sidebar-text:        #1e4976;
+  --sidebar-text-hover:  #e0f2fe;
 
-  --sage:       #2563eb;
-  --sage-light: rgba(37,99,235,0.18);
-  --sage-dark:  #93c5fd;
+  --blue:       #0284c7;
+  --blue-light: rgba(2,132,199,0.2);
+  --blue-dark:  #7dd3fc;
 
-  --peach:       #d4745a;
-  --peach-light: rgba(212,116,90,0.18);
+  --peach:       #06b6d4;
+  --peach-light: rgba(6,182,212,0.2);
 
-  --amber:       #c8922a;
-  --amber-light: rgba(200,146,42,0.18);
+  --amber:       #f59e0b;
+  --amber-light: rgba(245,158,11,0.2);
 
-  --emerald:      #3d8060;
-  --emerald-muted:rgba(61,128,96,0.18);
-  --emerald-text: #6ab490;
+  --emerald:      #059669;
+  --emerald-muted:rgba(5,150,105,0.2);
+  --emerald-text: #6ee7b7;
 }
 
 /* ────────────────────────────────────────────────────────────

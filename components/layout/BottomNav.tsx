@@ -28,19 +28,19 @@ export function BottomNav() {
             key={href}
             href={href}
             className="flex flex-1 flex-col items-center justify-center gap-1 py-2.5 transition-all active:scale-95"
-            style={{ color: active ? "#2563eb" : "var(--text-faint)" }}
+            style={{ color: active ? "#0284c7" : "var(--text-faint)" }}
           >
             <Icon className="h-5 w-5" strokeWidth={active ? 2.5 : 1.8} />
             <span
               className="text-[10px] font-semibold"
-              style={{ color: active ? "#2563eb" : "var(--text-faint)" }}
+              style={{ color: active ? "#0284c7" : "var(--text-faint)" }}
             >
               {label}
             </span>
             {active && (
               <span
                 className="absolute top-0 h-0.5 w-10 rounded-full"
-                style={{ backgroundColor: "#2563eb" }}
+                style={{ backgroundColor: "#0284c7" }}
               />
             )}
           </Link>
