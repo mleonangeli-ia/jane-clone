@@ -1,0 +1,37 @@
+tests/lib/i18n.test.ts
+  s_b7d33d458833f1::t_db069c7175cc98 1-86
+tests/lib/csv-parser.test.ts
+  s_b7d33d458833f1::t_f0ddae21525877 1-121
+tests/lib/invoice-token.test.ts
+  s_b7d33d458833f1::t_65b68df5874627 1-57
+tests/lib/patient-auth.test.ts
+  s_b7d33d458833f1::t_4719f276678c33 1-55
+tests/lib/push-vapid.test.ts
+  s_b7d33d458833f1::t_9a8314f8bd2f9e 1-89
+tests/api/auth.test.ts
+  s_b7d33d458833f1::t_79c7cdd75e2345 1-91
+tests/lib/abuse.test.ts
+  s_b7d33d458833f1::t_1fe9ddaa8aecb7 1-28,30-93
+tests/lib/afip-crypto.test.ts
+  s_b7d33d458833f1::t_ec1584c762052d 1-72
+tests/api/clients-import.test.ts
+  s_b7d33d458833f1::t_3cfca103f0206b 1-119
+tests/api/booking.test.ts
+  s_b7d33d458833f1::t_2575abebe0dc9f 1-106
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "5c609d0da82922ee2f20816f14df7e6f648317b8",
+  "prompts": {},
+  "sessions": {
+    "s_b7d33d458833f1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1e396cc2-b540-49f1-b87b-a96982e27c87",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Matias Leonangeli <matias.leonangeli@mercadolibre.com>"
+    }
+  }
+}
