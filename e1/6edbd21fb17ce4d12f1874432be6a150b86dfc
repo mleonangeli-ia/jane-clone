@@ -1,0 +1,39 @@
+app/dashboard/page.tsx
+  s_b7d33d458833f1::t_e25f5594f3da5b 87
+app/login/page.tsx
+  s_b7d33d458833f1::t_7893682a5a34f0 258,266
+components/layout/Sidebar.tsx
+  s_b7d33d458833f1::t_9bb88e5b22f1c3 50-51
+  s_b7d33d458833f1::t_d44319e73476c3 55
+  s_b7d33d458833f1::t_78005fc1a72e41 145
+app/register/page.tsx
+  s_b7d33d458833f1::t_7893682a5a34f0 102
+components/staff/StaffProfileForm.tsx
+  s_b7d33d458833f1::t_7893682a5a34f0 10,99,111
+app/page.tsx
+  s_b7d33d458833f1::t_b672370eee1713 142,156,161,168,184-185,189,206-208,246,261
+  s_b7d33d458833f1::t_cc3c3a2c08d4bf 57
+  s_b7d33d458833f1::t_731c58a9abe8cf 44,63,66,75-79,86,91,98,105,114,264
+components/invoices/InvoiceEditForm.tsx
+  s_b7d33d458833f1::t_7893682a5a34f0 113
+app/globals.css
+  s_b7d33d458833f1::t_d81f46dbf19715 4-5,11,13-14,17-18,21-23,26-45,54,57-85
+components/layout/BottomNav.tsx
+  s_b7d33d458833f1::t_c5bc6797a1b9fa 31,36,43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "e16edbd21fb17ce4d12f1874432be6a150b86dfc",
+  "prompts": {},
+  "sessions": {
+    "s_b7d33d458833f1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1e396cc2-b540-49f1-b87b-a96982e27c87",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Matias Leonangeli <matias.leonangeli@mercadolibre.com>"
+    }
+  }
+}
