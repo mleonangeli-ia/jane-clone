@@ -1,0 +1,21 @@
+app/dashboard/appointments/page.tsx
+  s_b7d33d458833f1::t_c32b902910c15b 15,22,24,26,32,37,39,42-47,52-54,57,69-70,72,77-79,82-144,147-148,150-152,156,159-162,168,173,176,178,180-195,198,200,205-206,208,212,220,235,237-243,246,248-252,263-267,275-276,278
+components/appointments/AppointmentsFilters.tsx
+  s_b7d33d458833f1::t_7b9679eaf72773 9-10,14-19,22-26,32-33,39-40,44-45,50-51,53-54,57-59,61-62,65-66,69-71,74-75,78-94
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "1541eac5e55fbd3d2d0f5caf673f8ae08a9ecca6",
+  "prompts": {},
+  "sessions": {
+    "s_b7d33d458833f1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1e396cc2-b540-49f1-b87b-a96982e27c87",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Matias Leonangeli <matias.leonangeli@mercadolibre.com>"
+    }
+  }
+}
