@@ -47,10 +47,12 @@ function NavContent({ onClose }: { onClose?: () => void }) {
 
   return (
     <div className="flex h-full flex-col" style={{ backgroundColor: "var(--sidebar-bg)" }}>
+      {/* Top accent bar */}
+      <div className="h-0.5 shrink-0" style={{ background: "linear-gradient(90deg, #0d9488, #5eead4, #0d9488)" }} />
 
       {/* Logo */}
       <div className="flex h-16 items-center gap-3 px-5" style={{ borderBottom: "1px solid var(--sidebar-border)" }}>
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-sky-400 to-sky-600 shadow-md shadow-[#5a7e6a]/30">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-teal-700 shadow-md shadow-teal-800/30">
           <Calendar className="h-4 w-4 text-white" />
         </div>
         <span className="flex-1 text-[15px] font-bold tracking-tight" style={{ color: "var(--text)" }}>
@@ -140,7 +142,7 @@ function NavContent({ onClose }: { onClose?: () => void }) {
       {/* User */}
       <div className="p-3" style={{ borderTop: "1px solid var(--sidebar-border)" }}>
         <div className="flex items-center gap-3 rounded-xl px-2 py-2">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-sky-500 text-xs font-bold text-white shadow-sm">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-teal-600 text-xs font-bold text-white shadow-sm">
             {session?.user?.name?.charAt(0)?.toUpperCase() ?? "?"}
           </div>
           <div className="min-w-0 flex-1">

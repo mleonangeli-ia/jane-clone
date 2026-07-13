@@ -110,7 +110,7 @@ export function InvoiceEditForm({
           </div>
           <a href={pubUrl} target="_blank"
              className="flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold text-white"
-             style={{ backgroundColor: "#2563eb" }}>
+             style={{ backgroundColor: "#0f766e" }}>
             Ver como paciente
             <ExternalLink className="h-4 w-4" />
           </a>

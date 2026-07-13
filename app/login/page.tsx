@@ -255,7 +255,7 @@ export default function LoginPage() {
                   <Button
                     type="button"
                     onClick={handleCaptchaRetry}
-                    className="h-11 w-full bg-gradient-to-r from-sky-400 to-sky-600 hover:from-sky-500 hover:to-sky-700 shadow-md"
+                    className="h-11 w-full bg-gradient-to-r from-teal-500 to-teal-700 hover:from-teal-600 hover:to-teal-800 shadow-md"
                     disabled={loading || !captchaReady}
                   >
                     {loading ? "Verificando..." : "Intentar de nuevo"}
@@ -263,7 +263,7 @@ export default function LoginPage() {
                 ) : (
                   <Button
                     type="submit"
-                    className="h-11 w-full bg-gradient-to-r from-sky-400 to-sky-600 hover:from-sky-500 hover:to-sky-700 shadow-md"
+                    className="h-11 w-full bg-gradient-to-r from-teal-500 to-teal-700 hover:from-teal-600 hover:to-teal-800 shadow-md"
                     disabled={loading}
                   >
                     {loading ? "Ingresando..." : "Iniciar sesión"}

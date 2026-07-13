@@ -41,7 +41,7 @@ export default function LandingPage() {
               </button>
             </Link>
             <Link href="/register">
-              <button className="rounded-xl bg-white px-4 py-2 text-sm font-bold text-[#1a1814] shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl">
+              <button className="rounded-xl bg-white px-4 py-2 text-sm font-bold text-slate-900 shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl">
                 Empezar gratis
               </button>
             </Link>
@@ -54,16 +54,16 @@ export default function LandingPage() {
         <section className="relative flex min-h-[90vh] items-center overflow-hidden">
 
           {/* Fondo base: gradiente cálido oscuro */}
-          <div className="absolute inset-0" style={{ background: "linear-gradient(145deg, #0a1628 0%, #0e2042 40%, #0a1628 100%)" }} />
+          <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1a3a3a 30%, #134e4a 60%, #0f2b27 100%)" }} />
 
           {/* Patrón de grilla — evoca agenda/calendario */}
           <svg className="absolute inset-0 h-full w-full opacity-[0.07]" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
-                <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#7db8e8" strokeWidth="0.8"/>
+                <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#5eead4" strokeWidth="0.8"/>
               </pattern>
               <pattern id="dots" width="60" height="60" patternUnits="userSpaceOnUse">
-                <circle cx="30" cy="30" r="1.5" fill="#7db8e8"/>
+                <circle cx="30" cy="30" r="1.5" fill="#5eead4"/>
               </pattern>
             </defs>
             <rect width="100%" height="100%" fill="url(#grid)"/>
@@ -72,37 +72,37 @@ export default function LandingPage() {
 
           {/* Círculos decorativos — sugieren ciclos, tiempo, salud */}
           <svg className="absolute inset-0 h-full w-full" xmlns="http://www.w3.org/2000/svg" style={{ opacity: 0.06 }}>
-            <circle cx="75%" cy="20%" r="280" fill="none" stroke="#0284c7" strokeWidth="1.5"/>
-            <circle cx="75%" cy="20%" r="200" fill="none" stroke="#0284c7" strokeWidth="1"/>
-            <circle cx="75%" cy="20%" r="120" fill="none" stroke="#0284c7" strokeWidth="0.8"/>
-            <circle cx="10%" cy="80%" r="160" fill="none" stroke="#0284c7" strokeWidth="1"/>
-            <circle cx="10%" cy="80%" r="90"  fill="none" stroke="#0284c7" strokeWidth="0.6"/>
+            <circle cx="75%" cy="20%" r="280" fill="none" stroke="#0f766e" strokeWidth="1.5"/>
+            <circle cx="75%" cy="20%" r="200" fill="none" stroke="#0f766e" strokeWidth="1"/>
+            <circle cx="75%" cy="20%" r="120" fill="none" stroke="#0f766e" strokeWidth="0.8"/>
+            <circle cx="10%" cy="80%" r="160" fill="none" stroke="#0f766e" strokeWidth="1"/>
+            <circle cx="10%" cy="80%" r="90"  fill="none" stroke="#0f766e" strokeWidth="0.6"/>
           </svg>
 
           {/* Líneas diagonales sutiles — dinamismo */}
           <svg className="absolute inset-0 h-full w-full" xmlns="http://www.w3.org/2000/svg" style={{ opacity: 0.04 }}>
             {[0,1,2,3,4,5,6,7,8].map(i => (
               <line key={i} x1={`${i * 14}%`} y1="0" x2={`${i * 14 + 30}%`} y2="100%"
-                    stroke="#7db8e8" strokeWidth="1"/>
+                    stroke="#5eead4" strokeWidth="1"/>
             ))}
           </svg>
 
           {/* Gradiente de fade bottom */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0a1628]/80 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a]/80 via-transparent to-transparent" />
 
           {/* Contenido */}
           <div className="relative mx-auto max-w-6xl w-full px-6 py-32">
             <div className="max-w-2xl">
 
               <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm font-medium text-white backdrop-blur-sm">
-                <span className="h-1.5 w-1.5 rounded-full bg-sky-400 animate-pulse" />
+                <span className="h-1.5 w-1.5 rounded-full bg-teal-400 animate-pulse" />
                 Para profesionales de la salud
               </div>
 
               <h1 className="text-5xl font-black leading-[1.05] tracking-tight text-white sm:text-6xl lg:text-7xl">
                 Tu agenda online,
                 <br />
-                <span className="text-sky-400">sin complicaciones</span>
+                <span className="text-teal-300">sin complicaciones</span>
               </h1>
 
               <p className="mt-6 max-w-lg text-lg leading-relaxed text-white/75">
@@ -111,7 +111,7 @@ export default function LandingPage() {
 
               <div className="mt-10 flex flex-col gap-3 sm:flex-row">
                 <Link href="/register">
-                  <button className="flex h-13 items-center gap-2 rounded-xl bg-[#0284c7] px-8 py-3.5 text-base font-bold text-white shadow-xl shadow-[#0284c7]/40 transition-all hover:-translate-y-0.5 hover:bg-[#0369a1] hover:shadow-2xl">
+                  <button className="flex h-13 items-center gap-2 rounded-xl bg-[#0f766e] px-8 py-3.5 text-base font-bold text-white shadow-xl shadow-[#0f766e]/40 transition-all hover:-translate-y-0.5 hover:bg-[#0d9488] hover:shadow-2xl">
                     Crear cuenta gratis
                     <ArrowRight className="h-5 w-5" />
                   </button>
@@ -139,7 +139,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── Benefits strip ─────────────────────────────────── */}
-        <section className="border-y border-gray-100 bg-white py-5">
+        <section className="border-y border-slate-100 bg-white py-5">
           <div className="mx-auto max-w-6xl px-6">
             <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2">
               {["Sin costos de instalación", "Tu link propio de reservas", "Emails automáticos", "Pagos con MercadoPago", "Multiidioma ES/EN/PT", "Seguridad incluida"].map((b) => (
@@ -153,19 +153,19 @@ export default function LandingPage() {
         </section>
 
         {/* ── Features ─────────────────────────────────────────── */}
-        <section id="features" className="relative py-28 overflow-hidden" style={{ backgroundColor: "#1c1a14" }}>
+        <section id="features" className="relative py-28 overflow-hidden" style={{ backgroundColor: "#0f172a" }}>
           {/* Hexagonal / medical cross pattern */}
           <svg className="absolute inset-0 h-full w-full opacity-[0.04]" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <pattern id="hex" width="80" height="70" patternUnits="userSpaceOnUse">
-                <polygon points="40,5 70,20 70,50 40,65 10,50 10,20" fill="none" stroke="#7db8e8" strokeWidth="0.8"/>
+                <polygon points="40,5 70,20 70,50 40,65 10,50 10,20" fill="none" stroke="#5eead4" strokeWidth="0.8"/>
               </pattern>
             </defs>
             <rect width="100%" height="100%" fill="url(#hex)"/>
           </svg>
           <div className="relative mx-auto max-w-6xl px-6">
             <div className="mb-16 text-center">
-              <p className="mb-3 text-sm font-bold uppercase tracking-widest text-sky-400">Funcionalidades</p>
+              <p className="mb-3 text-sm font-bold uppercase tracking-widest text-teal-300">Funcionalidades</p>
               <h2 className="text-3xl font-black tracking-tight text-white sm:text-4xl" style={{ letterSpacing: "-0.03em" }}>
                 Todo lo que necesitás en un solo lugar
               </h2>
@@ -181,12 +181,12 @@ export default function LandingPage() {
                   className="group relative overflow-hidden rounded-2xl border border-white/5 bg-white/5 p-6 transition-all duration-300 hover:border-blue-500/30 hover:bg-white/8 hover:-translate-y-1"
                   style={{ animationDelay: `${i * 60}ms` }}
                 >
-                  <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-[#0284c7]/10">
-                    <Icon className="h-5 w-5 text-sky-400" />
+                  <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-[#0f766e]/10">
+                    <Icon className="h-5 w-5 text-teal-300" />
                   </div>
                   <h3 className="mb-2 font-bold text-white" style={{ letterSpacing: "-0.02em" }}>{title}</h3>
                   <p className="text-sm leading-relaxed text-gray-400">{desc}</p>
-                  <div className="absolute bottom-0 left-0 h-px w-0 bg-[#0284c7] transition-all duration-500 group-hover:w-full" />
+                  <div className="absolute bottom-0 left-0 h-px w-0 bg-[#0f766e] transition-all duration-500 group-hover:w-full" />
                 </div>
               ))}
             </div>
@@ -203,9 +203,9 @@ export default function LandingPage() {
           <svg className="absolute inset-0 h-full w-full" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style={{ opacity: 0.12 }}>
             <defs>
               <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%"   stopColor="#0284c7" stopOpacity="0"/>
-                <stop offset="50%"  stopColor="#0284c7" stopOpacity="1"/>
-                <stop offset="100%" stopColor="#0284c7" stopOpacity="0"/>
+                <stop offset="0%"   stopColor="#0f766e" stopOpacity="0"/>
+                <stop offset="50%"  stopColor="#0f766e" stopOpacity="1"/>
+                <stop offset="100%" stopColor="#0f766e" stopOpacity="0"/>
               </linearGradient>
             </defs>
             {[0,1,2,3,4].map(i => (
@@ -243,7 +243,7 @@ export default function LandingPage() {
             </p>
             <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
               <Link href="/register">
-                <button className="flex h-13 items-center gap-2 rounded-xl bg-white px-10 py-3.5 text-base font-black text-[#1a1814] shadow-2xl transition-all hover:-translate-y-0.5">
+                <button className="flex h-13 items-center gap-2 rounded-xl bg-white px-10 py-3.5 text-base font-black text-slate-900 shadow-2xl transition-all hover:-translate-y-0.5">
                   Crear mi cuenta gratis
                   <ArrowRight className="h-5 w-5" />
                 </button>
@@ -258,10 +258,10 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="border-t border-gray-100 bg-white py-8">
+      <footer className="border-t border-slate-100 bg-white py-8">
         <div className="mx-auto max-w-6xl px-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
           <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#0284c7]">
+            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#0f766e]">
               <Calendar className="h-3 w-3 text-white" />
             </div>
             <span className="text-sm font-bold text-gray-800">JaneClone</span>

@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Save, Loader2, CheckCircle, ToggleLeft, ToggleRight } from "lucide-react";
 
 const COLORS = [
-  "#2563eb","#3b82f6","#0ea5e9","#06b6d4","#10b981",
+  "#0f766e","#3b82f6","#0ea5e9","#06b6d4","#10b981",
   "#f59e0b","#ef4444","#ec4899","#8b5cf6","#64748b",
 ];
 
@@ -96,7 +96,7 @@ export function StaffProfileForm({ staffId, initial }: Props) {
         </div>
         <button onClick={() => set("isActive", !form.isActive)} type="button">
           {form.isActive
-            ? <ToggleRight className="h-8 w-8" style={{ color: "#2563eb" }} />
+            ? <ToggleRight className="h-8 w-8" style={{ color: "#0f766e" }} />
             : <ToggleLeft  className="h-8 w-8" style={{ color: "var(--text-faint)" }} />
           }
         </button>
@@ -108,7 +108,7 @@ export function StaffProfileForm({ staffId, initial }: Props) {
           onClick={save}
           disabled={saving}
           className="flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:-translate-y-0.5 disabled:opacity-60"
-          style={{ backgroundColor: "#2563eb" }}
+          style={{ backgroundColor: "#0f766e" }}
         >
           {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
           Guardar cambios

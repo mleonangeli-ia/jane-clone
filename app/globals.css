@@ -1,48 +1,48 @@
 @import "tailwindcss";
 
 /* ────────────────────────────────────────────────────────────
-   LIGHT — Celeste & Blue pastel palette
-   Background: sky-50   Brand: sky-600   Sidebar: sky-100
+   LIGHT — Slate neutral + Teal brand  (professional & clean)
+   Background: slate-50   Brand: teal-700   Sidebar: white
    ──────────────────────────────────────────────────────────── */
 :root {
   --font-inter: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
 
   /* Surfaces */
-  --bg:           #f0f9ff;
+  --bg:           #f8fafc;
   --bg-card:      #ffffff;
-  --bg-subtle:    #e0f2fe;
-  --bg-hover:     #bae6fd;
+  --bg-subtle:    #f1f5f9;
+  --bg-hover:     #e2e8f0;
 
   /* Borders */
-  --border:       #bae6fd;
-  --border-subtle:#e0f2fe;
+  --border:       #cbd5e1;
+  --border-subtle:#e2e8f0;
 
   /* Text */
-  --text:         #0c4a6e;
-  --text-muted:   #0369a1;
-  --text-faint:   #7dd3fc;
+  --text:         #0f172a;
+  --text-muted:   #475569;
+  --text-faint:   #94a3b8;
 
   /* Sidebar */
-  --sidebar-bg:          #e0f2fe;
-  --sidebar-border:      #bae6fd;
-  --sidebar-active-bg:   #bae6fd;
-  --sidebar-active-text: #0369a1;
-  --sidebar-icon-active: #0284c7;
-  --sidebar-text:        #38bdf8;
-  --sidebar-text-hover:  #0c4a6e;
+  --sidebar-bg:          #ffffff;
+  --sidebar-border:      #e2e8f0;
+  --sidebar-active-bg:   #f0fdfa;
+  --sidebar-active-text: #0f766e;
+  --sidebar-icon-active: #0d9488;
+  --sidebar-text:        #94a3b8;
+  --sidebar-text-hover:  #0f172a;
 
-  /* Sky — primary brand */
-  --blue:       #0284c7;
-  --blue-light: #e0f2fe;
-  --blue-dark:  #0369a1;
+  /* Teal — primary brand */
+  --blue:       #0f766e;
+  --blue-light: #ccfbf1;
+  --blue-dark:  #0f766e;
 
-  /* Cyan — secondary */
-  --peach:       #06b6d4;
-  --peach-light: #cffafe;
+  /* Amber — secondary/CTA warm */
+  --peach:       #d97706;
+  --peach-light: #fef3c7;
 
-  /* Amber — tertiary */
-  --amber:       #f59e0b;
-  --amber-light: #fef3c7;
+  /* Slate — tertiary */
+  --amber:       #64748b;
+  --amber-light: #f1f5f9;
 
   /* Emerald / success */
   --emerald:      #059669;
@@ -51,38 +51,38 @@
 }
 
 /* ────────────────────────────────────────────────────────────
-   DARK — Deep navy + muted sky accents
+   DARK — Deep slate + teal accents
    ──────────────────────────────────────────────────────────── */
 [data-theme="dark"] {
-  --bg:           #0c1929;
-  --bg-card:      #112131;
-  --bg-subtle:    #163047;
-  --bg-hover:     #1e3d59;
+  --bg:           #0f172a;
+  --bg-card:      #1e293b;
+  --bg-subtle:    #334155;
+  --bg-hover:     #475569;
 
-  --border:       #1e4976;
-  --border-subtle:#163047;
+  --border:       #334155;
+  --border-subtle:#1e293b;
 
-  --text:         #e0f2fe;
-  --text-muted:   #7dd3fc;
-  --text-faint:   #1e4976;
+  --text:         #f1f5f9;
+  --text-muted:   #94a3b8;
+  --text-faint:   #475569;
 
-  --sidebar-bg:          #0a1628;
-  --sidebar-border:      #163047;
-  --sidebar-active-bg:   rgba(2,132,199,0.2);
-  --sidebar-active-text: #7dd3fc;
-  --sidebar-icon-active: #38bdf8;
-  --sidebar-text:        #1e4976;
-  --sidebar-text-hover:  #e0f2fe;
+  --sidebar-bg:          #1e293b;
+  --sidebar-border:      #334155;
+  --sidebar-active-bg:   rgba(15,118,110,0.2);
+  --sidebar-active-text: #5eead4;
+  --sidebar-icon-active: #2dd4bf;
+  --sidebar-text:        #475569;
+  --sidebar-text-hover:  #f1f5f9;
 
-  --blue:       #0284c7;
-  --blue-light: rgba(2,132,199,0.2);
-  --blue-dark:  #7dd3fc;
+  --blue:       #0d9488;
+  --blue-light: rgba(13,148,136,0.2);
+  --blue-dark:  #5eead4;
 
-  --peach:       #06b6d4;
-  --peach-light: rgba(6,182,212,0.2);
+  --peach:       #d97706;
+  --peach-light: rgba(217,119,6,0.2);
 
-  --amber:       #f59e0b;
-  --amber-light: rgba(245,158,11,0.2);
+  --amber:       #64748b;
+  --amber-light: rgba(100,116,139,0.2);
 
   --emerald:      #059669;
   --emerald-muted:rgba(5,150,105,0.2);
