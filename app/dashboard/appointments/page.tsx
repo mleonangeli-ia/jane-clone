@@ -12,40 +12,49 @@ import { Suspense } from "react";
 import { AppointmentsFilters } from "@/components/appointments/AppointmentsFilters";
 import Link from "next/link";
 import { AppointmentStatus, Prisma } from "@prisma/client";
+import { Users } from "lucide-react";
 
 const PAGE_SIZE = 25;
 
 export default async function AppointmentsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; status?: string; serviceId?: string; page?: string }>;
+  searchParams: Promise<{ q?: string; status?: string; serviceId?: string; staffId?: string; page?: string }>;
 }) {
-  const session = await getServerSession(authOptions);
+  const session  = await getServerSession(authOptions);
   const tenantId = session!.user.id;
-  const { q, status, serviceId, page: pageParam } = await searchParams;
+  const { q, status, serviceId, staffId, page: pageParam } = await searchParams;
 
   const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
   const skip = (page - 1) * PAGE_SIZE;
 
   const where: Prisma.AppointmentWhereInput = { tenantId };
-  if (q) where.client = { name: { contains: q, mode: "insensitive" } };
+  if (q)        where.client    = { name: { contains: q, mode: "insensitive" } };
   if (status && Object.values(AppointmentStatus).includes(status as AppointmentStatus)) {
     where.status = status as AppointmentStatus;
   }
   if (serviceId) where.serviceId = serviceId;
+  if (staffId)   where.staffId   = staffId;
 
-  const [rawAppointments, services] = await Promise.all([
+  const [rawAppointments, services, staffList, tenant] = await Promise.all([
     prisma.appointment.findMany({
       where,
-      include: { client: true, service: true, invoice: { select: { id: true } } },
+      include: {
+        client:  true,
+        service: true,
+        staff:   { select: { id: true, name: true, title: true, accentColor: true } },
+        invoice: { select: { id: true } },
+      },
       orderBy: { startTime: "desc" },
       skip,
       take: PAGE_SIZE + 1,
     }),
-    prisma.service.findMany({ where: { tenantId } }),
+    prisma.service.findMany({ where: { tenantId }, select: { id: true, name: true } }),
+    prisma.staff.findMany({ where: { tenantId, isActive: true }, select: { id: true, name: true, title: true, accentColor: true }, orderBy: { name: "asc" } }),
+    prisma.tenant.findUnique({ where: { id: tenantId }, select: { isClinic: true } }),
   ]);
 
-  const hasMore = rawAppointments.length > PAGE_SIZE;
+  const hasMore     = rawAppointments.length > PAGE_SIZE;
   const appointments = hasMore ? rawAppointments.slice(0, PAGE_SIZE) : rawAppointments;
 
   const grouped = appointments.reduce<Record<string, typeof appointments>>((acc, apt) => {
@@ -57,62 +66,150 @@ export default async function AppointmentsPage({
 
   function buildPageUrl(targetPage: number) {
     const params = new URLSearchParams();
-    if (q) params.set("q", q);
-    if (status) params.set("status", status);
+    if (q)         params.set("q",         q);
+    if (status)    params.set("status",    status);
     if (serviceId) params.set("serviceId", serviceId);
+    if (staffId)   params.set("staffId",   staffId);
     params.set("page", String(targetPage));
     return `/dashboard/appointments?${params.toString()}`;
   }
 
+  // Staff header summary when filtering
+  const activeStaff = staffId ? staffList.find(s => s.id === staffId) : null;
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-900 sm:text-2xl">Agenda</h1>
+
+      {/* Header */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-xl font-bold sm:text-2xl" style={{ color: "var(--text)", letterSpacing: "-0.03em" }}>
+            Agenda
+          </h1>
+          {activeStaff && (
+            <div className="mt-1 flex items-center gap-2">
+              <div
+                className="h-2 w-2 rounded-full"
+                style={{ backgroundColor: activeStaff.accentColor }}
+              />
+              <p className="text-sm font-medium" style={{ color: "var(--text-muted)" }}>
+                Filtrado: {activeStaff.title ? `${activeStaff.title} ` : ""}{activeStaff.name}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Staff quick-switch pills (solo para clínicas) */}
+        {tenant?.isClinic && staffList.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            <Link href="/dashboard/appointments">
+              <span
+                className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold transition-all"
+                style={{
+                  backgroundColor: !staffId ? "#0284c7" : "var(--bg-subtle)",
+                  color: !staffId ? "white" : "var(--text-muted)",
+                }}
+              >
+                <Users className="h-3 w-3" />
+                Todos
+              </span>
+            </Link>
+            {staffList.map(m => {
+              const active = staffId === m.id;
+              const initial = m.name.split(" ").find(p => !["Lic.", "Dr.", "Dra.", "Mg."].includes(p))?.charAt(0) ?? m.name.charAt(0);
+              return (
+                <Link key={m.id} href={`/dashboard/appointments?staffId=${m.id}`}>
+                  <span
+                    className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-all"
+                    style={{
+                      backgroundColor: active ? m.accentColor : "var(--bg-subtle)",
+                      color: active ? "white" : "var(--text-muted)",
+                    }}
+                  >
+                    <span
+                      className="flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-black"
+                      style={{
+                        backgroundColor: active ? "rgba(255,255,255,0.3)" : m.accentColor + "30",
+                        color: active ? "white" : m.accentColor,
+                      }}
+                    >
+                      {initial.toUpperCase()}
+                    </span>
+                    {m.name.split(" ").slice(0, 2).join(" ")}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </div>
 
-      <Suspense fallback={<div className="h-9 w-full rounded-md bg-gray-100 animate-pulse" />}>
+      {/* Filters */}
+      <Suspense fallback={<div className="h-10 w-full rounded-xl skeleton" />}>
         <AppointmentsFilters
-          services={services.map((s) => ({ id: s.id, name: s.name }))}
-          defaultValues={{ q, status, serviceId }}
+          services={services}
+          staffList={tenant?.isClinic ? staffList : []}
+          defaultValues={{ q, status, serviceId, staffId }}
         />
       </Suspense>
 
+      {/* Appointments list */}
       {Object.keys(grouped).length === 0 ? (
         <Card>
-          <CardContent className="py-16 text-center text-gray-400">
-            Todavía no hay turnos registrados.
+          <CardContent className="py-16 text-center" style={{ color: "var(--text-faint)" }}>
+            {staffId || q || status || serviceId
+              ? "No hay turnos que coincidan con los filtros."
+              : "Todavía no hay turnos registrados."}
           </CardContent>
         </Card>
       ) : (
         (Object.entries(grouped) as [string, typeof appointments][]).map(([date, apts]) => (
           <div key={date}>
-            <h2 className="mb-3 text-sm font-medium uppercase tracking-wider text-gray-400">
+            <h2 className="mb-3 text-xs font-bold uppercase tracking-wider" style={{ color: "var(--text-faint)" }}>
               {format(new Date(date + "T12:00:00"), "EEEE d 'de' MMMM", { locale: es })}
             </h2>
             <div className="space-y-2">
               {apts.map((apt) => (
-                <Card key={apt.id}>
+                <Card key={apt.id} style={{ border: "1px solid var(--border)", backgroundColor: "var(--bg-card)" }}>
                   <CardContent className="py-3 px-4">
                     <div className="flex items-center gap-3">
+                      {/* Color bar */}
                       <div className="h-9 w-1 shrink-0 rounded-full" style={{ backgroundColor: apt.service.color }} />
+
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-gray-900 truncate">{apt.client.name}</p>
-                        <p className="text-xs text-gray-500 truncate">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="font-semibold text-sm truncate" style={{ color: "var(--text)" }}>
+                            {apt.client.name}
+                          </p>
+                          {/* Staff badge — visible cuando hay clínica */}
+                          {apt.staff && (
+                            <span
+                              className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold text-white"
+                              style={{ backgroundColor: apt.staff.accentColor }}
+                            >
+                              {apt.staff.title ? `${apt.staff.title} ` : ""}
+                              {apt.staff.name.split(" ").slice(0, 2).join(" ")}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs truncate" style={{ color: "var(--text-muted)" }}>
                           {apt.service.name} · {format(apt.startTime, "HH:mm")}–{format(apt.endTime, "HH:mm")}
                         </p>
-                        {/* Mobile: badges inline */}
+                        {/* Mobile: badges */}
                         <div className="mt-1.5 flex flex-wrap items-center gap-1.5 sm:hidden">
-                          <span className="text-xs font-semibold text-gray-600">{formatPrice(apt.service.price)}</span>
+                          <span className="text-xs font-semibold" style={{ color: "var(--text)" }}>{formatPrice(apt.service.price)}</span>
                           <PaymentBadge status={apt.paymentStatus} />
                           <StatusBadge status={apt.status} />
                         </div>
                       </div>
-                      {/* Desktop: badges inline right */}
+
+                      {/* Desktop badges */}
                       <div className="hidden shrink-0 items-center gap-2 sm:flex">
-                        <span className="text-sm font-medium text-gray-700">{formatPrice(apt.service.price)}</span>
+                        <span className="text-sm font-medium" style={{ color: "var(--text)" }}>{formatPrice(apt.service.price)}</span>
                         <PaymentBadge status={apt.paymentStatus} />
                         <StatusBadge status={apt.status} />
                       </div>
+
                       {apt.status === "COMPLETED" || apt.paymentStatus === "PAID" ? (
                         <AppointmentInvoiceButton
                           appointmentId={apt.id}
@@ -120,6 +217,7 @@ export default async function AppointmentsPage({
                           existingInvoiceId={apt.invoice?.id}
                         />
                       ) : null}
+
                       <AppointmentActions
                         appointmentId={apt.id}
                         currentStatus={apt.status}
@@ -134,24 +232,24 @@ export default async function AppointmentsPage({
         ))
       )}
 
+      {/* Pagination */}
       {(page > 1 || hasMore) && (
-        <div className="flex items-center justify-between pt-2">
-          {page > 1 ? (
-            <Link
-              href={buildPageUrl(page - 1)}
-              className="text-sm font-medium text-indigo-600 hover:text-indigo-800"
-            >
-              ← Anterior
+        <div className="flex items-center justify-center gap-4 pt-2">
+          {page > 1 && (
+            <Link href={buildPageUrl(page - 1)}>
+              <button className="rounded-xl px-4 py-2 text-sm font-medium transition-all"
+                      style={{ backgroundColor: "var(--bg-subtle)", color: "var(--text-muted)", border: "1px solid var(--border)" }}>
+                ← Anterior
+              </button>
             </Link>
-          ) : (
-            <span />
           )}
+          <span className="text-sm" style={{ color: "var(--text-faint)" }}>Página {page}</span>
           {hasMore && (
-            <Link
-              href={buildPageUrl(page + 1)}
-              className="text-sm font-medium text-indigo-600 hover:text-indigo-800"
-            >
-              Siguiente →
+            <Link href={buildPageUrl(page + 1)}>
+              <button className="rounded-xl px-4 py-2 text-sm font-medium transition-all"
+                      style={{ backgroundColor: "var(--bg-subtle)", color: "var(--text-muted)", border: "1px solid var(--border)" }}>
+                Siguiente →
+              </button>
             </Link>
           )}
         </div>
@@ -162,11 +260,11 @@ export default async function AppointmentsPage({
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { label: string; variant: "default" | "success" | "warning" | "destructive" | "secondary" }> = {
-    PENDING: { label: "Pendiente", variant: "warning" },
-    CONFIRMED: { label: "Confirmado", variant: "success" },
-    CANCELLED: { label: "Cancelado", variant: "destructive" },
-    COMPLETED: { label: "Completado", variant: "secondary" },
-    NO_SHOW: { label: "No asistió", variant: "destructive" },
+    PENDING:   { label: "Pendiente",  variant: "warning"     },
+    CONFIRMED: { label: "Confirmado", variant: "success"     },
+    CANCELLED: { label: "Cancelado",  variant: "destructive" },
+    COMPLETED: { label: "Completado", variant: "secondary"   },
+    NO_SHOW:   { label: "No asistió", variant: "destructive" },
   };
   const { label, variant } = map[status] ?? { label: status, variant: "secondary" };
   return <Badge variant={variant}>{label}</Badge>;
@@ -174,10 +272,10 @@ function StatusBadge({ status }: { status: string }) {
 
 function PaymentBadge({ status }: { status: string }) {
   const map: Record<string, { label: string; variant: "default" | "success" | "warning" | "destructive" | "secondary" }> = {
-    UNPAID: { label: "Sin pagar", variant: "warning" },
-    PAID: { label: "Pagado", variant: "success" },
+    UNPAID:   { label: "Sin pagar",   variant: "warning"   },
+    PAID:     { label: "Pagado",      variant: "success"   },
     REFUNDED: { label: "Reembolsado", variant: "secondary" },
-    FAILED: { label: "Fallido", variant: "destructive" },
+    FAILED:   { label: "Fallido",     variant: "destructive" },
   };
   const { label, variant } = map[status] ?? { label: status, variant: "secondary" };
   return <Badge variant={variant}>{label}</Badge>;
