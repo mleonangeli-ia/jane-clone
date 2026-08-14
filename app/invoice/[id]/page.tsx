@@ -1,10 +1,12 @@
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 import { prisma } from "@/lib/db";
 import { verifyInvoiceToken } from "@/lib/invoice-token";
 import { formatPrice } from "@/lib/utils";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { ShieldCheck } from "lucide-react";
+import { consume } from "@/lib/rate-limit";
 
 export default async function PublicInvoicePage({
   params,
@@ -17,6 +19,13 @@ export default async function PublicInvoicePage({
   const { token } = await searchParams;
 
   if (!token) notFound();
+
+  // Rate-limit: 20 attempts per invoice per hour — prevents brute-force on token
+  const hdrs = await headers();
+  const xff  = hdrs.get("x-forwarded-for") ?? "unknown";
+  const ip   = xff.split(",").at(-1)?.trim() ?? "unknown";
+  const { allowed } = consume(`invoice-view:${id}:${ip}`, 20, 60 * 60_000);
+  if (!allowed) notFound(); // silent rejection — don't reveal rate limit
 
   const invoice = await prisma.invoice.findUnique({ where: { id } });
 

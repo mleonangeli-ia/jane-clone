@@ -4,6 +4,7 @@ import { compare } from "bcryptjs";
 import { prisma } from "./db";
 import { consume, peek, reset } from "./rate-limit";
 import { verifyCaptchaToken } from "./captcha";
+import "./env"; // validate env vars at startup
 
 // Soft limit → CAPTCHA required after this many attempts
 const SOFT  = { max: 3,  windowMs: 15 * 60_000 };

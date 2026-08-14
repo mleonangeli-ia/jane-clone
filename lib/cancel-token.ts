@@ -7,5 +7,10 @@ export function generateCancelToken(appointmentId: string, createdAt: Date): str
 }
 
 export function verifyCancelToken(token: string, appointmentId: string, createdAt: Date): boolean {
-  return token === generateCancelToken(appointmentId, createdAt);
+  const expected = generateCancelToken(appointmentId, createdAt);
+  try {
+    return crypto.timingSafeEqual(Buffer.from(token, "hex"), Buffer.from(expected, "hex"));
+  } catch {
+    return false;
+  }
 }

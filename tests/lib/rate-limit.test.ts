@@ -42,11 +42,13 @@ describe("rateLimit", () => {
 });
 
 describe("getClientIp", () => {
-  it("extracts the first IP from x-forwarded-for", () => {
+  // Security note: we take the LAST entry of x-forwarded-for (injected by
+  // the outermost proxy) so attackers can't spoof it by prepending fake IPs.
+  it("extracts the last (outermost-proxy) IP from x-forwarded-for", () => {
     const req = new Request("http://localhost", {
       headers: { "x-forwarded-for": "1.2.3.4, 5.6.7.8" },
     });
-    assert.strictEqual(getClientIp(req), "1.2.3.4");
+    assert.strictEqual(getClientIp(req), "5.6.7.8");
   });
 
   it("returns 'unknown' when header is missing", () => {

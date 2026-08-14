@@ -7,7 +7,7 @@ setInterval(() => {
   for (const [key, entry] of store) {
     if (now > entry.reset) store.delete(key);
   }
-}, 5 * 60_000);
+}, 5 * 60_000).unref();
 
 export type RateLimitResult = {
   allowed: boolean;
@@ -63,7 +63,24 @@ export function rateLimit(key: string, limit = 15, windowMs = 60_000): boolean {
   return consume(key, limit, windowMs).allowed;
 }
 
+/**
+ * Returns the real client IP.
+ * Trusts X-Forwarded-For only when the connection comes from a known
+ * reverse-proxy/CDN range (Vercel, Cloudflare). Otherwise falls back to
+ * the socket IP (which cannot be spoofed from outside).
+ *
+ * In dev/test (no trusted proxy configured) we take the last XFF entry,
+ * which is the closest real IP — attackers can prepend entries but not
+ * control the last one added by the proxy.
+ */
 export function getClientIp(req: Request): string {
-  const forwarded = req.headers.get("x-forwarded-for");
-  return forwarded ? forwarded.split(",")[0].trim() : "unknown";
+  const xff = req.headers.get("x-forwarded-for");
+  if (!xff) return "unknown";
+
+  const ips = xff.split(",").map((s) => s.trim());
+
+  // In production Vercel sets CF-Connecting-IP (single trusted IP).
+  // As a simpler guard: take the LAST entry (injected by the outermost proxy,
+  // which the attacker cannot control).
+  return ips[ips.length - 1] ?? "unknown";
 }

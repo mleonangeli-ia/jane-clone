@@ -107,6 +107,7 @@ model Client {
   invoices           Invoice[]
 
   @@unique([tenantId, email])
+  @@index([tenantId, createdAt])
   @@map("clients")
 }
 
@@ -136,6 +137,9 @@ model Appointment {
   invoice        Invoice?
 
   @@index([staffId])
+  @@index([tenantId, startTime])
+  @@index([tenantId, status])
+  @@index([clientId])
   @@map("appointments")
 }
 

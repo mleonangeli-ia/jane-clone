@@ -19,6 +19,7 @@ export async function GET() {
       _count: { select: { appointments: true } },
     },
     orderBy: { createdAt: "asc" },
+    take: 50,
   });
 
   return NextResponse.json(staff);

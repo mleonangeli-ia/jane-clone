@@ -22,8 +22,11 @@ export function verifyPatientCookie(value: string): string | null {
   if (parts.length !== 3) return null;
   const [clientId, ts, sig] = parts;
   const data     = `${clientId}.${ts}`;
-  const expected = crypto.createHmac("sha256", secret()).update(data).digest("hex");
-  if (!crypto.timingSafeEqual(Buffer.from(sig, "hex"), Buffer.from(expected, "hex"))) return null;
+  const expected    = crypto.createHmac("sha256", secret()).update(data).digest("hex");
+  const expectedBuf = Buffer.from(expected, "hex");
+  const sigBuf      = Buffer.from(sig, "hex");
+  if (sigBuf.length !== expectedBuf.length) return null;
+  if (!crypto.timingSafeEqual(sigBuf, expectedBuf)) return null;
   if (Date.now() - parseInt(ts) > MAX_AGE * 1000) return null;
   return clientId;
 }

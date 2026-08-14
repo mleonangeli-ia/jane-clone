@@ -7,5 +7,10 @@ export function generateIntakeToken(responseId: string, createdAt: Date): string
 }
 
 export function verifyIntakeToken(token: string, responseId: string, createdAt: Date): boolean {
-  return token === generateIntakeToken(responseId, createdAt);
+  const expected = generateIntakeToken(responseId, createdAt);
+  try {
+    return crypto.timingSafeEqual(Buffer.from(token, "hex"), Buffer.from(expected, "hex"));
+  } catch {
+    return false;
+  }
 }

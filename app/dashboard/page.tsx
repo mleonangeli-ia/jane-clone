@@ -159,6 +159,8 @@ export default async function DashboardPage() {
                       appointmentId={apt.id}
                       currentStatus={apt.status}
                       currentPaymentStatus={apt.paymentStatus}
+                      tenantId={tenantId}
+                      serviceId={apt.service.id}
                     />
                   </div>
                 </div>

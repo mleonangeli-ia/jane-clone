@@ -3,9 +3,21 @@ import { prisma } from "@/lib/db";
 import { resend, FROM_EMAIL } from "@/lib/resend";
 import { reminderEmail } from "@/lib/emails/reminder";
 import { startOfDay, endOfDay, addDays } from "date-fns";
+import crypto from "crypto";
+
+function verifyCronSecret(authHeader: string | null): boolean {
+  const secret = process.env.CRON_SECRET;
+  if (!secret) return false;
+  const received = authHeader?.replace(/^Bearer\s+/, "") ?? "";
+  try {
+    return crypto.timingSafeEqual(Buffer.from(received), Buffer.from(secret));
+  } catch {
+    return false;
+  }
+}
 
 export async function GET(req: NextRequest) {
-  if (req.headers.get("authorization") !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!verifyCronSecret(req.headers.get("authorization"))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

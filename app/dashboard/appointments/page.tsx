@@ -222,6 +222,9 @@ export default async function AppointmentsPage({
                         appointmentId={apt.id}
                         currentStatus={apt.status}
                         currentPaymentStatus={apt.paymentStatus}
+                        tenantId={tenantId}
+                        serviceId={apt.service.id}
+                        staffId={apt.staff?.id}
                       />
                     </div>
                   </CardContent>

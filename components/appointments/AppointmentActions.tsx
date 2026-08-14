@@ -4,17 +4,22 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { MoreVertical, CheckCircle, XCircle, DollarSign, UserX } from "lucide-react";
+import { MoreVertical, CheckCircle, XCircle, DollarSign, UserX, CalendarClock } from "lucide-react";
+import { AppointmentRescheduleModal } from "./AppointmentRescheduleModal";
 
 type Props = {
   appointmentId: string;
   currentStatus: string;
   currentPaymentStatus: string;
+  tenantId: string;
+  serviceId: string;
+  staffId?: string | null;
 };
 
-export function AppointmentActions({ appointmentId, currentStatus, currentPaymentStatus }: Props) {
+export function AppointmentActions({ appointmentId, currentStatus, currentPaymentStatus, tenantId, serviceId, staffId }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [showReschedule, setShowReschedule] = useState(false);
 
   async function update(data: Record<string, string>) {
     setLoading(true);
@@ -31,6 +36,16 @@ export function AppointmentActions({ appointmentId, currentStatus, currentPaymen
   const isPaid = currentPaymentStatus === "PAID";
 
   return (
+    <>
+    {showReschedule && (
+      <AppointmentRescheduleModal
+        appointmentId={appointmentId}
+        tenantId={tenantId}
+        serviceId={serviceId}
+        staffId={staffId}
+        onClose={() => setShowReschedule(false)}
+      />
+    )}
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
         <Button variant="ghost" size="icon" disabled={loading}>
@@ -58,6 +73,11 @@ export function AppointmentActions({ appointmentId, currentStatus, currentPaymen
                   onClick={() => update({ paymentStatus: "PAID" })}
                 />
               )}
+              <MenuItem
+                icon={CalendarClock}
+                label="Reagendar"
+                onClick={() => setShowReschedule(true)}
+              />
               <div className="my-1 h-px bg-gray-100" />
               <MenuItem
                 icon={XCircle}
@@ -73,6 +93,7 @@ export function AppointmentActions({ appointmentId, currentStatus, currentPaymen
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>
+    </>
   );
 }
 

@@ -15,6 +15,7 @@ export async function GET() {
       _count: { select: { responses: true, services: true } },
     },
     orderBy: { createdAt: "desc" },
+    take: 50,
   });
 
   return NextResponse.json(forms);

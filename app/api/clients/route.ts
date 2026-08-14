@@ -11,6 +11,7 @@ export async function GET() {
     where: { tenantId: session.user.id },
     include: { _count: { select: { appointments: true } } },
     orderBy: { createdAt: "desc" },
+    take: 500,
   });
   return NextResponse.json(clients);
 }

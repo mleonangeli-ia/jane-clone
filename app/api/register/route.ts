@@ -25,7 +25,8 @@ export async function POST(req: NextRequest) {
 
   const existing = await prisma.tenant.findUnique({ where: { email } });
   if (existing) {
-    return NextResponse.json({ error: "Ya existe una cuenta con ese email" }, { status: 409 });
+    // Generic message to prevent email enumeration
+    return NextResponse.json({ error: "No se pudo completar el registro. Verificá los datos e intentá de nuevo." }, { status: 409 });
   }
 
   const baseSlug = slugify(name);
