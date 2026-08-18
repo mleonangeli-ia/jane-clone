@@ -161,6 +161,9 @@ export default async function DashboardPage() {
                       currentPaymentStatus={apt.paymentStatus}
                       tenantId={tenantId}
                       serviceId={apt.service.id}
+                      clientName={apt.client.name}
+                      serviceName={apt.service.name}
+                      appointmentDate={format(apt.startTime, "d 'de' MMMM, HH:mm", { locale: es })}
                     />
                   </div>
                 </div>

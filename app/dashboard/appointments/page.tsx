@@ -12,7 +12,7 @@ import { Suspense } from "react";
 import { AppointmentsFilters } from "@/components/appointments/AppointmentsFilters";
 import Link from "next/link";
 import { AppointmentStatus, Prisma } from "@prisma/client";
-import { Users } from "lucide-react";
+import { Users, ClipboardList } from "lucide-react";
 
 const PAGE_SIZE = 25;
 
@@ -40,10 +40,11 @@ export default async function AppointmentsPage({
     prisma.appointment.findMany({
       where,
       include: {
-        client:  true,
-        service: true,
-        staff:   { select: { id: true, name: true, title: true, accentColor: true } },
-        invoice: { select: { id: true } },
+        client:       true,
+        service:      true,
+        staff:        { select: { id: true, name: true, title: true, accentColor: true } },
+        invoice:      { select: { id: true } },
+        clinicalNote: { select: { id: true } },
       },
       orderBy: { startTime: "desc" },
       skip,
@@ -194,6 +195,11 @@ export default async function AppointmentsPage({
                         </div>
                         <p className="text-xs truncate" style={{ color: "var(--text-muted)" }}>
                           {apt.service.name} · {format(apt.startTime, "HH:mm")}–{format(apt.endTime, "HH:mm")}
+                          {apt.clinicalNote && (
+                            <span className="ml-2 inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-semibold" style={{ backgroundColor: "#f0fdfa", color: "#0f766e" }}>
+                              <ClipboardList className="h-2.5 w-2.5" />nota
+                            </span>
+                          )}
                         </p>
                         {/* Mobile: badges */}
                         <div className="mt-1.5 flex flex-wrap items-center gap-1.5 sm:hidden">
@@ -225,6 +231,10 @@ export default async function AppointmentsPage({
                         tenantId={tenantId}
                         serviceId={apt.service.id}
                         staffId={apt.staff?.id}
+                        clientName={apt.client.name}
+                        serviceName={apt.service.name}
+                        appointmentDate={format(apt.startTime, "d 'de' MMMM, HH:mm", { locale: es })}
+                        hasNote={!!apt.clinicalNote}
                       />
                     </div>
                   </CardContent>

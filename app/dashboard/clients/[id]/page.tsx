@@ -26,6 +26,7 @@ export default async function ClientDetailPage({
       appointments: {
         include: {
           service: true,
+          clinicalNote: true,
           intakeResponse: {
             include: { answers: { include: { field: true } } },
           },
@@ -165,6 +166,41 @@ export default async function ClientDetailPage({
                                   </li>
                                 ))}
                               </ul>
+                            </details>
+                          </div>
+                        )}
+                        {apt.clinicalNote && (
+                          <div className="mt-2 pl-4">
+                            <details className="text-xs">
+                              <summary className="cursor-pointer inline-flex items-center gap-1 rounded-full bg-teal-50 px-2 py-0.5 text-teal-700 font-medium hover:bg-teal-100">
+                                📋 Nota clínica
+                              </summary>
+                              <div className="mt-2 space-y-2 pl-2">
+                                {apt.clinicalNote.subjective && (
+                                  <div>
+                                    <span className="font-semibold text-cyan-700">S — Subjetivo:</span>{" "}
+                                    <span className="text-gray-600">{apt.clinicalNote.subjective}</span>
+                                  </div>
+                                )}
+                                {apt.clinicalNote.objective && (
+                                  <div>
+                                    <span className="font-semibold text-teal-700">O — Objetivo:</span>{" "}
+                                    <span className="text-gray-600">{apt.clinicalNote.objective}</span>
+                                  </div>
+                                )}
+                                {apt.clinicalNote.assessment && (
+                                  <div>
+                                    <span className="font-semibold text-purple-700">A — Análisis:</span>{" "}
+                                    <span className="text-gray-600">{apt.clinicalNote.assessment}</span>
+                                  </div>
+                                )}
+                                {apt.clinicalNote.plan && (
+                                  <div>
+                                    <span className="font-semibold text-amber-700">P — Plan:</span>{" "}
+                                    <span className="text-gray-600">{apt.clinicalNote.plan}</span>
+                                  </div>
+                                )}
+                              </div>
                             </details>
                           </div>
                         )}

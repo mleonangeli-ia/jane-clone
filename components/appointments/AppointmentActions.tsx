@@ -4,22 +4,28 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { MoreVertical, CheckCircle, XCircle, DollarSign, UserX, CalendarClock } from "lucide-react";
+import { MoreVertical, CheckCircle, XCircle, DollarSign, UserX, CalendarClock, ClipboardList } from "lucide-react";
 import { AppointmentRescheduleModal } from "./AppointmentRescheduleModal";
+import { ClinicalNoteModal } from "./ClinicalNoteModal";
 
 type Props = {
-  appointmentId: string;
-  currentStatus: string;
+  appointmentId:   string;
+  currentStatus:   string;
   currentPaymentStatus: string;
-  tenantId: string;
-  serviceId: string;
-  staffId?: string | null;
+  tenantId:        string;
+  serviceId:       string;
+  staffId?:        string | null;
+  clientName:      string;
+  serviceName:     string;
+  appointmentDate: string;
+  hasNote?:        boolean;
 };
 
-export function AppointmentActions({ appointmentId, currentStatus, currentPaymentStatus, tenantId, serviceId, staffId }: Props) {
+export function AppointmentActions({ appointmentId, currentStatus, currentPaymentStatus, tenantId, serviceId, staffId, clientName, serviceName, appointmentDate, hasNote }: Props) {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading]         = useState(false);
   const [showReschedule, setShowReschedule] = useState(false);
+  const [showNote, setShowNote]       = useState(false);
 
   async function update(data: Record<string, string>) {
     setLoading(true);
@@ -44,6 +50,16 @@ export function AppointmentActions({ appointmentId, currentStatus, currentPaymen
         serviceId={serviceId}
         staffId={staffId}
         onClose={() => setShowReschedule(false)}
+      />
+    )}
+    {showNote && (
+      <ClinicalNoteModal
+        appointmentId={appointmentId}
+        clientName={clientName}
+        serviceName={serviceName}
+        appointmentDate={appointmentDate}
+        onClose={() => setShowNote(false)}
+        onSaved={() => router.refresh()}
       />
     )}
     <DropdownMenu.Root>
@@ -77,6 +93,11 @@ export function AppointmentActions({ appointmentId, currentStatus, currentPaymen
                 icon={CalendarClock}
                 label="Reagendar"
                 onClick={() => setShowReschedule(true)}
+              />
+              <MenuItem
+                icon={ClipboardList}
+                label={hasNote ? "Ver nota clínica" : "Agregar nota clínica"}
+                onClick={() => setShowNote(true)}
               />
               <div className="my-1 h-px bg-gray-100" />
               <MenuItem
