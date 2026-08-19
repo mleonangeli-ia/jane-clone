@@ -174,6 +174,11 @@ export default async function BookingPage({ params }: { params: Promise<{ slug: 
                           <Clock className="h-3 w-3" />
                           {formatDuration(service.duration)}
                         </span>
+                        {service.isVirtual && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-teal-50 px-2 py-0.5 text-xs font-semibold text-teal-700">
+                            🎥 Videollamada
+                          </span>
+                        )}
                         {service.price === 0 && (
                           <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-600">
                             {t.booking.free}

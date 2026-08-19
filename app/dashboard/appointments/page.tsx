@@ -216,6 +216,19 @@ export default async function AppointmentsPage({
                         <StatusBadge status={apt.status} />
                       </div>
 
+                      {/* Join button for virtual upcoming appointments */}
+                      {apt.meetingUrl && ["CONFIRMED", "PENDING"].includes(apt.status) && (
+                        <a
+                          href={apt.meetingUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="shrink-0 inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold text-white transition-all hover:opacity-90"
+                          style={{ backgroundColor: "#0f766e" }}
+                        >
+                          🎥 Unirse
+                        </a>
+                      )}
+
                       {apt.status === "COMPLETED" || apt.paymentStatus === "PAID" ? (
                         <AppointmentInvoiceButton
                           appointmentId={apt.id}

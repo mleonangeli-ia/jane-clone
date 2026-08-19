@@ -66,6 +66,7 @@ model Service {
   price        Int
   color        String   @default("#4F46E5")
   isActive     Boolean  @default(true)
+  isVirtual    Boolean  @default(false)
   intakeFormId String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -124,6 +125,7 @@ model Appointment {
   paymentStatus  PaymentStatus     @default(UNPAID)
   mpPreferenceId String?           @unique @map("stripeCheckoutSession")
   googleEventId  String?
+  meetingUrl     String?
   reminderSentAt DateTime?
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt

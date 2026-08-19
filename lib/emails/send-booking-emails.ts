@@ -21,6 +21,7 @@ type BookingEmailParams = {
   appointmentId: string;
   appointmentCreatedAt: Date;
   intakeUrl: string | null;
+  meetingUrl?: string | null;
 };
 
 export async function sendBookingEmails(p: BookingEmailParams) {
@@ -42,7 +43,8 @@ export async function sendBookingEmails(p: BookingEmailParams) {
     bookingUrl,
     cancelUrl,
     rescheduleUrl,
-    intakeUrl: p.intakeUrl,
+    intakeUrl:  p.intakeUrl,
+    meetingUrl: p.meetingUrl ?? null,
   });
 
   const professional = professionalNotificationEmail({

@@ -9,6 +9,7 @@ import { generateIntakeToken } from "@/lib/intake-token";
 import { checkBookingRateLimit, isDisposableEmail, isHoneypotClean } from "@/lib/abuse";
 import { createCalendarEvent } from "@/lib/google-calendar";
 import { sendPushToTenant } from "@/lib/push/send";
+import { generateMeetingUrl } from "@/lib/meeting";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -84,14 +85,26 @@ export async function POST(req: NextRequest) {
     data: {
       tenantId,
       serviceId,
-      clientId: client.id,
-      staffId: staffId ?? undefined,
-      startTime: start,
-      endTime: end,
+      clientId:   client.id,
+      staffId:    staffId ?? undefined,
+      startTime:  start,
+      endTime:    end,
       status,
-      notes: notes ?? undefined,
+      notes:      notes ?? undefined,
+      // Generate Jitsi room for virtual services
+      meetingUrl: service.isVirtual ? "__pending__" : undefined,
     },
   });
+
+  // Now we have the appointmentId — generate the deterministic Jitsi URL
+  if (service.isVirtual) {
+    const meetingUrl = generateMeetingUrl(appointment.id);
+    await prisma.appointment.update({
+      where: { id: appointment.id },
+      data:  { meetingUrl },
+    });
+    (appointment as typeof appointment & { meetingUrl: string | null }).meetingUrl = meetingUrl;
+  }
 
   let intakeUrl: string | null = null;
   if (service.intakeFormId) {
@@ -113,21 +126,22 @@ export async function POST(req: NextRequest) {
     sendBookingEmails({
       clientName,
       clientEmail,
-      clientPhone: clientPhone ?? null,
-      tenantName: tenant.name,
-      tenantEmail: tenant.email,
+      clientPhone:   clientPhone ?? null,
+      tenantName:    tenant.name,
+      tenantEmail:   tenant.email,
       tenantAddress: tenant.address,
-      serviceName: service.name,
-      startTime: start,
-      endTime: end,
-      price: service.price,
-      currency: tenant.currency,
-      notes: notes ?? null,
-      tenantSlug: tenant.slug,
+      serviceName:   service.name,
+      startTime:     start,
+      endTime:       end,
+      price:         service.price,
+      currency:      tenant.currency,
+      notes:         notes ?? null,
+      tenantSlug:    tenant.slug,
       appUrl,
-      appointmentId: appointment.id,
+      appointmentId:        appointment.id,
       appointmentCreatedAt: appointment.createdAt,
       intakeUrl,
+      meetingUrl: service.isVirtual ? generateMeetingUrl(appointment.id) : null,
     }).catch(console.error);
 
     // Sync to Google Calendar if the professional has it connected

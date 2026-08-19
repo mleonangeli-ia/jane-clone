@@ -6,13 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import * as Dialog from "@radix-ui/react-dialog";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Video } from "lucide-react";
 
 export function ServiceForm() {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [open, setOpen]         = useState(false);
+  const [loading, setLoading]   = useState(false);
+  const [error, setError]       = useState("");
+  const [isVirtual, setIsVirtual] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -23,11 +24,12 @@ export function ServiceForm() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        name: data.get("name"),
+        name:        data.get("name"),
         description: data.get("description"),
-        duration: Number(data.get("duration")),
-        price: Math.round(Number(data.get("price")) * 100),
-        color: data.get("color"),
+        duration:    Number(data.get("duration")),
+        price:       Math.round(Number(data.get("price")) * 100),
+        color:       data.get("color"),
+        isVirtual,
       }),
     });
     if (!res.ok) {
@@ -80,6 +82,32 @@ export function ServiceForm() {
               <Label htmlFor="color">Color</Label>
               <input id="color" name="color" type="color" defaultValue="#4F46E5" className="h-10 w-full cursor-pointer rounded-lg border border-gray-200 p-1" />
             </div>
+            <button
+              type="button"
+              onClick={() => setIsVirtual((v) => !v)}
+              className="flex w-full items-center gap-3 rounded-xl border p-3 text-left transition-all"
+              style={{
+                borderColor:     isVirtual ? "#0d9488" : "#e5e7eb",
+                backgroundColor: isVirtual ? "#f0fdfa" : "#f9fafb",
+              }}
+            >
+              <Video className="h-5 w-5 shrink-0" style={{ color: isVirtual ? "#0f766e" : "#9ca3af" }} />
+              <div className="flex-1">
+                <p className="text-sm font-semibold" style={{ color: isVirtual ? "#0f766e" : "#374151" }}>
+                  Servicio virtual (videollamada)
+                </p>
+                <p className="text-xs" style={{ color: isVirtual ? "#0d9488" : "#6b7280" }}>
+                  {isVirtual ? "Se generará un link de Jitsi automáticamente al reservar" : "Activar para generar link de videollamada automático"}
+                </p>
+              </div>
+              <div
+                className="h-5 w-5 shrink-0 rounded-full border-2 transition-all"
+                style={{
+                  borderColor:     isVirtual ? "#0f766e" : "#d1d5db",
+                  backgroundColor: isVirtual ? "#0f766e" : "transparent",
+                }}
+              />
+            </button>
             {error && <p className="text-sm text-red-500">{error}</p>}
             <div className="flex justify-end gap-3">
               <Dialog.Close asChild>

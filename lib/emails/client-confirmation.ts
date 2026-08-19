@@ -14,6 +14,7 @@ type Params = {
   cancelUrl: string | null;
   rescheduleUrl?: string | null;
   intakeUrl: string | null;
+  meetingUrl: string | null;
 };
 
 export function clientConfirmationEmail(p: Params) {
@@ -100,6 +101,26 @@ export function clientConfirmationEmail(p: Params) {
 
           </td>
         </tr>
+
+        ${
+          p.meetingUrl
+            ? `<!-- Video meeting section -->
+        <tr>
+          <td style="padding:0 40px 24px;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0fdfa;border-radius:8px;border:1px solid #99f6e4;">
+              <tr>
+                <td style="padding:16px 20px;">
+                  <p style="margin:0 0 4px;color:#0f766e;font-size:14px;font-weight:700;">🎥 Tu turno es por videollamada</p>
+                  <p style="margin:0 0 12px;color:#0f766e;font-size:13px;">Usá el siguiente link para unirte a la consulta. No hace falta instalar nada.</p>
+                  <a href="${p.meetingUrl}" style="display:inline-block;padding:10px 24px;background:#0f766e;color:#ffffff;font-size:13px;font-weight:700;border-radius:8px;text-decoration:none;">Unirse a la videollamada</a>
+                  <p style="margin:12px 0 0;color:#5eead4;font-size:11px;">Abrí este link al inicio de tu turno. El link es único para tu consulta.</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>`
+            : ""
+        }
 
         ${
           p.intakeUrl

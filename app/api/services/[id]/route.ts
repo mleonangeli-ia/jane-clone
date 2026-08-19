@@ -11,7 +11,7 @@ export async function PATCH(
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
-  const { intakeFormId } = await req.json();
+  const { intakeFormId, isVirtual, name, description, duration, price, color, isActive } = await req.json();
 
   const service = await prisma.service.findUnique({ where: { id } });
   if (!service || service.tenantId !== session.user.id) {
@@ -20,7 +20,16 @@ export async function PATCH(
 
   const updated = await prisma.service.update({
     where: { id },
-    data: { intakeFormId: intakeFormId ?? null },
+    data: {
+      ...(intakeFormId !== undefined ? { intakeFormId: intakeFormId ?? null } : {}),
+      ...(isVirtual    !== undefined ? { isVirtual }    : {}),
+      ...(name         !== undefined ? { name }         : {}),
+      ...(description  !== undefined ? { description }  : {}),
+      ...(duration     !== undefined ? { duration }     : {}),
+      ...(price        !== undefined ? { price }        : {}),
+      ...(color        !== undefined ? { color }        : {}),
+      ...(isActive     !== undefined ? { isActive }     : {}),
+    },
   });
 
   return NextResponse.json(updated);
