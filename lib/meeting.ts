@@ -7,8 +7,12 @@ const JITSI_BASE = "https://meet.jit.si";
  * Room name: jc-<12 random chars> — unpredictable but stable for the same appointmentId.
  */
 export function generateMeetingUrl(appointmentId: string): string {
+  const secret = process.env.NEXTAUTH_SECRET;
+  if (!secret || secret.length < 16) {
+    throw new Error("[meeting] NEXTAUTH_SECRET must be set and at least 16 chars to generate secure meeting URLs");
+  }
   const hash = crypto
-    .createHmac("sha256", process.env.NEXTAUTH_SECRET ?? "fallback")
+    .createHmac("sha256", secret)
     .update(appointmentId)
     .digest("hex")
     .slice(0, 12);

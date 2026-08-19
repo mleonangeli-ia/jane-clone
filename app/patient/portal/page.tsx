@@ -17,9 +17,19 @@ export default async function PatientPortalPage() {
     where: { id: clientId },
     include: {
       appointments: {
-        include: {
-          service: true,
-          tenant: { select: { name: true, address: true, slug: true, accentColor: true, cancelWindowHours: true } },
+        // Explicit select to prevent leaking internal fields (meetingUrl, googleEventId,
+        // mpPreferenceId, tenantId) to the patient-facing portal.
+        select: {
+          id:            true,
+          startTime:     true,
+          endTime:       true,
+          status:        true,
+          paymentStatus: true,
+          notes:         true,
+          createdAt:     true,
+          // meetingUrl intentionally OMITTED — patients get it via email only
+          service: { select: { name: true, color: true, price: true, duration: true, isVirtual: true } },
+          tenant:  { select: { name: true, address: true, slug: true, accentColor: true, cancelWindowHours: true } },
         },
         orderBy: { startTime: "desc" },
         take: 50,

@@ -30,4 +30,11 @@ describe("generateMeetingUrl", () => {
     assert.strictEqual(room.length, 12);
     assert.match(room, /^[0-9a-f]+$/);
   });
+
+  it("throws when NEXTAUTH_SECRET is missing or too short", () => {
+    const original = process.env.NEXTAUTH_SECRET;
+    process.env.NEXTAUTH_SECRET = "short";
+    assert.throws(() => generateMeetingUrl("appt-1"), /NEXTAUTH_SECRET/);
+    process.env.NEXTAUTH_SECRET = original;
+  });
 });

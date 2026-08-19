@@ -5,6 +5,7 @@ import { addMinutes, parseISO, differenceInHours } from "date-fns";
 import { sendBookingEmails } from "@/lib/emails/send-booking-emails";
 import { createCalendarEvent, deleteCalendarEvent } from "@/lib/google-calendar";
 import { getClientIp, consume } from "@/lib/rate-limit";
+import { generateMeetingUrl } from "@/lib/meeting";
 
 // 3 reagendamientos por IP por hora
 const RATE = { max: 3, windowMs: 60 * 60_000 };
@@ -76,16 +77,23 @@ export async function POST(req: NextRequest) {
   // Create new appointment (same service + client)
   const newAppointment = await prisma.appointment.create({
     data: {
-      tenantId:  appointment.tenantId,
-      serviceId: appointment.serviceId,
-      clientId:  appointment.clientId,
-      startTime: newStart,
-      endTime:   newEnd,
-      status:    "CONFIRMED",
-      paymentStatus: appointment.paymentStatus, // carry over paid status
-      notes: appointment.notes,
+      tenantId:   appointment.tenantId,
+      serviceId:  appointment.serviceId,
+      clientId:   appointment.clientId,
+      startTime:  newStart,
+      endTime:    newEnd,
+      status:     "CONFIRMED",
+      paymentStatus: appointment.paymentStatus,
+      notes:      appointment.notes,
+      // Generate fresh Jitsi URL for virtual services
+      meetingUrl: appointment.service.isVirtual ? "__pending__" : undefined,
     },
   });
+
+  if (appointment.service.isVirtual) {
+    const url = generateMeetingUrl(newAppointment.id);
+    await prisma.appointment.update({ where: { id: newAppointment.id }, data: { meetingUrl: url } });
+  }
 
   // Cancel the old appointment
   await prisma.appointment.update({
@@ -133,9 +141,10 @@ export async function POST(req: NextRequest) {
     notes:         appointment.notes,
     tenantSlug:    appointment.tenant.slug,
     appUrl,
-    appointmentId:      newAppointment.id,
+    appointmentId:        newAppointment.id,
     appointmentCreatedAt: newAppointment.createdAt,
-    intakeUrl: null,
+    intakeUrl:  null,
+    meetingUrl: appointment.service.isVirtual ? generateMeetingUrl(newAppointment.id) : null,
   }).catch(console.error);
 
   return NextResponse.json({ id: newAppointment.id });

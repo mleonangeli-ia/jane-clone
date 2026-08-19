@@ -40,7 +40,18 @@ export async function PUT(req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const { subjective, objective, assessment, plan } = await req.json();
+  const body = await req.json();
+  const { subjective, objective, assessment, plan } = body;
+
+  const MAX_FIELD = 5000; // ~5 KB per SOAP field — enough for clinical notes
+  for (const [field, value] of Object.entries({ subjective, objective, assessment, plan })) {
+    if (value && typeof value === "string" && value.length > MAX_FIELD) {
+      return NextResponse.json(
+        { error: `El campo '${field}' excede el máximo permitido (${MAX_FIELD} caracteres)` },
+        { status: 400 }
+      );
+    }
+  }
 
   const note = await prisma.clinicalNote.upsert({
     where:  { appointmentId: id },
