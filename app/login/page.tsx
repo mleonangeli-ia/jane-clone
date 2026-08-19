@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState, useRef } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -8,19 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Calendar, ShieldAlert, ShieldCheck } from "lucide-react";
-
-declare global {
-  interface Window {
-    turnstile?: {
-      render: (el: HTMLElement, opts: Record<string, unknown>) => string;
-      reset: (id: string) => void;
-      remove: (id: string) => void;
-    };
-  }
-}
-
-const SITE_KEY =
-  process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "1x00000000000000000000AA"; // Cloudflare test key (always passes)
+import CaptchaWidget from "@/components/CaptchaWidget";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -31,56 +19,11 @@ export default function LoginPage() {
   const [retryMin, setRetryMin] = useState(0);
 
   // CAPTCHA state
-  const [showCaptcha, setShowCaptcha]       = useState(false);
-  const [captchaToken, setCaptchaToken]     = useState("");
-  const [captchaReady, setCaptchaReady]     = useState(false);
-  const captchaRef    = useRef<HTMLDivElement>(null);
-  const widgetIdRef   = useRef<string | null>(null);
+  const [showCaptcha, setShowCaptcha]   = useState(false);
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [captchaReady, setCaptchaReady] = useState(false);
   const savedEmail    = useRef("");
   const savedPassword = useRef("");
-
-  // Load + render Turnstile when CAPTCHA is needed
-  useEffect(() => {
-    if (!showCaptcha || !captchaRef.current) return;
-
-    function renderWidget() {
-      if (!captchaRef.current) return;
-      const id = window.turnstile?.render(captchaRef.current, {
-        sitekey: SITE_KEY,
-        theme: "light",
-        callback: (token: string) => {
-          setCaptchaToken(token);
-          setCaptchaReady(true);
-        },
-        "expired-callback": () => {
-          setCaptchaToken("");
-          setCaptchaReady(false);
-        },
-        "error-callback": () => {
-          setCaptchaToken("");
-          setCaptchaReady(false);
-        },
-      });
-      if (id) widgetIdRef.current = id;
-    }
-
-    if (window.turnstile) {
-      renderWidget();
-    } else {
-      const script = document.createElement("script");
-      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
-      script.async = true;
-      script.onload = renderWidget;
-      document.head.appendChild(script);
-    }
-
-    return () => {
-      if (widgetIdRef.current) {
-        window.turnstile?.remove(widgetIdRef.current);
-        widgetIdRef.current = null;
-      }
-    };
-  }, [showCaptcha]);
 
   async function doSignIn(email: string, password: string, token = "") {
     setLoading(true);
@@ -114,7 +57,6 @@ export default function LoginPage() {
       setError("El CAPTCHA no es válido. Resolvelo de nuevo.");
       setCaptchaToken("");
       setCaptchaReady(false);
-      if (widgetIdRef.current) window.turnstile?.reset(widgetIdRef.current);
     } else {
       setError("Email o contraseña incorrectos");
     }
@@ -235,12 +177,15 @@ export default function LoginPage() {
                 {/* ── CAPTCHA widget ──────────────────────── */}
                 {showCaptcha && (
                   <div className="space-y-3">
-                    <div className="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3">
-                      <p className="text-xs font-medium text-emerald-700">
+                    <div className="rounded-xl border border-amber-100 bg-amber-50 px-4 py-3">
+                      <p className="text-xs font-medium text-amber-700">
                         Demasiados intentos. Confirmá que sos humano para continuar.
                       </p>
                     </div>
-                    <div ref={captchaRef} className="flex justify-center" />
+                    <CaptchaWidget
+                      onVerified={(proof) => { setCaptchaToken(proof); setCaptchaReady(true); }}
+                      onReset={() => { setCaptchaToken(""); setCaptchaReady(false); }}
+                    />
                     {captchaReady && (
                       <div className="flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700">
                         <ShieldCheck className="h-4 w-4 shrink-0" />
