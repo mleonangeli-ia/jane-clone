@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import { CaptchaPreloader } from "@/components/CaptchaPreloader";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="theme-color" content="#2563eb" />
       </head>
       <body className="h-full antialiased" style={{ backgroundColor: "var(--bg)" }}>
+        <CaptchaPreloader />
         <Providers>{children}</Providers>
       </body>
     </html>
