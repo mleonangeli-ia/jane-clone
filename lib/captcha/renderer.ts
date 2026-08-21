@@ -73,10 +73,11 @@ function over(dR:number,dG:number,dB:number,sR:number,sG:number,sB:number,a:numb
   return [Math.round(lerp(dR,sR,a)),Math.round(lerp(dG,sG,a)),Math.round(lerp(dB,sB,a))];
 }
 
+// Premium gradient with vibrant colors
 const STOPS = [
-  {t:0.0,r:0x66,g:0x7e,b:0xea},
-  {t:0.5,r:0x7c,g:0x3a,b:0xed},
-  {t:1.0,r:0xdb,g:0x28,b:0x77},
+  {t:0.0,r:0x0f,g:0x55,b:0xc8}, // bright blue
+  {t:0.5,r:0x1e,g:0x8c,b:0x32}, // bright green
+  {t:1.0,r:0xc8,g:0x78,b:0x00}, // bright orange
 ];
 
 function gradientAt(x:number,y:number,w:number,h:number):[number,number,number] {
@@ -98,9 +99,19 @@ interface Circle { cx:number; cy:number; r:number; color:[number,number,number];
 function buildCircles(seed:number,w:number,h:number):Circle[] {
   let s=seed>>>0;
   const rng=()=>{s=(Math.imul(1664525,s)+1013904223)|0;return(s>>>0)/0xffffffff;};
-  return Array.from({length:14},()=>({
-    cx:rng()*w,cy:rng()*h,r:8+rng()*34,
-    color:hslToRgb(rng()*360,0.8,0.75),alpha:0.12+rng()*0.22,
+  // Premium colors for visual depth
+  const premiumColors:[number,number,number][] = [
+    [15,85,200], // bright blue
+    [200,15,50], // bright red
+    [30,140,50], // bright green
+    [200,120,0], // bright orange
+    [100,10,140], // bright purple
+    [0,120,150], // bright cyan
+  ];
+  return Array.from({length:18},()=>({
+    cx:rng()*w,cy:rng()*h,r:6+rng()*28,
+    color:premiumColors[Math.floor(rng()*premiumColors.length)],
+    alpha:0.08+rng()*0.14,
   }));
 }
 
@@ -109,17 +120,36 @@ function renderPixels(w:number,h:number,circles:Circle[],hole:{px:number;py:numb
   for (let y=0;y<h;y++) {
     for (let x=0;x<w;x++) {
       let [r,g,b]=gradientAt(x,y,w,h);
-      if (x%20===0||y%20===0) [r,g,b]=over(r,g,b,255,255,255,0.07);
+      // Enhanced grid pattern for texture
+      if ((x%18===0||y%18===0) && ((x^y)&2)) [r,g,b]=over(r,g,b,200,200,200,0.08);
+      // Apply color circles
       for (const c of circles) {
         const dx=x-c.cx,dy=y-c.cy;
-        if (dx*dx+dy*dy<=c.r*c.r) [r,g,b]=over(r,g,b,c.color[0],c.color[1],c.color[2],c.alpha);
+        const d2=dx*dx+dy*dy;
+        if (d2<=c.r*c.r) {
+          [r,g,b]=over(r,g,b,c.color[0],c.color[1],c.color[2],c.alpha);
+          // Softer edges via distance falloff
+          if (d2>=(c.r*0.85)*(c.r*0.85)) {
+            const edge=(Math.sqrt(d2)-c.r*0.85)/(c.r*0.15);
+            [r,g,b]=over(r,g,b,c.color[0],c.color[1],c.color[2],c.alpha*(1-edge)*0.5);
+          }
+        }
       }
+      // Hole rendering with premium styling
       if (hole) {
         const {px,py,pw,ph}=hole;
         const inside=x>=px&&x<px+pw&&y>=py&&y<py+ph;
         if (inside) {
-          const edge=x===px||x===px+pw-1||y===py||y===py+ph-1;
-          [r,g,b]=edge?over(r,g,b,255,255,255,0.45):over(r,g,b,0,0,0,0.38);
+          const dx=x-px, dy=y-py;
+          const edge=dx===0||dx===pw-1||dy===0||dy===ph-1;
+          const near=(dx<=2||dx>=pw-3||dy<=2||dy>=ph-3);
+          if (edge) {
+            [r,g,b]=over(r,g,b,220,220,220,0.55); // bright edge
+          } else if (near) {
+            [r,g,b]=over(r,g,b,50,50,50,0.25); // soft inner shadow
+          } else {
+            [r,g,b]=over(r,g,b,30,30,30,0.32); // deep hole center
+          }
         }
       }
       const i=(y*w+x)*4;
