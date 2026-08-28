@@ -1,20 +1,22 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { LOCALES, type Locale } from "@/lib/i18n";
 
-export function LanguageSwitcher({ current }: { current: Locale }) {
-  const router = useRouter();
+function setLocaleCookie(locale: Locale) {
+  document.cookie = `jane-locale=${locale}; path=/; max-age=31536000; SameSite=Lax`;
+}
 
+export function LanguageSwitcher({ current }: { current: Locale }) {
   function setLocale(locale: Locale) {
-    document.cookie = `jane-locale=${locale}; path=/; max-age=31536000; SameSite=Lax`;
-    router.refresh();
+    setLocaleCookie(locale);
+    window.location.reload();
   }
 
   return (
     <div className="flex items-center gap-0.5 rounded-full border border-white/20 bg-white/10 p-1 backdrop-blur-sm">
       {LOCALES.map(({ code, flag }) => (
         <button
+          type="button"
           key={code}
           onClick={() => setLocale(code)}
           title={LOCALES.find((l) => l.code === code)?.label}

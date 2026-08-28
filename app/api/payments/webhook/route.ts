@@ -3,30 +3,15 @@ import { getPayment } from "@/lib/mercadopago";
 import { prisma } from "@/lib/db";
 import { sendBookingEmails } from "@/lib/emails/send-booking-emails";
 import { createCalendarEvent } from "@/lib/google-calendar";
-import crypto from "crypto";
+import { verifyMercadoPagoSignature } from "@/lib/mercadopago-security";
 
-function verifyMpSignature(req: NextRequest, rawBody: string): boolean {
-  const secret = process.env.MP_WEBHOOK_SECRET;
-  // If no secret configured, skip verification (dev/test mode)
-  if (!secret) return true;
-
-  // MP sends: x-signature: ts=<timestamp>,v1=<hmac>
-  const header = req.headers.get("x-signature") ?? "";
-  const xRequestId = req.headers.get("x-request-id") ?? "";
-  const dataId = new URL(req.url).searchParams.get("data.id") ?? "";
-
-  const tsMatch = header.match(/ts=([^,]+)/);
-  const v1Match = header.match(/v1=([^,]+)/);
-  if (!tsMatch || !v1Match) return false;
-
-  const ts = tsMatch[1];
-  const receivedHash = v1Match[1];
-
-  // MP signs: id:<data.id>;request-id:<x-request-id>;ts:<ts>;
-  const manifest = `id:${dataId};request-id:${xRequestId};ts:${ts};`;
-  const expected = crypto.createHmac("sha256", secret).update(manifest).digest("hex");
-
-  return crypto.timingSafeEqual(Buffer.from(receivedHash, "hex"), Buffer.from(expected, "hex"));
+function verifyMpSignature(req: NextRequest): boolean {
+  return verifyMercadoPagoSignature({
+    secret: process.env.MP_WEBHOOK_SECRET,
+    signatureHeader: req.headers.get("x-signature"),
+    requestId: req.headers.get("x-request-id"),
+    dataId: req.nextUrl.searchParams.get("data.id"),
+  });
 }
 
 export async function POST(req: NextRequest) {
@@ -35,7 +20,7 @@ export async function POST(req: NextRequest) {
   try { body = JSON.parse(rawBody); } catch { /* ignore */ }
   if (!body) return NextResponse.json({ ok: true });
 
-  if (!verifyMpSignature(req, rawBody)) {
+  if (!verifyMpSignature(req)) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 

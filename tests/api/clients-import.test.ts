@@ -3,25 +3,15 @@
  * Requires the dev server running on localhost:3001.
  * Skipped automatically if server is not available.
  */
-import { describe, it, before } from "node:test";
+import { after, before, describe, it } from "node:test";
 import assert from "node:assert/strict";
+import { randomBytes } from "node:crypto";
+import { createAuthenticatedTenantFixture } from "@/tests/helpers/authenticated-tenant";
 
 const BASE = process.env.TEST_BASE_URL ?? "http://localhost:3001";
-const DEMO_EMAIL = "demo@janeclone.com";
-const DEMO_PASS  = "demo1234";
-
 let sessionCookie = "";
-
-async function login() {
-  const res = await fetch(`${BASE}/api/auth/callback/credentials`, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ email: DEMO_EMAIL, password: DEMO_PASS }),
-    redirect: "manual",
-  });
-  const setCookie = res.headers.get("set-cookie") ?? "";
-  sessionCookie = setCookie.split(";")[0];
-}
+let cleanupFixture: (() => Promise<void>) | undefined;
+const testIp = `2001:db8::${randomBytes(8).toString("hex")}`;
 
 async function checkServer(): Promise<boolean> {
   try {
@@ -30,11 +20,18 @@ async function checkServer(): Promise<boolean> {
   } catch { return false; }
 }
 
+before(async () => {
+  if (!await checkServer()) return;
+  const fixture = await createAuthenticatedTenantFixture(BASE);
+  sessionCookie = fixture.cookie;
+  cleanupFixture = fixture.cleanup;
+});
+
+after(async () => {
+  await cleanupFixture?.();
+});
+
 describe("GET /api/clients/export", () => {
-  before(async () => {
-    if (!await checkServer()) return;
-    await login();
-  });
 
   it("returns CSV with correct headers", async () => {
     if (!await checkServer()) return; // skip if no server
@@ -62,11 +59,6 @@ describe("GET /api/clients/export", () => {
 });
 
 describe("POST /api/clients/import", () => {
-  before(async () => {
-    if (!await checkServer()) return;
-    await login();
-  });
-
   it("imports valid CSV and returns counts", async () => {
     if (!await checkServer()) return;
 
@@ -80,7 +72,7 @@ describe("POST /api/clients/import", () => {
 
     const res  = await fetch(`${BASE}/api/clients/import`, {
       method: "POST",
-      headers: { Cookie: sessionCookie },
+      headers: { Cookie: sessionCookie, "X-Forwarded-For": testIp },
       body: form,
     });
 
@@ -101,7 +93,7 @@ describe("POST /api/clients/import", () => {
 
     const res = await fetch(`${BASE}/api/clients/import`, {
       method: "POST",
-      headers: { Cookie: sessionCookie },
+      headers: { Cookie: sessionCookie, "X-Forwarded-For": testIp },
       body: form,
     });
     assert.strictEqual(res.status, 400);
@@ -111,7 +103,11 @@ describe("POST /api/clients/import", () => {
     if (!await checkServer()) return;
     const res = await fetch(`${BASE}/api/clients/import`, {
       method: "POST",
-      headers: { Cookie: sessionCookie, "Content-Type": "application/json" },
+      headers: {
+        Cookie: sessionCookie,
+        "Content-Type": "application/json",
+        "X-Forwarded-For": testIp,
+      },
       body: JSON.stringify({}),
     });
     assert.ok(res.status >= 400, `expected 4xx, got ${res.status}`);

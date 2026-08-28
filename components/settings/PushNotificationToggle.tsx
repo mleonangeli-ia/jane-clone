@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Bell, BellOff, Loader2, CheckCircle, AlertCircle } from "lucide-react";
 
 type State = "idle" | "loading" | "subscribed" | "blocked" | "unsupported";
@@ -9,24 +9,26 @@ export function PushNotificationToggle() {
   const [state,  setState]  = useState<State>("loading");
   const [testing, setTesting] = useState(false);
 
-  useEffect(() => {
-    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
-      setState("unsupported");
-      return;
-    }
-
-    checkSubscription();
-  }, []);
-
-  async function checkSubscription() {
-    setState("loading");
+  const checkSubscription = useCallback(async () => {
     const perm = Notification.permission;
     if (perm === "denied") { setState("blocked"); return; }
 
     const reg = await navigator.serviceWorker.register("/sw.js");
     const sub = await reg.pushManager.getSubscription();
     setState(sub ? "subscribed" : "idle");
-  }
+  }, []);
+
+  useEffect(() => {
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+      queueMicrotask(() => setState("unsupported"));
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      void checkSubscription();
+    }, 0);
+    return () => window.clearTimeout(timeout);
+  }, [checkSubscription]);
 
   async function subscribe() {
     setState("loading");
@@ -54,12 +56,11 @@ export function PushNotificationToggle() {
       });
 
       setState("subscribed");
-    } catch (err: any) {
+    } catch {
       if (Notification.permission === "denied") {
         setState("blocked");
       } else {
         setState("idle");
-        console.error("[push] subscribe error:", err);
       }
     }
   }

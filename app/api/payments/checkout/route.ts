@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createPreference } from "@/lib/mercadopago";
 import { prisma } from "@/lib/db";
+import {
+  APPOINTMENT_ACCESS_COOKIE,
+  verifyAppointmentAccessToken,
+} from "@/lib/appointment-access-token";
 
 export async function POST(req: NextRequest) {
   const { appointmentId } = await req.json();
@@ -12,6 +16,10 @@ export async function POST(req: NextRequest) {
   });
 
   if (!appointment) return NextResponse.json({ error: "Turno no encontrado" }, { status: 404 });
+  const accessToken = req.cookies.get(APPOINTMENT_ACCESS_COOKIE)?.value;
+  if (!verifyAppointmentAccessToken(accessToken, appointment.id)) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+  }
   if (appointment.status !== "PENDING") return NextResponse.json({ error: "El turno ya fue procesado" }, { status: 409 });
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3001";

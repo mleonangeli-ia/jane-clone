@@ -66,10 +66,13 @@ describe("GET /api/patient/auth/verify (magic token)", () => {
   });
 });
 
-describe("GET /api/patient/auth/logout", () => {
+describe("POST /api/patient/auth/logout", () => {
   it("clears the patient cookie and redirects", async () => {
     if (!await checkServer()) return;
-    const res = await fetch(`${BASE}/api/patient/auth/logout`, { redirect: "manual" });
+    const res = await fetch(`${BASE}/api/patient/auth/logout`, {
+      method: "POST",
+      redirect: "manual",
+    });
     assert.ok(
       [200, 301, 302, 303, 307, 308].includes(res.status),
       `expected 2xx or redirect, got ${res.status}`

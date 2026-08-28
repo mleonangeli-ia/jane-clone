@@ -1,26 +1,29 @@
 /**
  * Integration tests for push notification endpoints.
  */
-import { describe, it, before } from "node:test";
+import { after, before, describe, it } from "node:test";
 import assert from "node:assert/strict";
+import { createAuthenticatedTenantFixture } from "@/tests/helpers/authenticated-tenant";
 
 const BASE = process.env.TEST_BASE_URL ?? "http://localhost:3001";
 let sessionCookie = "";
+let cleanupFixture: (() => Promise<void>) | undefined;
 
 async function checkServer() {
   try { await fetch(`${BASE}/api/auth/csrf`, { signal: AbortSignal.timeout(2000) }); return true; }
   catch { return false; }
 }
 
-async function login() {
-  const res = await fetch(`${BASE}/api/auth/callback/credentials`, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ email: "demo@janeclone.com", password: "demo1234" }),
-    redirect: "manual",
-  });
-  sessionCookie = (res.headers.get("set-cookie") ?? "").split(";")[0];
-}
+before(async () => {
+  if (!await checkServer()) return;
+  const fixture = await createAuthenticatedTenantFixture(BASE);
+  sessionCookie = fixture.cookie;
+  cleanupFixture = fixture.cleanup;
+});
+
+after(async () => {
+  await cleanupFixture?.();
+});
 
 describe("GET /api/push/vapid-key", () => {
   it("returns a publicKey string without auth", async () => {
@@ -41,8 +44,6 @@ describe("GET /api/push/vapid-key", () => {
 });
 
 describe("POST /api/push/subscribe", () => {
-  before(async () => { if (await checkServer()) await login(); });
-
   it("returns 401 without auth", async () => {
     if (!await checkServer()) return;
     const res = await fetch(`${BASE}/api/push/subscribe`, {
@@ -65,8 +66,6 @@ describe("POST /api/push/subscribe", () => {
 });
 
 describe("POST /api/push/unsubscribe", () => {
-  before(async () => { if (await checkServer()) await login(); });
-
   it("returns 401 without auth", async () => {
     if (!await checkServer()) return;
     const res = await fetch(`${BASE}/api/push/unsubscribe`, {

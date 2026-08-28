@@ -82,41 +82,39 @@ export function renderMathPng(a: number, b: number): Buffer {
   }
 
   // Premium characters with antialiasing
-  for (let ci=0;ci<text.length;ci++){
-    const bitmap=FONT[text[ci]]??FONT[' '];
-    const [cr,cg,cb]=COLORS[ci%COLORS.length];
-    const bx=PAD_X+ci*STEP;
+  for (let ci = 0; ci < text.length; ci++) {
+    const bitmap = FONT[text[ci]] ?? FONT[' '];
+    const [cr, cg, cb] = COLORS[ci % COLORS.length];
+    const bx = PAD_X + ci * STEP;
 
-    for (let row=0;row<CHAR_H;row++){
-      for (let col=0;col<CHAR_W;col++){
-        if (bitmap[row]&(1<<(CHAR_W-1-col))){
-          // Core pixel
-          for (let dy=0;dy<SCALE;dy++){
-            for (let dx=0;dx<SCALE;dx++){
-              const px=bx+col*SCALE+dx, py=PAD_Y+row*SCALE+dy;
-              if (px>=0&&px<W&&py>=0&&py<H){
-                const i=(py*W+px)*4;
-                rgba[i]=cr;rgba[i+1]=cg;rgba[i+2]=cb;rgba[i+3]=255;
-              }
-            }
-          }
+    for (let row = 0; row < CHAR_H; row++) {
+      for (let col = 0; col < CHAR_W; col++) {
+        if (!(bitmap[row] & (1 << (CHAR_W - 1 - col)))) continue;
 
-          // Antialiasing: softer edges
-          for (let dy=-1;dy<=SCALE;dy++){
-            for (let dx=-1;dx<=SCALE;dx++){
-              if((dx<0||dx>=SCALE||dy<0||dy>=SCALE)&&rng()<0.3){
-                const px=bx+col*SCALE+dx, py=PAD_Y+row*SCALE+dy;
-                if(px>=0&&px<W&&py>=0&&py<H){
-                  const i=(py*W+px)*4;
-                  const blend=0.4;
-                  rgba[i]=Math.round(rgba[i]*(1-blend)+cr*blend);
-                  rgba[i+1]=Math.round(rgba[i+1]*(1-blend)+cg*blend);
-                  rgba[i+2]=Math.round(rgba[i+2]*(1-blend)+cb*blend);
-                }
-              }
-            }
+        for (let dy = 0; dy < SCALE; dy++) {
+          for (let dx = 0; dx < SCALE; dx++) {
+            const px = bx + col * SCALE + dx;
+            const py = PAD_Y + row * SCALE + dy;
+            if (px < 0 || px >= W || py < 0 || py >= H) continue;
+            const index = (py * W + px) * 4;
+            rgba[index] = cr;
+            rgba[index + 1] = cg;
+            rgba[index + 2] = cb;
+            rgba[index + 3] = 255;
           }
-            }
+        }
+
+        for (let dy = -1; dy <= SCALE; dy++) {
+          for (let dx = -1; dx <= SCALE; dx++) {
+            if ((dx >= 0 && dx < SCALE && dy >= 0 && dy < SCALE) || rng() >= 0.3) continue;
+            const px = bx + col * SCALE + dx;
+            const py = PAD_Y + row * SCALE + dy;
+            if (px < 0 || px >= W || py < 0 || py >= H) continue;
+            const index = (py * W + px) * 4;
+            const blend = 0.4;
+            rgba[index] = Math.round(rgba[index] * (1 - blend) + cr * blend);
+            rgba[index + 1] = Math.round(rgba[index + 1] * (1 - blend) + cg * blend);
+            rgba[index + 2] = Math.round(rgba[index + 2] * (1 - blend) + cb * blend);
           }
         }
       }

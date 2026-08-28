@@ -99,13 +99,16 @@ export default async function ReportsPage({
     return acc;
   }, {});
 
-  let cumulative = allClients.filter(c => new Date(c.createdAt) < from).length;
-  const clientGrowthData = Array.from({ length: days }, (_, i) => {
-    const d   = subDays(now, days - 1 - i);
-    const key = format(d, "yyyy-MM-dd");
-    cumulative += clientsByDay[key] ?? 0;
-    return { date: key, total: cumulative };
-  });
+  const clientsBeforePeriod = allClients.filter(c => new Date(c.createdAt) < from).length;
+  const clientGrowthData = Array.from({ length: days }, (_, i) => i).reduce(
+    (acc, i) => {
+      const d = subDays(now, days - 1 - i);
+      const date = format(d, "yyyy-MM-dd");
+      const total = acc.total + (clientsByDay[date] ?? 0);
+      return { total, data: [...acc.data, { date, total }] };
+    },
+    { total: clientsBeforePeriod, data: [] as { date: string; total: number }[] },
+  ).data;
 
   // ── Top clients ───────────────────────────────────────────────
   const clientMap = active.reduce<Record<string, { name: string; count: number; revenue: number }>>((acc, a) => {

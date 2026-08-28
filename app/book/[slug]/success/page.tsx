@@ -6,6 +6,10 @@ import { CheckCircle, Clock, Calendar, MapPin, ArrowLeft } from "lucide-react";
 import { format } from "date-fns";
 import { es, enUS, ptBR } from "date-fns/locale";
 import Link from "next/link";
+import {
+  APPOINTMENT_ACCESS_COOKIE,
+  verifyAppointmentAccessToken,
+} from "@/lib/appointment-access-token";
 
 import type { Locale as DateFnsLocale } from "date-fns";
 const DATE_FNS: Record<Locale, DateFnsLocale> = { es, en: enUS, pt: ptBR };
@@ -22,17 +26,20 @@ export default async function SuccessPage({
 
   const cookieStore = await cookies();
   const locale = (cookieStore.get("jane-locale")?.value ?? "es") as Locale;
+  const accessToken = cookieStore.get(APPOINTMENT_ACCESS_COOKIE)?.value;
   const t = getT(locale).success;
   const dateFnsLocale = DATE_FNS[locale];
 
-  if (!appointment_id) return <ErrorMessage slug={slug} locale={locale} />;
+  if (!appointment_id || !accessToken) return <ErrorMessage slug={slug} locale={locale} />;
 
-  const appointment = await prisma.appointment.findUnique({
-    where: { id: appointment_id },
+  const appointment = await prisma.appointment.findFirst({
+    where: { id: appointment_id, tenant: { slug } },
     include: { service: true, tenant: true, client: true },
   }).catch(() => null);
 
-  if (!appointment) return <ErrorMessage slug={slug} locale={locale} />;
+  if (!appointment || !verifyAppointmentAccessToken(accessToken, appointment.id)) {
+    return <ErrorMessage slug={slug} locale={locale} />;
+  }
 
   const isPending = pending === "1";
   const accent = appointment.tenant.accentColor;

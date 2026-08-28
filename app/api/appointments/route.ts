@@ -12,6 +12,22 @@ import { sendPushToTenant } from "@/lib/push/send";
 import { generateMeetingUrl } from "@/lib/meeting";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { Prisma, type Appointment } from "@prisma/client";
+import {
+  APPOINTMENT_ACCESS_COOKIE,
+  appointmentAccessCookieOptions,
+  createAppointmentAccessToken,
+} from "@/lib/appointment-access-token";
+import {
+  isTransactionWriteConflict,
+  runSerializableWithRetry,
+} from "@/lib/serializable-transaction";
+
+class SlotUnavailableError extends Error {}
+
+async function withSerializableRetry<T>(operation: (tx: Prisma.TransactionClient) => Promise<T>): Promise<T> {
+  return runSerializableWithRetry(prisma.$transaction.bind(prisma), operation);
+}
 
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
@@ -56,45 +72,52 @@ export async function POST(req: NextRequest) {
   const start = parseISO(startTime);
   const end = addMinutes(start, service.duration);
 
-  const conflict = await prisma.appointment.findFirst({
-    where: {
-      tenantId,
-      status: { notIn: ["CANCELLED"] },
-      OR: [
-        { startTime: { gte: start, lt: end } },
-        { endTime: { gt: start, lte: end } },
-        { startTime: { lte: start }, endTime: { gte: end } },
-      ],
-    },
-  });
-  if (conflict) {
-    return NextResponse.json({ error: "El horario ya no está disponible" }, { status: 409 });
-  }
-
-  const client = await prisma.client.upsert({
-    where: { tenantId_email: { tenantId, email: clientEmail } },
-    update: { name: clientName, phone: clientPhone ?? undefined },
-    create: { tenantId, name: clientName, email: clientEmail, phone: clientPhone ?? undefined },
-  });
-
   const paymentsEnabled = process.env.PAYMENTS_ENABLED !== "false";
   const requiresPayment = paymentsEnabled && service.price > 0;
   const status = requiresPayment ? "PENDING" : "CONFIRMED";
 
-  const appointment = await prisma.appointment.create({
-    data: {
-      tenantId,
-      serviceId,
-      clientId:   client.id,
-      staffId:    staffId ?? undefined,
-      startTime:  start,
-      endTime:    end,
-      status,
-      notes:      notes ?? undefined,
-      // Generate Jitsi room for virtual services
-      meetingUrl: service.isVirtual ? "__pending__" : undefined,
-    },
-  });
+  let appointment: Appointment;
+  try {
+    appointment = await withSerializableRetry(async (tx) => {
+      const conflict = await tx.appointment.findFirst({
+        where: {
+          tenantId,
+          status: { notIn: ["CANCELLED"] },
+          OR: [
+            { startTime: { gte: start, lt: end } },
+            { endTime: { gt: start, lte: end } },
+            { startTime: { lte: start }, endTime: { gte: end } },
+          ],
+        },
+      });
+      if (conflict) throw new SlotUnavailableError();
+
+      const client = await tx.client.upsert({
+        where: { tenantId_email: { tenantId, email: clientEmail } },
+        update: { name: clientName, phone: clientPhone ?? undefined },
+        create: { tenantId, name: clientName, email: clientEmail, phone: clientPhone ?? undefined },
+      });
+
+      return tx.appointment.create({
+        data: {
+          tenantId,
+          serviceId,
+          clientId: client.id,
+          staffId: staffId ?? undefined,
+          startTime: start,
+          endTime: end,
+          status,
+          notes: notes ?? undefined,
+          meetingUrl: service.isVirtual ? "__pending__" : undefined,
+        },
+      });
+    });
+  } catch (error) {
+    if (error instanceof SlotUnavailableError || isTransactionWriteConflict(error)) {
+      return NextResponse.json({ error: "El horario ya no está disponible" }, { status: 409 });
+    }
+    throw error;
+  }
 
   // Now we have the appointmentId — generate the deterministic Jitsi URL
   if (service.isVirtual) {
@@ -171,13 +194,19 @@ export async function POST(req: NextRequest) {
     }).catch(console.error);
   }
 
-  return NextResponse.json(
+  const response = NextResponse.json(
     { id: appointment.id, requiresPayment, price: service.price },
     { status: 201 }
   );
+  response.cookies.set(
+    APPOINTMENT_ACCESS_COOKIE,
+    createAppointmentAccessToken(appointment.id),
+    appointmentAccessCookieOptions(process.env.NODE_ENV),
+  );
+  return response;
 }
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 

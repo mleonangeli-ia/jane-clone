@@ -5,6 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { formatPrice } from "@/lib/utils";
+import { InvoicePrintActions } from "@/components/invoices/InvoicePrintActions";
 
 export default async function InvoicePrintPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
@@ -22,18 +23,7 @@ export default async function InvoicePrintPage({ params }: { params: Promise<{ i
   return (
     <>
       {/* Print trigger + back button */}
-      <div className="fixed top-4 right-4 flex gap-2 print:hidden z-50">
-        <a href="/dashboard/invoices"
-           className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-600 shadow-sm hover:bg-gray-50">
-          ← Volver
-        </a>
-        <button
-          onClick={() => window.print()}
-          className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-gray-800"
-        >
-          Imprimir / PDF
-        </button>
-      </div>
+      <InvoicePrintActions />
 
       {/* Invoice */}
       <div className="min-h-screen bg-gray-100 p-8 print:bg-white print:p-0">

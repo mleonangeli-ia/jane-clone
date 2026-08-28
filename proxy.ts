@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { buildContentSecurityPolicy } from "@/lib/security-headers";
 
 // Known bad User-Agent substrings (scanners, exploit kits, scrapers)
 const BAD_UA_PATTERNS = [
@@ -20,12 +21,13 @@ const PUBLIC_API_PATHS = [
   "/api/book",
   "/api/waitlist",
   "/api/intake",
+  "/api/payments/checkout",
   "/api/payments/webhook",
   "/api/patient",
   "/api/push/vapid-key",
 ];
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const ua = req.headers.get("user-agent")?.toLowerCase() ?? "";
 
@@ -75,18 +77,7 @@ export async function middleware(req: NextRequest) {
     "camera=(), microphone=(), geolocation=(), payment=(self)"
   );
   // Basic CSP — allows Cloudflare Turnstile + same-origin scripts
-  res.headers.set(
-    "Content-Security-Policy",
-    [
-      "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com",
-      "frame-src https://challenges.cloudflare.com",
-      "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: https:",
-      "connect-src 'self' https://challenges.cloudflare.com",
-      "font-src 'self'",
-    ].join("; ")
-  );
+  res.headers.set("Content-Security-Policy", buildContentSecurityPolicy(process.env.NODE_ENV));
   // Opt out of FLoC / Topics API
   res.headers.set("X-Permitted-Cross-Domain-Policies", "none");
 

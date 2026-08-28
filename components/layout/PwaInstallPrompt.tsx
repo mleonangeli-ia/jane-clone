@@ -3,14 +3,19 @@
 import { useEffect, useState } from "react";
 import { Download, X } from "lucide-react";
 
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+}
+
 export function PwaInstallPrompt() {
-  const [prompt, setPrompt] = useState<any>(null);
+  const [prompt, setPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [show,   setShow]   = useState(false);
 
   useEffect(() => {
     const handler = (e: Event) => {
       e.preventDefault();
-      setPrompt(e);
+      setPrompt(e as BeforeInstallPromptEvent);
       // Show after 30 seconds or on 2nd visit
       const shown = localStorage.getItem("pwa-prompt-dismissed");
       if (!shown) setShow(true);
@@ -22,6 +27,7 @@ export function PwaInstallPrompt() {
   if (!show || !prompt) return null;
 
   async function install() {
+    if (!prompt) return;
     prompt.prompt();
     const { outcome } = await prompt.userChoice;
     setShow(false);

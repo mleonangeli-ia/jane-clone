@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatPrice, formatDuration } from "@/lib/utils";
 import { getT, type Locale } from "@/lib/i18n";
+import { getSafeMercadoPagoCheckoutUrl } from "@/lib/mercadopago-security";
 
 import type { Locale as DateFnsLocale } from "date-fns";
 const DATE_FNS: Record<Locale, DateFnsLocale> = { es, en: enUS, pt: ptBR };
@@ -85,7 +86,14 @@ export function BookingForm({ tenantId, service, date, time, accentColor, locale
       return;
     }
 
-    window.location.href = checkoutJson.url;
+    const checkoutUrl = getSafeMercadoPagoCheckoutUrl(checkoutJson.url);
+    if (!checkoutUrl) {
+      setError(tf.errPayment);
+      setLoading(false);
+      return;
+    }
+
+    window.location.assign(checkoutUrl);
   }
 
   // ── Success ────────────────────────────────────────────────────

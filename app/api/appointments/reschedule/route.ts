@@ -1,14 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { verifyCancelToken, generateCancelToken } from "@/lib/cancel-token";
+import { verifyCancelToken } from "@/lib/cancel-token";
 import { addMinutes, parseISO, differenceInHours } from "date-fns";
 import { sendBookingEmails } from "@/lib/emails/send-booking-emails";
 import { createCalendarEvent, deleteCalendarEvent } from "@/lib/google-calendar";
 import { getClientIp, consume } from "@/lib/rate-limit";
 import { generateMeetingUrl } from "@/lib/meeting";
+import { Prisma, type Appointment } from "@prisma/client";
+import {
+  isTransactionWriteConflict,
+  runSerializableWithRetry,
+} from "@/lib/serializable-transaction";
+import { getRescheduleRejection } from "@/lib/appointment-workflow";
 
 // 3 reagendamientos por IP por hora
 const RATE = { max: 3, windowMs: 60 * 60_000 };
+
+class RescheduleRejectedError extends Error {}
+
+async function withSerializableRetry<T>(operation: (tx: Prisma.TransactionClient) => Promise<T>): Promise<T> {
+  return runSerializableWithRetry(prisma.$transaction.bind(prisma), operation);
+}
 
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
@@ -37,9 +49,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Link inválido o expirado" }, { status: 403 });
   }
 
-  // Can only reschedule CONFIRMED or PENDING appointments
-  if (!["CONFIRMED", "PENDING"].includes(appointment.status)) {
-    return NextResponse.json({ error: "Este turno no se puede reagendar" }, { status: 409 });
+  const initialRejection = getRescheduleRejection({
+    servicePrice: appointment.service.price,
+    appointmentStatus: appointment.status,
+    paymentStatus: appointment.paymentStatus,
+  });
+  if (initialRejection) {
+    return NextResponse.json({ error: initialRejection }, { status: 409 });
   }
 
   // Check cancellation window
@@ -54,52 +70,60 @@ export async function POST(req: NextRequest) {
   const newStart = parseISO(newStartTime);
   const newEnd   = addMinutes(newStart, appointment.service.duration);
 
-  // Check conflict on the new slot
-  const conflict = await prisma.appointment.findFirst({
-    where: {
-      tenantId: appointment.tenantId,
-      id: { not: appointment.id },
-      status: { notIn: ["CANCELLED"] },
-      OR: [
-        { startTime: { gte: newStart, lt: newEnd } },
-        { endTime: { gt: newStart, lte: newEnd } },
-        { startTime: { lte: newStart }, endTime: { gte: newEnd } },
-      ],
-    },
-  });
-
-  if (conflict) {
-    return NextResponse.json({ error: "El nuevo horario ya no está disponible" }, { status: 409 });
-  }
-
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
-  // Create new appointment (same service + client)
-  const newAppointment = await prisma.appointment.create({
-    data: {
-      tenantId:   appointment.tenantId,
-      serviceId:  appointment.serviceId,
-      clientId:   appointment.clientId,
-      startTime:  newStart,
-      endTime:    newEnd,
-      status:     "CONFIRMED",
-      paymentStatus: appointment.paymentStatus,
-      notes:      appointment.notes,
-      // Generate fresh Jitsi URL for virtual services
-      meetingUrl: appointment.service.isVirtual ? "__pending__" : undefined,
-    },
-  });
+  let newAppointment: Appointment;
+  try {
+    newAppointment = await withSerializableRetry(async (tx) => {
+      const current = await tx.appointment.findUnique({
+        where: { id: appointment.id },
+        select: { status: true, paymentStatus: true },
+      });
+      if (!current) {
+        throw new RescheduleRejectedError("Este turno no se puede reagendar");
+      }
+      const currentRejection = getRescheduleRejection({
+        servicePrice: appointment.service.price,
+        appointmentStatus: current.status,
+        paymentStatus: current.paymentStatus,
+      });
+      if (currentRejection) {
+        throw new RescheduleRejectedError(currentRejection);
+      }
+
+      const conflict = await tx.appointment.findFirst({
+        where: {
+          tenantId: appointment.tenantId,
+          id: { not: appointment.id },
+          status: { notIn: ["CANCELLED"] },
+          OR: [
+            { startTime: { gte: newStart, lt: newEnd } },
+            { endTime: { gt: newStart, lte: newEnd } },
+            { startTime: { lte: newStart }, endTime: { gte: newEnd } },
+          ],
+        },
+      });
+      if (conflict) throw new RescheduleRejectedError("El nuevo horario ya no está disponible");
+
+      return tx.appointment.update({
+        where: { id: appointment.id },
+        data: { startTime: newStart, endTime: newEnd },
+      });
+    });
+  } catch (error) {
+    if (error instanceof RescheduleRejectedError) {
+      return NextResponse.json({ error: error.message }, { status: 409 });
+    }
+    if (isTransactionWriteConflict(error)) {
+      return NextResponse.json({ error: "El nuevo horario ya no está disponible" }, { status: 409 });
+    }
+    throw error;
+  }
 
   if (appointment.service.isVirtual) {
     const url = generateMeetingUrl(newAppointment.id);
     await prisma.appointment.update({ where: { id: newAppointment.id }, data: { meetingUrl: url } });
   }
-
-  // Cancel the old appointment
-  await prisma.appointment.update({
-    where: { id: appointment.id },
-    data: { status: "CANCELLED" },
-  });
 
   // Delete old calendar event
   if (appointment.googleEventId && appointment.tenant.googleRefreshToken) {
@@ -125,7 +149,6 @@ export async function POST(req: NextRequest) {
   }
 
   // Send new confirmation email
-  const newToken = generateCancelToken(newAppointment.id, newAppointment.createdAt);
   sendBookingEmails({
     clientName:    appointment.client.name,
     clientEmail:   appointment.client.email,

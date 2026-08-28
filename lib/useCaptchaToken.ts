@@ -24,11 +24,13 @@ export function useCaptchaToken(): UseCaptchaTokenResult {
   const [error, setError] = useState<string | null>(null);
   const mouseCountRef = useRef(0);
   const keyCountRef = useRef(0);
-  const startTimeRef = useRef(Date.now());
+  const startTimeRef = useRef<number | null>(null);
   const [level, setLevel] = useState<RiskLevel>('easy');
   const [type, setType] = useState<CaptchaType>('math');
 
   useEffect(() => {
+    const startedAt = Date.now();
+    startTimeRef.current = startedAt;
     // Track user interaction
     const onMouse = () => mouseCountRef.current++;
     const onKey = () => keyCountRef.current++;
@@ -42,7 +44,7 @@ export function useCaptchaToken(): UseCaptchaTokenResult {
       webdriver: Boolean((navigator as { webdriver?: boolean }).webdriver),
       mouseEvents: mouseCountRef.current,
       keyEvents: keyCountRef.current,
-      timeOnPage: Date.now() - startTimeRef.current,
+      timeOnPage: Date.now() - startedAt,
       isMobile: typeof window !== 'undefined' ? 'ontouchstart' in window : false,
       screenW: typeof window !== 'undefined' ? window.screen.width : 0,
       screenH: typeof window !== 'undefined' ? window.screen.height : 0,

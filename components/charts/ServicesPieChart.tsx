@@ -9,22 +9,26 @@ export function ServicesPieChart({ data }: { data: Item[] }) {
 
   const total = data.reduce((s, d) => s + d.count, 0);
   const R = 70, cx = 90, cy = 90;
-  let cumAngle = -Math.PI / 2;
-
-  const slices = data.map((d, i) => {
-    const angle = (d.count / total) * 2 * Math.PI;
-    const x1 = cx + R * Math.cos(cumAngle);
-    const y1 = cy + R * Math.sin(cumAngle);
-    cumAngle += angle;
-    const x2 = cx + R * Math.cos(cumAngle);
-    const y2 = cy + R * Math.sin(cumAngle);
-    const large = angle > Math.PI ? 1 : 0;
-    return {
-      path: `M ${cx} ${cy} L ${x1} ${y1} A ${R} ${R} 0 ${large} 1 ${x2} ${y2} Z`,
-      color: COLORS[i % COLORS.length],
-      ...d,
-    };
-  });
+  const slices = data.reduce(
+    (acc, d, i) => {
+      const angle = (d.count / total) * 2 * Math.PI;
+      const x1 = cx + R * Math.cos(acc.angle);
+      const y1 = cy + R * Math.sin(acc.angle);
+      const endAngle = acc.angle + angle;
+      const x2 = cx + R * Math.cos(endAngle);
+      const y2 = cy + R * Math.sin(endAngle);
+      const large = angle > Math.PI ? 1 : 0;
+      return {
+        angle: endAngle,
+        slices: [...acc.slices, {
+          path: `M ${cx} ${cy} L ${x1} ${y1} A ${R} ${R} 0 ${large} 1 ${x2} ${y2} Z`,
+          color: COLORS[i % COLORS.length],
+          ...d,
+        }],
+      };
+    },
+    { angle: -Math.PI / 2, slices: [] as Array<Item & { path: string; color: string }> },
+  ).slices;
 
   // Donut hole
   return (

@@ -17,7 +17,7 @@ function MathWidget({ token, onVerified, onError }: SubProps) {
   const [answer, setAnswer] = useState("");
   const [status, setStatus] = useState<"idle" | "checking" | "ok" | "wrong">("idle");
   const inputRef = useRef<HTMLInputElement>(null);
-  const debounce = useRef<ReturnType<typeof setTimeout>>();
+  const debounce = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -42,7 +42,7 @@ function MathWidget({ token, onVerified, onError }: SubProps) {
     const val = e.target.value;
     setAnswer(val);
     if (status !== "idle") setStatus("idle");
-    clearTimeout(debounce.current);
+    if (debounce.current) clearTimeout(debounce.current);
     if (val) debounce.current = setTimeout(() => verify(val), 500);
   };
 
@@ -77,7 +77,7 @@ function PuzzleWidget({ token, onVerified, onError }: SubProps) {
   const [sliderPx, setSliderPx] = useState(0);
   const [solved, setSolved] = useState(false);
   const [checking, setChecking] = useState(false);
-  const debounce = useRef<ReturnType<typeof setTimeout>>();
+  const debounce = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const verify = useCallback(async (px: number) => {
     const userX = Math.round((px / SLIDER_MAX) * 100);
@@ -97,7 +97,7 @@ function PuzzleWidget({ token, onVerified, onError }: SubProps) {
     const px = Number(e.target.value);
     setSliderPx(px);
     if (solved) setSolved(false);
-    clearTimeout(debounce.current);
+    if (debounce.current) clearTimeout(debounce.current);
     debounce.current = setTimeout(() => verify(px), 250);
   };
 
@@ -195,7 +195,7 @@ export default function CaptchaWidget({ onVerified, onReset }: Props) {
     onVerified(proof);
   }, [onVerified]);
 
-  const handleError = useCallback((msg: string) => {
+  const handleError = useCallback(() => {
     setWidgState("error");
   }, []);
 

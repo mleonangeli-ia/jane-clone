@@ -10,12 +10,13 @@ export default async function SettingsPage() {
     where: { id: session!.user.id },
     select: { id: true, name: true, email: true, slug: true, bio: true, phone: true, address: true, accentColor: true, timezone: true, googleRefreshToken: true },
   });
+  const { googleRefreshToken, ...safeTenant } = tenant!;
 
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-gray-900">Configuración</h1>
       <Suspense fallback={null}>
-        <SettingsForm tenant={tenant!} isGoogleConnected={!!tenant?.googleRefreshToken} />
+        <SettingsForm tenant={safeTenant} isGoogleConnected={Boolean(googleRefreshToken)} />
       </Suspense>
     </div>
   );

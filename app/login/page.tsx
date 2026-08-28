@@ -91,7 +91,7 @@ export default function LoginPage() {
         </div>
         <div>
           <blockquote className="text-2xl font-light leading-relaxed text-gray-100">
-            "Desde que uso JaneClone mis pacientes reservan solos y yo me concentro en atender."
+            &ldquo;Desde que uso JaneClone mis pacientes reservan solos y yo me concentro en atender.&rdquo;
           </blockquote>
           <p className="mt-4 text-sm text-gray-400">Lic. Florencia Lucchini — Psicóloga</p>
         </div>
@@ -151,7 +151,6 @@ export default function LoginPage() {
                     id="email" name="email" type="email" required
                     placeholder="vos@ejemplo.com" className="h-11"
                     autoComplete="email"
-                    defaultValue={savedEmail.current || undefined}
                   />
                 </div>
                 <div className="space-y-1.5">

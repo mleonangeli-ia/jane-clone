@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { getT, LOCALES, translations } from "@/lib/i18n";
+import { getT, LOCALES } from "@/lib/i18n";
 
 describe("getT", () => {
   it("returns Spanish translations by default", () => {
@@ -70,6 +70,13 @@ describe("LOCALES", () => {
       assert.ok(loc.flag,  "flag missing");
     }
   });
+
+  it("uses the expected country flag for each language", () => {
+    assert.deepEqual(
+      Object.fromEntries(LOCALES.map(({ code, flag }) => [code, flag])),
+      { es: "🇦🇷", en: "🇺🇸", pt: "🇧🇷" },
+    );
+  });
 });
 
 describe("translations completeness", () => {
@@ -77,8 +84,8 @@ describe("translations completeness", () => {
 
   for (const section of sections) {
     it(`all locales have the '${section}' section`, () => {
-      for (const locale of ["es", "en", "pt"]) {
-        const t = getT(locale) as any;
+      for (const locale of ["es", "en", "pt"] as const) {
+        const t = getT(locale);
         assert.ok(t[section], `${locale} missing ${section}`);
       }
     });
