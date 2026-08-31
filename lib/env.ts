@@ -11,7 +11,7 @@ const envSchema = z.object({
   GOOGLE_CLIENT_ID:    z.string().optional(),
   GOOGLE_CLIENT_SECRET: z.string().optional(),
   CRON_SECRET:         z.string().optional(),
-  TURNSTILE_SECRET_KEY: z.string().optional(),
+  CAPTCHA_SECRET:      z.string().min(32, "CAPTCHA_SECRET must be at least 32 chars"),
   MP_WEBHOOK_SECRET:   z.string().optional(),
 });
 

@@ -1,4 +1,6 @@
 import { encryptToken, decryptToken } from './token';
+import { randomInt } from 'node:crypto';
+import { createProof } from './proof';
 
 const MIN_MS  = 2_000;
 const MAX_MS  = 10 * 60_000;
@@ -8,13 +10,12 @@ const CODE_LEN = 5;
 export const CHARSET = '23456789ABCDEFGHJKMNPRSTUVWXYZ';
 
 interface TextPayload { captchaType: 'text'; code: string; seed: number; ts: number; }
-interface ProofPayload { type: 'proof'; captchaType: string; ts: number; }
 
 export function generateText(): { token: string } {
   const code = Array.from({ length: CODE_LEN }, () =>
-    CHARSET[Math.floor(Math.random() * CHARSET.length)]
+    CHARSET[randomInt(CHARSET.length)]
   ).join('');
-  const seed = (Math.random() * 0x7fffffff) | 0;
+  const seed = randomInt(0, 0x80000000);
   return { token: encryptToken({ captchaType: 'text', code, seed, ts: Date.now() } satisfies TextPayload) };
 }
 
@@ -35,6 +36,6 @@ export function verifyText(token: string, userCode: string): { ok: boolean; reas
 
   return {
     ok: true,
-    proof: encryptToken({ type: 'proof', captchaType: 'text', ts: Date.now() } satisfies ProofPayload),
+    proof: createProof('text', d.ts),
   };
 }

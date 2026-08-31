@@ -5,6 +5,7 @@
  */
 import { prisma } from "@/lib/db";
 import { getVapidKeys, createVapidJWT } from "./vapid";
+import { assertSafePushEndpoint } from "./endpoint";
 
 export type PushPayload = {
   title: string;
@@ -35,17 +36,19 @@ async function sendOne(
   subject: string,
   data: PushPayload,
 ) {
-  const url      = new URL(sub.endpoint);
-  const audience = `${url.protocol}//${url.host}`;
-  const jwt      = createVapidJWT(audience, subject, vapidPrivateKey);
-
-  // Encode the JSON payload
-  const body = JSON.stringify(data);
-  const bodyBuffer = Buffer.from(body, "utf-8");
-
   try {
-    const res = await fetch(sub.endpoint, {
+    const url      = await assertSafePushEndpoint(sub.endpoint);
+    const audience = url.origin;
+    const jwt      = createVapidJWT(audience, subject, vapidPrivateKey);
+
+    // Encode the JSON payload
+    const body = JSON.stringify(data);
+    const bodyBuffer = Buffer.from(body, "utf-8");
+
+    const res = await fetch(url, {
       method: "POST",
+      redirect: "error",
+      signal: AbortSignal.timeout(10_000),
       headers: {
         "Authorization": `vapid t=${jwt},k=${vapidPublicKey}`,
         "Content-Type":  "application/json",

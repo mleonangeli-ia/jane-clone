@@ -4,18 +4,18 @@
  */
 import { encryptToken, decryptToken } from './token';
 import { SLIDER_MAX } from './renderer';
+import { randomInt } from 'node:crypto';
+import { createProof } from './proof';
 
 const MIN_MS    = 2_000;
 const MAX_MS    = 10 * 60_000;
 const TOLERANCE = 5;       // ±5 % of slider range
-const PROOF_TTL = 5 * 60_000; // proof valid 5 minutes
 
 interface PuzzlePayload { correctX: number; seed: number; ts: number; }
-interface ProofPayload  { type: 'proof'; puzzleTs: number; issuedAt: number; }
 
 export function generatePuzzle(): { token: string } {
-  const correctX = 15 + Math.floor(Math.random() * 60); // 15–74
-  const seed     = (Math.random() * 0x7fffffff) | 0;
+  const correctX = randomInt(15, 75); // 15–74
+  const seed     = randomInt(0, 0x80000000);
   const ts       = Date.now();
   return { token: encryptToken({ correctX, seed, ts } satisfies PuzzlePayload) };
 }
@@ -39,19 +39,8 @@ export function verifyPosition(
 
   if (Math.abs(userX - data.correctX) > TOLERANCE) return { ok: false, reason: 'wrong_position' };
 
-  const proof = encryptToken({ type: 'proof', puzzleTs: data.ts, issuedAt: Date.now() } satisfies ProofPayload);
+  const proof = createProof('puzzle', data.ts);
   return { ok: true, proof };
-}
-
-/**
- * Called in the Next.js proxy before forwarding to the Java backend.
- * Returns true if the proof is cryptographically valid and recent.
- */
-export function validateProof(proof: string): boolean {
-  const data = decryptToken<ProofPayload>(proof);
-  if (!data || data.type !== 'proof') return false;
-  if (Date.now() - data.issuedAt > PROOF_TTL) return false;
-  return true;
 }
 
 export { SLIDER_MAX };

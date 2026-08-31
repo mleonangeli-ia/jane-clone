@@ -3,15 +3,23 @@
  * All captcha state (correctX, seed, timestamps) travels encrypted in the token.
  * No server-side Map/Set — works in Next.js serverless (Vercel).
  */
-import crypto from 'crypto';
+import crypto from 'node:crypto';
+
+export const CAPTCHA_SECRET_MIN_LENGTH = 32;
 
 // Compute key lazily so process.env.CAPTCHA_SECRET can be set before first call.
 // This is intentional: Next.js initializes modules before env vars are ready in tests.
 let _key: Buffer | null = null;
 function getKey(): Buffer {
   if (!_key) {
+    const secret = process.env.CAPTCHA_SECRET;
+    if (!secret || secret.length < CAPTCHA_SECRET_MIN_LENGTH) {
+      throw new Error(
+        `CAPTCHA_SECRET must be configured with at least ${CAPTCHA_SECRET_MIN_LENGTH} characters`,
+      );
+    }
     _key = crypto.createHash('sha256')
-      .update(process.env.CAPTCHA_SECRET ?? 'dev-secret-change-in-production')
+      .update(secret)
       .digest();
   }
   return _key;
