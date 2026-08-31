@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const ip = getClientIp(req);
-  if (!consume(`import:${ip}`, 5, 60 * 60_000).allowed) {
+  if (!(await consume(`import:${ip}`, 5, 60 * 60_000)).allowed) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
 

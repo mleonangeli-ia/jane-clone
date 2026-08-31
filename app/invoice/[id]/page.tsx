@@ -24,7 +24,7 @@ export default async function PublicInvoicePage({
   const hdrs = await headers();
   const xff  = hdrs.get("x-forwarded-for") ?? "unknown";
   const ip   = xff.split(",").at(-1)?.trim() ?? "unknown";
-  const { allowed } = consume(`invoice-view:${id}:${ip}`, 20, 60 * 60_000);
+  const { allowed } = await consume(`invoice-view:${id}:${ip}`, 20, 60 * 60_000);
   if (!allowed) notFound(); // silent rejection — don't reveal rate limit
 
   const invoice = await prisma.invoice.findUnique({ where: { id } });

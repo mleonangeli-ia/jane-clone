@@ -1,13 +1,17 @@
-type Entry = { count: number; reset: number };
-const store = new Map<string, Entry>();
+import { createHash } from "node:crypto";
+import { prisma } from "@/lib/db";
 
-// Removes expired entries periodically to avoid memory leaks
-setInterval(() => {
-  const now = Date.now();
-  for (const [key, entry] of store) {
-    if (now > entry.reset) store.delete(key);
-  }
-}, 5 * 60_000).unref();
+const MAX_KEY_LENGTH = 512;
+const MAX_LIMIT = 1_000_000;
+const MAX_WINDOW_MS = 30 * 24 * 60 * 60_000;
+
+type StoredBucket = { count: number; resetAt: Date };
+
+export interface RateLimitStore {
+  consume(key: string, limit: number, windowMs: number): Promise<StoredBucket>;
+  peek(key: string): Promise<StoredBucket | null>;
+  reset(key: string): Promise<void>;
+}
 
 export type RateLimitResult = {
   allowed: boolean;
@@ -15,72 +19,128 @@ export type RateLimitResult = {
   resetInMs: number;
 };
 
-/**
- * Consumes one token from the bucket.
- * Returns whether the request is allowed and how many attempts remain.
- */
-export function consume(key: string, limit: number, windowMs: number): RateLimitResult {
-  const now = Date.now();
-  const entry = store.get(key);
+const postgresRateLimitStore: RateLimitStore = {
+  async consume(key, limit, windowMs) {
+    const now = new Date();
+    const nextResetAt = new Date(now.getTime() + windowMs);
+    const rows = await prisma.$queryRaw<StoredBucket[]>`
+      WITH "expired" AS (
+        SELECT "key" FROM "rate_limit_buckets"
+        WHERE "resetAt" <= ${now}
+        LIMIT 100
+      ),
+      "cleanup" AS (
+        DELETE FROM "rate_limit_buckets"
+        USING "expired"
+        WHERE "rate_limit_buckets"."key" = "expired"."key"
+      )
+      INSERT INTO "rate_limit_buckets" ("key", "count", "resetAt", "updatedAt")
+      VALUES (${key}, 1, ${nextResetAt}, ${now})
+      ON CONFLICT ("key") DO UPDATE SET
+        "count" = CASE
+          WHEN "rate_limit_buckets"."resetAt" <= ${now} THEN 1
+          ELSE LEAST("rate_limit_buckets"."count" + 1, ${limit + 1})
+        END,
+        "resetAt" = CASE
+          WHEN "rate_limit_buckets"."resetAt" <= ${now} THEN ${nextResetAt}
+          ELSE "rate_limit_buckets"."resetAt"
+        END,
+        "updatedAt" = ${now}
+      RETURNING "count", "resetAt"
+    `;
 
-  if (!entry || now > entry.reset) {
-    store.set(key, { count: 1, reset: now + windowMs });
-    return { allowed: true, remaining: limit - 1, resetInMs: windowMs };
+    const bucket = rows[0];
+    if (!bucket) throw new Error("Rate limit storage did not return a bucket");
+    return bucket;
+  },
+
+  async peek(key) {
+    const now = new Date();
+    const rows = await prisma.$queryRaw<StoredBucket[]>`
+      SELECT "count", "resetAt"
+      FROM "rate_limit_buckets"
+      WHERE "key" = ${key} AND "resetAt" > ${now}
+      LIMIT 1
+    `;
+    return rows[0] ?? null;
+  },
+
+  async reset(key) {
+    await prisma.$executeRaw`
+      DELETE FROM "rate_limit_buckets" WHERE "key" = ${key}
+    `;
+  },
+};
+
+function validateArguments(key: string, limit: number, windowMs: number): void {
+  if (!key || key.length > MAX_KEY_LENGTH) throw new Error("Invalid rate limit key");
+  if (!Number.isInteger(limit) || limit < 1 || limit > MAX_LIMIT) {
+    throw new Error("Invalid rate limit limit");
   }
-
-  if (entry.count >= limit) {
-    return { allowed: false, remaining: 0, resetInMs: entry.reset - now };
+  if (!Number.isInteger(windowMs) || windowMs < 1 || windowMs > MAX_WINDOW_MS) {
+    throw new Error("Invalid rate limit window");
   }
-
-  entry.count++;
-  return { allowed: true, remaining: limit - entry.count, resetInMs: entry.reset - now };
 }
 
-/**
- * Checks the current count WITHOUT consuming a token.
- * Useful for deciding whether to show CAPTCHA before committing the attempt.
- */
-export function peek(key: string, limit: number, windowMs: number): RateLimitResult {
-  const now = Date.now();
-  const entry = store.get(key);
-  if (!entry || now > entry.reset) {
-    return { allowed: true, remaining: limit, resetInMs: windowMs };
-  }
+function storageKey(key: string): string {
+  return createHash("sha256").update(key, "utf8").digest("hex");
+}
+
+function resultFor(bucket: StoredBucket, limit: number): RateLimitResult {
   return {
-    allowed: entry.count < limit,
-    remaining: Math.max(0, limit - entry.count),
-    resetInMs: entry.reset - now,
+    allowed: bucket.count <= limit,
+    remaining: Math.max(0, limit - bucket.count),
+    resetInMs: Math.max(0, bucket.resetAt.getTime() - Date.now()),
   };
 }
 
-/** Resets the counter for a key (e.g. after successful login). */
-export function reset(key: string) {
-  store.delete(key);
+/** Atomically consumes one attempt in the shared PostgreSQL bucket. */
+export async function consume(
+  key: string,
+  limit: number,
+  windowMs: number,
+  store: RateLimitStore = postgresRateLimitStore,
+): Promise<RateLimitResult> {
+  validateArguments(key, limit, windowMs);
+  return resultFor(await store.consume(storageKey(key), limit, windowMs), limit);
 }
 
-/** Legacy helper kept for existing call sites. */
-export function rateLimit(key: string, limit = 15, windowMs = 60_000): boolean {
-  return consume(key, limit, windowMs).allowed;
+/** Reads a bucket without consuming an attempt. */
+export async function peek(
+  key: string,
+  limit: number,
+  windowMs: number,
+  store: RateLimitStore = postgresRateLimitStore,
+): Promise<RateLimitResult> {
+  validateArguments(key, limit, windowMs);
+  const bucket = await store.peek(storageKey(key));
+  if (!bucket || bucket.resetAt.getTime() <= Date.now()) {
+    return { allowed: true, remaining: limit, resetInMs: windowMs };
+  }
+  return resultFor(bucket, limit);
 }
 
-/**
- * Returns the real client IP.
- * Trusts X-Forwarded-For only when the connection comes from a known
- * reverse-proxy/CDN range (Vercel, Cloudflare). Otherwise falls back to
- * the socket IP (which cannot be spoofed from outside).
- *
- * In dev/test (no trusted proxy configured) we take the last XFF entry,
- * which is the closest real IP — attackers can prepend entries but not
- * control the last one added by the proxy.
- */
+export async function reset(
+  key: string,
+  store: RateLimitStore = postgresRateLimitStore,
+): Promise<void> {
+  if (!key || key.length > MAX_KEY_LENGTH) throw new Error("Invalid rate limit key");
+  await store.reset(storageKey(key));
+}
+
+export async function rateLimit(
+  key: string,
+  limit = 15,
+  windowMs = 60_000,
+  store: RateLimitStore = postgresRateLimitStore,
+): Promise<boolean> {
+  return (await consume(key, limit, windowMs, store)).allowed;
+}
+
+/** Returns the address added by the outermost reverse proxy. */
 export function getClientIp(req: Request): string {
-  const xff = req.headers.get("x-forwarded-for");
-  if (!xff) return "unknown";
-
-  const ips = xff.split(",").map((s) => s.trim());
-
-  // In production Vercel sets CF-Connecting-IP (single trusted IP).
-  // As a simpler guard: take the LAST entry (injected by the outermost proxy,
-  // which the attacker cannot control).
-  return ips[ips.length - 1] ?? "unknown";
+  const forwarded = req.headers.get("x-forwarded-for");
+  if (!forwarded) return "unknown";
+  const addresses = forwarded.split(",").map((address) => address.trim()).filter(Boolean);
+  return addresses.at(-1) ?? "unknown";
 }

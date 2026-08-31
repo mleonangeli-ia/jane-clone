@@ -9,7 +9,7 @@ const REGISTER_LIMIT = { max: 3, windowMs: 60 * 60_000 };
 
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
-  const { allowed } = consume(`register:ip:${ip}`, REGISTER_LIMIT.max, REGISTER_LIMIT.windowMs);
+  const { allowed } = await consume(`register:ip:${ip}`, REGISTER_LIMIT.max, REGISTER_LIMIT.windowMs);
   if (!allowed) {
     return NextResponse.json(
       { error: "Demasiados registros desde este origen. Intentá más tarde." },

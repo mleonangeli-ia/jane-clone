@@ -1,9 +1,17 @@
-import { describe, it, before } from "node:test";
+import { after, before, describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { encryptPem, decryptPem, buildAfipQR } from "@/lib/afip/crypto";
 
+let originalEncryptionKey: string | undefined;
+
 before(() => {
-  process.env.NEXTAUTH_SECRET = "test-secret-32-bytes-minimum-ok!";
+  originalEncryptionKey = process.env.AFIP_ENCRYPTION_KEY;
+  process.env.AFIP_ENCRYPTION_KEY = "test-afip-encryption-key-32-bytes-minimum";
+});
+
+after(() => {
+  if (originalEncryptionKey === undefined) delete process.env.AFIP_ENCRYPTION_KEY;
+  else process.env.AFIP_ENCRYPTION_KEY = originalEncryptionKey;
 });
 
 const SAMPLE_PEM = `-----BEGIN CERTIFICATE-----
@@ -34,6 +42,16 @@ describe("encryptPem / decryptPem", () => {
     const encrypted = encryptPem("");
     const decrypted = decryptPem(encrypted);
     assert.strictEqual(decrypted, "");
+  });
+
+  it("fails closed when the dedicated encryption key is missing or too short", () => {
+    const original = process.env.AFIP_ENCRYPTION_KEY;
+    delete process.env.AFIP_ENCRYPTION_KEY;
+    assert.throws(() => encryptPem(SAMPLE_PEM), /AFIP_ENCRYPTION_KEY/);
+
+    process.env.AFIP_ENCRYPTION_KEY = "too-short";
+    assert.throws(() => encryptPem(SAMPLE_PEM), /AFIP_ENCRYPTION_KEY/);
+    process.env.AFIP_ENCRYPTION_KEY = original;
   });
 });
 

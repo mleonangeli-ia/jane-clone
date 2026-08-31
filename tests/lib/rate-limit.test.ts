@@ -1,6 +1,8 @@
 import { describe, it, beforeEach, afterEach, mock } from "node:test";
 import assert from "node:assert/strict";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { randomUUID } from "node:crypto";
+import { MemoryRateLimitStore } from "@/tests/helpers/rate-limit-store";
 
 describe("rateLimit", () => {
   beforeEach(() => {
@@ -11,33 +13,45 @@ describe("rateLimit", () => {
     mock.timers.reset();
   });
 
-  it("allows requests up to the limit", () => {
-    const ip = `ip-${Math.random()}`;
+  it("allows requests up to the limit", async () => {
+    const store = new MemoryRateLimitStore();
+    const ip = `ip-${randomUUID()}`;
     for (let i = 0; i < 15; i++) {
-      assert.strictEqual(rateLimit(ip, 15, 60_000), true);
+      assert.strictEqual(await rateLimit(ip, 15, 60_000, store), true);
     }
   });
 
-  it("blocks the request that exceeds the limit", () => {
-    const ip = `ip-${Math.random()}`;
-    for (let i = 0; i < 15; i++) rateLimit(ip, 15, 60_000);
-    assert.strictEqual(rateLimit(ip, 15, 60_000), false);
+  it("blocks the request that exceeds the limit", async () => {
+    const store = new MemoryRateLimitStore();
+    const ip = `ip-${randomUUID()}`;
+    for (let i = 0; i < 15; i++) await rateLimit(ip, 15, 60_000, store);
+    assert.strictEqual(await rateLimit(ip, 15, 60_000, store), false);
   });
 
-  it("resets after the window expires", () => {
-    const ip = `ip-${Math.random()}`;
-    for (let i = 0; i < 15; i++) rateLimit(ip, 15, 60_000);
-    assert.strictEqual(rateLimit(ip, 15, 60_000), false);
+  it("resets after the window expires", async () => {
+    const store = new MemoryRateLimitStore();
+    const ip = `ip-${randomUUID()}`;
+    for (let i = 0; i < 15; i++) await rateLimit(ip, 15, 60_000, store);
+    assert.strictEqual(await rateLimit(ip, 15, 60_000, store), false);
     mock.timers.tick(61_000);
-    assert.strictEqual(rateLimit(ip, 15, 60_000), true);
+    assert.strictEqual(await rateLimit(ip, 15, 60_000, store), true);
   });
 
-  it("tracks IPs independently", () => {
-    const ip1 = `ip-${Math.random()}`;
-    const ip2 = `ip-${Math.random()}`;
-    for (let i = 0; i < 15; i++) rateLimit(ip1, 15, 60_000);
-    assert.strictEqual(rateLimit(ip1, 15, 60_000), false);
-    assert.strictEqual(rateLimit(ip2, 15, 60_000), true);
+  it("tracks IPs independently", async () => {
+    const store = new MemoryRateLimitStore();
+    const ip1 = `ip-${randomUUID()}`;
+    const ip2 = `ip-${randomUUID()}`;
+    for (let i = 0; i < 15; i++) await rateLimit(ip1, 15, 60_000, store);
+    assert.strictEqual(await rateLimit(ip1, 15, 60_000, store), false);
+    assert.strictEqual(await rateLimit(ip2, 15, 60_000, store), true);
+  });
+
+  it("shares one atomic limit across concurrent consumers", async () => {
+    const store = new MemoryRateLimitStore();
+    const results = await Promise.all(
+      Array.from({ length: 25 }, () => rateLimit("shared-key", 10, 60_000, store)),
+    );
+    assert.equal(results.filter(Boolean).length, 10);
   });
 });
 

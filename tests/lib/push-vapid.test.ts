@@ -1,11 +1,29 @@
-import { describe, it, before } from "node:test";
+import { after, before, beforeEach, describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { generateVapidKeys, createVapidJWT, getVapidKeys } from "@/lib/push/vapid";
+import { generateVapidKeys, createVapidJWT, getVapidKeys, getVapidSubject } from "@/lib/push/vapid";
 
+let originalPublicKey: string | undefined;
+let originalPrivateKey: string | undefined;
+let originalSubject: string | undefined;
 before(() => {
-  // Clear env to force ephemeral key generation
+  originalPublicKey = process.env.VAPID_PUBLIC_KEY;
+  originalPrivateKey = process.env.VAPID_PRIVATE_KEY;
+  originalSubject = process.env.VAPID_SUBJECT;
+});
+
+beforeEach(() => {
   delete process.env.VAPID_PUBLIC_KEY;
   delete process.env.VAPID_PRIVATE_KEY;
+  delete process.env.VAPID_SUBJECT;
+});
+
+after(() => {
+  if (originalPublicKey === undefined) delete process.env.VAPID_PUBLIC_KEY;
+  else process.env.VAPID_PUBLIC_KEY = originalPublicKey;
+  if (originalPrivateKey === undefined) delete process.env.VAPID_PRIVATE_KEY;
+  else process.env.VAPID_PRIVATE_KEY = originalPrivateKey;
+  if (originalSubject === undefined) delete process.env.VAPID_SUBJECT;
+  else process.env.VAPID_SUBJECT = originalSubject;
 });
 
 describe("generateVapidKeys", () => {
@@ -74,16 +92,48 @@ describe("createVapidJWT", () => {
 });
 
 describe("getVapidKeys", () => {
-  it("returns ephemeral keys when env vars are not set", () => {
-    const { publicKey, privateKey } = getVapidKeys();
-    assert.ok(publicKey.length  > 0);
-    assert.ok(privateKey.length > 0);
+  it("fails closed when persistent keys are missing", () => {
+    assert.throws(() => getVapidKeys(), /must be configured/);
   });
 
-  it("returns the same ephemeral keys on successive calls (cached)", () => {
-    const k1 = getVapidKeys();
-    const k2 = getVapidKeys();
-    assert.strictEqual(k1.publicKey,  k2.publicKey);
-    assert.strictEqual(k1.privateKey, k2.privateKey);
+  it("returns a configured, valid persistent key pair", () => {
+    const generated = generateVapidKeys();
+    process.env.VAPID_PUBLIC_KEY = generated.publicKey;
+    process.env.VAPID_PRIVATE_KEY = generated.privateKey;
+    assert.deepEqual(getVapidKeys(), generated);
+  });
+
+  it("rejects malformed public and private keys", () => {
+    const generated = generateVapidKeys();
+    process.env.VAPID_PUBLIC_KEY = "invalid";
+    process.env.VAPID_PRIVATE_KEY = generated.privateKey;
+    assert.throws(() => getVapidKeys(), /PUBLIC_KEY is invalid/);
+
+    process.env.VAPID_PUBLIC_KEY = generated.publicKey;
+    process.env.VAPID_PRIVATE_KEY = "{}";
+    assert.throws(() => getVapidKeys(), /PRIVATE_KEY is invalid/);
+  });
+
+  it("rejects a public key that does not match the private key", () => {
+    const first = generateVapidKeys();
+    const second = generateVapidKeys();
+    process.env.VAPID_PUBLIC_KEY = first.publicKey;
+    process.env.VAPID_PRIVATE_KEY = second.privateKey;
+    assert.throws(() => getVapidKeys(), /PRIVATE_KEY is invalid/);
+  });
+});
+
+describe("getVapidSubject", () => {
+  it("accepts mailto and HTTPS subjects", () => {
+    process.env.VAPID_SUBJECT = "mailto:notifications@example.com";
+    assert.equal(getVapidSubject(), "mailto:notifications@example.com");
+    process.env.VAPID_SUBJECT = "https://example.com/contact";
+    assert.equal(getVapidSubject(), "https://example.com/contact");
+  });
+
+  it("rejects missing or unsupported subjects", () => {
+    assert.throws(() => getVapidSubject(), /VAPID_SUBJECT/);
+    process.env.VAPID_SUBJECT = "http://example.com";
+    assert.throws(() => getVapidSubject(), /VAPID_SUBJECT/);
   });
 });

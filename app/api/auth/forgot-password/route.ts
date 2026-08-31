@@ -10,7 +10,7 @@ const RATE = { max: 3, windowMs: 60 * 60_000 };
 
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
-  if (!consume(`forgot:ip:${ip}`, RATE.max, RATE.windowMs).allowed) {
+  if (!(await consume(`forgot:ip:${ip}`, RATE.max, RATE.windowMs)).allowed) {
     return NextResponse.json({ ok: true }); // respuesta idéntica para no dar info
   }
 

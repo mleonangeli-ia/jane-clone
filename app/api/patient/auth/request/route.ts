@@ -10,7 +10,7 @@ const RATE = { max: 5, windowMs: 60 * 60_000 };
 
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
-  if (!consume(`patient-login:${ip}`, RATE.max, RATE.windowMs).allowed) {
+  if (!(await consume(`patient-login:${ip}`, RATE.max, RATE.windowMs)).allowed) {
     return NextResponse.json({ ok: true }); // respuesta idéntica
   }
 

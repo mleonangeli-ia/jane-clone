@@ -1,6 +1,9 @@
 import { Resend } from "resend";
 
-export const resend = new Resend(process.env.RESEND_API_KEY);
+const apiKey = process.env.RESEND_API_KEY;
+const fromEmail = process.env.FROM_EMAIL;
+if (!apiKey) throw new Error("RESEND_API_KEY must be configured");
+if (!fromEmail) throw new Error("FROM_EMAIL must be configured");
 
-export const FROM_EMAIL =
-  process.env.FROM_EMAIL ?? "turnos@resend.dev";
+export const resend = new Resend(apiKey);
+export const FROM_EMAIL = fromEmail;

@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
   }
 
   // 3. Rate limit: per-IP and per-email
-  const { ipResult, emailResult } = checkBookingRateLimit(ip, (clientEmail ?? "").toLowerCase());
+  const { ipResult, emailResult } = await checkBookingRateLimit(ip, (clientEmail ?? "").toLowerCase());
   if (!ipResult.allowed) {
     return NextResponse.json({ error: "Demasiadas reservas. Intentá en unos minutos." }, { status: 429 });
   }

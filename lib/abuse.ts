@@ -35,27 +35,28 @@ export function isHoneypotClean(value: string | null | undefined): boolean {
 // ── Per-endpoint rate limit configs ───────────────────────────────────────────
 
 /** Public booking creation — prevent slot flooding */
-export function checkBookingRateLimit(ip: string, email: string): {
+export async function checkBookingRateLimit(ip: string, email: string): Promise<{
   ipResult: RateLimitResult;
   emailResult: RateLimitResult;
-} {
-  return {
-    ipResult:    consume(`booking:ip:${ip}`,       5,  10 * 60_000), // 5/10min per IP
-    emailResult: consume(`booking:email:${email}`, 3,  24 * 60 * 60_000), // 3/day per email
-  };
+}> {
+  const [ipResult, emailResult] = await Promise.all([
+    consume(`booking:ip:${ip}`, 5, 10 * 60_000), // 5/10min per IP
+    consume(`booking:email:${email}`, 3, 24 * 60 * 60_000), // 3/day per email
+  ]);
+  return { ipResult, emailResult };
 }
 
 /** Slot availability check — prevent scraping */
-export function checkSlotsRateLimit(ip: string): RateLimitResult {
+export function checkSlotsRateLimit(ip: string): Promise<RateLimitResult> {
   return consume(`slots:ip:${ip}`, 60, 60_000); // 60/min per IP
 }
 
 /** Waitlist signup — prevent spam */
-export function checkWaitlistRateLimit(ip: string): RateLimitResult {
+export function checkWaitlistRateLimit(ip: string): Promise<RateLimitResult> {
   return consume(`waitlist:ip:${ip}`, 10, 60 * 60_000); // 10/hour per IP
 }
 
 /** Public cancel endpoint */
-export function checkCancelRateLimit(ip: string): RateLimitResult {
+export function checkCancelRateLimit(ip: string): Promise<RateLimitResult> {
   return consume(`cancel:ip:${ip}`, 5, 60 * 60_000); // 5/hour per IP
 }

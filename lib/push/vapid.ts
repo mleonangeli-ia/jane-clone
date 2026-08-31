@@ -2,7 +2,7 @@
  * VAPID key generation and JWT signing for Web Push.
  * Pure Node.js — no external dependencies.
  */
-import crypto from "crypto";
+import crypto from "node:crypto";
 
 export type VapidKeys = { publicKey: string; privateKey: string };
 
@@ -62,19 +62,47 @@ export function createVapidJWT(
   return `${msg}.${rawSig}`;
 }
 
-/** Returns the VAPID keys from env — or generates and caches in memory for dev */
-let _cached: VapidKeys | null = null;
-
 export function getVapidKeys(): VapidKeys {
   const pub  = process.env.VAPID_PUBLIC_KEY;
   const priv = process.env.VAPID_PRIVATE_KEY;
 
-  if (pub && priv) return { publicKey: pub, privateKey: priv };
-
-  // Dev: auto-generate once
-  if (!_cached) {
-    _cached = generateVapidKeys();
-    console.warn("[push] VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY not set — using ephemeral keys (sessions will break on restart)");
+  if (!pub || !priv) {
+    throw new Error("VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY must be configured");
   }
-  return _cached;
+
+  const decodedPublicKey = Buffer.from(pub, "base64url");
+  if (decodedPublicKey.length !== 65 || decodedPublicKey[0] !== 0x04) {
+    throw new Error("VAPID_PUBLIC_KEY is invalid");
+  }
+
+  try {
+    const jwk = JSON.parse(priv) as { kty?: string; crv?: string; d?: string; x?: string; y?: string };
+    if (jwk.kty !== "EC" || jwk.crv !== "P-256" || !jwk.d || !jwk.x || !jwk.y) {
+      throw new Error("invalid JWK");
+    }
+    crypto.createPrivateKey({ key: jwk, format: "jwk" });
+    const publicKeyFromPrivate = Buffer.concat([
+      Buffer.from([0x04]),
+      Buffer.from(jwk.x, "base64url"),
+      Buffer.from(jwk.y, "base64url"),
+    ]);
+    if (
+      publicKeyFromPrivate.length !== decodedPublicKey.length ||
+      !crypto.timingSafeEqual(publicKeyFromPrivate, decodedPublicKey)
+    ) {
+      throw new Error("mismatched key pair");
+    }
+  } catch {
+    throw new Error("VAPID_PRIVATE_KEY is invalid");
+  }
+
+  return { publicKey: pub, privateKey: priv };
+}
+
+export function getVapidSubject(): string {
+  const subject = process.env.VAPID_SUBJECT;
+  if (!subject || (!subject.startsWith("mailto:") && !subject.startsWith("https://"))) {
+    throw new Error("VAPID_SUBJECT must be a mailto: or HTTPS URL");
+  }
+  return subject;
 }

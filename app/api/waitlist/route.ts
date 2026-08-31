@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
   if (email && isDisposableEmail(email)) {
     return NextResponse.json({ error: "Email no permitido." }, { status: 422 });
   }
-  const wlLimit = checkWaitlistRateLimit(ip);
+  const wlLimit = await checkWaitlistRateLimit(ip);
   if (!wlLimit.allowed) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }

@@ -4,7 +4,7 @@
  * This avoids the complex RFC8291 message encryption.
  */
 import { prisma } from "@/lib/db";
-import { getVapidKeys, createVapidJWT } from "./vapid";
+import { getVapidKeys, getVapidSubject, createVapidJWT } from "./vapid";
 import { assertSafePushEndpoint } from "./endpoint";
 
 export type PushPayload = {
@@ -22,7 +22,7 @@ export async function sendPushToTenant(tenantId: string, data: PushPayload) {
   if (!subscriptions.length) return;
 
   const { publicKey, privateKey } = getVapidKeys();
-  const subject = process.env.VAPID_SUBJECT ?? `mailto:${process.env.FROM_EMAIL ?? "hello@janeclone.app"}`;
+  const subject = getVapidSubject();
 
   await Promise.allSettled(
     subscriptions.map(sub => sendOne(sub, publicKey, privateKey, subject, data))

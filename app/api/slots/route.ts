@@ -20,7 +20,7 @@ function toZonedTime(date: Date, tz: string): Date {
 
 export async function GET(req: NextRequest) {
   const ip = getClientIp(req);
-  const slotLimit = checkSlotsRateLimit(ip);
+  const slotLimit = await checkSlotsRateLimit(ip);
   if (!slotLimit.allowed) return NextResponse.json({ error: "Too many requests" }, { status: 429 });
 
   const { searchParams } = new URL(req.url);

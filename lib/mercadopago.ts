@@ -1,8 +1,10 @@
 const MP_BASE = "https://api.mercadopago.com";
 
 function headers() {
+  const accessToken = process.env.MP_ACCESS_TOKEN;
+  if (!accessToken) throw new Error("MP_ACCESS_TOKEN must be configured");
   return {
-    Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
+    Authorization: `Bearer ${accessToken}`,
     "Content-Type": "application/json",
   };
 }

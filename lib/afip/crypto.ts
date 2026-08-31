@@ -1,9 +1,12 @@
-import crypto from "crypto";
+import crypto from "node:crypto";
 
 const ALG = "aes-256-gcm";
 
 function getKey() {
-  const secret = process.env.NEXTAUTH_SECRET ?? "dev-secret-change-in-production";
+  const secret = process.env.AFIP_ENCRYPTION_KEY;
+  if (!secret || secret.length < 32) {
+    throw new Error("AFIP_ENCRYPTION_KEY must be configured with at least 32 characters");
+  }
   return crypto.createHash("sha256").update(secret).digest();
 }
 

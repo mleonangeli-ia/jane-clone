@@ -39,14 +39,14 @@ export const authOptions: NextAuthOptions = {
         const softKey = `login:soft:${ip}`;
 
         // ── 1. Hard limit: consumes on every attempt ──────────────
-        const hard = consume(hardKey, HARD.max, HARD.windowMs);
+        const hard = await consume(hardKey, HARD.max, HARD.windowMs);
         if (!hard.allowed) {
           const min = Math.ceil(hard.resetInMs / 60_000);
           throw new Error(`RateLimit:${min}`);
         }
 
         // ── 2. Soft limit: peek first (don't charge twice) ────────
-        const soft = peek(softKey, SOFT.max, SOFT.windowMs);
+        const soft = await peek(softKey, SOFT.max, SOFT.windowMs);
         if (!soft.allowed) {
           if (!captchaToken) {
             throw new Error("NeedsCaptcha");
@@ -58,11 +58,11 @@ export const authOptions: NextAuthOptions = {
           }
 
           // CAPTCHA passed → reset soft counter so user gets 3 more free attempts
-          reset(softKey);
+          await reset(softKey);
         }
 
         // Consume soft slot
-        consume(softKey, SOFT.max, SOFT.windowMs);
+        await consume(softKey, SOFT.max, SOFT.windowMs);
 
         // ── 3. Credential check ───────────────────────────────────
         const tenant = await prisma.tenant.findUnique({ where: { email } });
@@ -72,8 +72,7 @@ export const authOptions: NextAuthOptions = {
         if (!valid) return null;
 
         // Success → clear all counters
-        reset(hardKey);
-        reset(softKey);
+        await Promise.all([reset(hardKey), reset(softKey)]);
 
         return {
           id:    tenant.id,

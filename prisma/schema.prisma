@@ -412,3 +412,13 @@ model PushSubscription {
   @@index([tenantId])
   @@map("push_subscriptions")
 }
+
+model RateLimitBucket {
+  key       String   @id @db.VarChar(64)
+  count     Int
+  resetAt   DateTime
+  updatedAt DateTime @updatedAt
+
+  @@index([resetAt])
+  @@map("rate_limit_buckets")
+}

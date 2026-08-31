@@ -24,7 +24,7 @@ async function withSerializableRetry<T>(operation: (tx: Prisma.TransactionClient
 
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
-  if (!consume(`reschedule:${ip}`, RATE.max, RATE.windowMs).allowed) {
+  if (!(await consume(`reschedule:${ip}`, RATE.max, RATE.windowMs)).allowed) {
     return NextResponse.json({ error: "Demasiados intentos. Intentá más tarde." }, { status: 429 });
   }
 
