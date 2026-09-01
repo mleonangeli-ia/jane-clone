@@ -422,3 +422,12 @@ model RateLimitBucket {
   @@index([resetAt])
   @@map("rate_limit_buckets")
 }
+
+model CaptchaProofUse {
+  key       String   @id @db.VarChar(64)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([expiresAt])
+  @@map("captcha_proof_uses")
+}

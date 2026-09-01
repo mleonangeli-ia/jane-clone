@@ -11,6 +11,10 @@ interface ProofPayload {
   issuedAt: number;
 }
 
+export type ValidCaptchaProof = {
+  expiresAt: Date;
+};
+
 export function createProof(captchaType: CaptchaType, challengeIssuedAt: number): string {
   return encryptToken({
     type: 'proof',
@@ -20,8 +24,11 @@ export function createProof(captchaType: CaptchaType, challengeIssuedAt: number)
   } satisfies ProofPayload);
 }
 
-export function validateProof(proof: string, now = Date.now()): boolean {
-  if (!proof) return false;
+export function getValidProof(
+  proof: string,
+  now = Date.now(),
+): ValidCaptchaProof | null {
+  if (!proof) return null;
 
   const data = decryptToken<ProofPayload>(proof);
   if (
@@ -31,9 +38,15 @@ export function validateProof(proof: string, now = Date.now()): boolean {
     !Number.isFinite(data.challengeIssuedAt) ||
     !Number.isFinite(data.issuedAt)
   ) {
-    return false;
+    return null;
   }
 
   const age = now - data.issuedAt;
-  return age >= 0 && age <= CAPTCHA_PROOF_TTL_MS;
+  if (age < 0 || age > CAPTCHA_PROOF_TTL_MS) return null;
+
+  return { expiresAt: new Date(data.issuedAt + CAPTCHA_PROOF_TTL_MS) };
+}
+
+export function validateProof(proof: string, now = Date.now()): boolean {
+  return getValidProof(proof, now) !== null;
 }

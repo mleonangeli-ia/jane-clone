@@ -1,6 +1,7 @@
 import { after, before, beforeEach, describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { verifyCaptchaToken } from "@/lib/captcha";
+import type { CaptchaProofStore } from "@/lib/captcha/proof-store";
 import { generateMath, getMathData, verifyMath } from "@/lib/captcha/math";
 import {
   CAPTCHA_PROOF_TTL_MS,
@@ -12,8 +13,21 @@ import { _resetKeyForTesting, encryptToken } from "@/lib/captcha/token";
 
 const TEST_SECRET = "captcha-test-secret-with-at-least-32-characters";
 
+function createProofStore(): CaptchaProofStore {
+  const consumed = new Set<string>();
+
+  return {
+    async consume(key) {
+      if (consumed.has(key)) return false;
+      consumed.add(key);
+      return true;
+    },
+  };
+}
+
 describe("CAPTCHA proof security", () => {
   let originalSecret: string | undefined;
+  let proofStore: CaptchaProofStore;
 
   before(() => {
     originalSecret = process.env.CAPTCHA_SECRET;
@@ -22,6 +36,7 @@ describe("CAPTCHA proof security", () => {
   beforeEach(() => {
     process.env.CAPTCHA_SECRET = TEST_SECRET;
     _resetKeyForTesting();
+    proofStore = createProofStore();
   });
 
   after(() => {
@@ -32,21 +47,37 @@ describe("CAPTCHA proof security", () => {
 
   it("accepts a valid, recent proof", async () => {
     const proof = createProof("puzzle", Date.now() - 3_000);
-    assert.equal(await verifyCaptchaToken(proof, "127.0.0.1"), true);
+    assert.equal(await verifyCaptchaToken(proof, "127.0.0.1", proofStore), true);
+  });
+
+  it("rejects a proof after its first successful consumption", async () => {
+    const proof = createProof("puzzle", Date.now() - 3_000);
+
+    assert.equal(await verifyCaptchaToken(proof, undefined, proofStore), true);
+    assert.equal(await verifyCaptchaToken(proof, undefined, proofStore), false);
+  });
+
+  it("allows exactly one concurrent consumer for the same proof", async () => {
+    const proof = createProof("puzzle", Date.now() - 3_000);
+    const results = await Promise.all(
+      Array.from({ length: 20 }, () => verifyCaptchaToken(proof, undefined, proofStore)),
+    );
+
+    assert.equal(results.filter(Boolean).length, 1);
   });
 
   it("fails closed when CAPTCHA_SECRET is missing", async () => {
     const proof = createProof("puzzle", Date.now() - 3_000);
     delete process.env.CAPTCHA_SECRET;
     _resetKeyForTesting();
-    assert.equal(await verifyCaptchaToken(proof), false);
+    assert.equal(await verifyCaptchaToken(proof, undefined, proofStore), false);
   });
 
   it("fails closed when CAPTCHA_SECRET is too short", async () => {
     const proof = createProof("puzzle", Date.now() - 3_000);
     process.env.CAPTCHA_SECRET = "too-short";
     _resetKeyForTesting();
-    assert.equal(await verifyCaptchaToken(proof), false);
+    assert.equal(await verifyCaptchaToken(proof, undefined, proofStore), false);
   });
 
   it("rejects empty, malformed and tampered proofs", async () => {
@@ -54,9 +85,9 @@ describe("CAPTCHA proof security", () => {
     const replacement = proof.endsWith("A") ? "B" : "A";
     const tampered = `${proof.slice(0, -1)}${replacement}`;
 
-    assert.equal(await verifyCaptchaToken(""), false);
-    assert.equal(await verifyCaptchaToken("not-a-token"), false);
-    assert.equal(await verifyCaptchaToken(tampered), false);
+    assert.equal(await verifyCaptchaToken("", undefined, proofStore), false);
+    assert.equal(await verifyCaptchaToken("not-a-token", undefined, proofStore), false);
+    assert.equal(await verifyCaptchaToken(tampered, undefined, proofStore), false);
   });
 
   it("rejects expired and future-dated proofs", () => {
